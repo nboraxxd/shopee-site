@@ -1,10 +1,13 @@
+import { Footer } from '@/components/Footer'
+import { RegisterHeader } from '@/components/RegisterHeader'
 import { Outlet } from 'react-router-dom'
 
 export default function RegisterLayout() {
   return (
     <div>
-      RegisterLayout
+      <RegisterHeader />
       <Outlet />
+      <Footer />
     </div>
   )
 }
