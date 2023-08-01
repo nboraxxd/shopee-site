@@ -1,21 +1,16 @@
 import { useForm } from 'react-hook-form'
 import { PATH } from '@/config/path'
 import { Link } from 'react-router-dom'
-import { getRules } from '@/utils/rules'
 import { Input } from '@/components/Input'
-
-interface IFormLogin {
-  email: string
-  password: string
-}
+import { yupResolver } from '@hookform/resolvers/yup'
+import { loginSchema, loginType } from '@/utils/rules'
 
 export default function Login() {
   const {
     register,
     formState: { errors },
     handleSubmit,
-  } = useForm<IFormLogin>()
-  const rules = getRules()
+  } = useForm<loginType>({ resolver: yupResolver(loginSchema) })
 
   const onSubmit = handleSubmit((data) => {
     console.log(data)
@@ -39,7 +34,6 @@ export default function Login() {
                 autoComplete="email"
                 classNameWrapper="mt-8"
                 errorMessage={errors.email?.message}
-                rules={rules.email}
               />
               {/* End Email Input */}
               {/* Password Input */}
@@ -50,7 +44,6 @@ export default function Login() {
                 type="password"
                 autoComplete="new-password"
                 errorMessage={errors.password?.message}
-                rules={rules.password}
               />
               {/* End Password Input */}
               {/* Button */}

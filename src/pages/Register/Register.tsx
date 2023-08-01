@@ -1,24 +1,16 @@
+import { useForm } from 'react-hook-form'
 import { PATH } from '@/config/path'
 import { Link } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
-import { getRules } from '@/utils/rules'
+import { registerSchema, registerType } from '@/utils/rules'
 import { Input } from '@/components/Input'
-
-interface IFormRegister {
-  email: string
-  password: string
-  confirm_password: string
-}
+import { yupResolver } from '@hookform/resolvers/yup'
 
 export default function Register() {
   const {
     register,
     handleSubmit,
-    getValues,
     formState: { errors },
-  } = useForm<IFormRegister>()
-
-  const rules = getRules(getValues)
+  } = useForm<registerType>({ resolver: yupResolver(registerSchema) })
 
   const onSubmit = handleSubmit((data) => {
     console.log(data)
@@ -42,7 +34,6 @@ export default function Register() {
                 autoComplete="email"
                 classNameWrapper="mt-8"
                 errorMessage={errors.email?.message}
-                rules={rules.email}
               />
               {/* End Email Input */}
               {/* Password Input */}
@@ -53,7 +44,6 @@ export default function Register() {
                 type="password"
                 autoComplete="new-password"
                 errorMessage={errors.password?.message}
-                rules={rules.password}
               />
               {/* End Password Input */}
               {/* Confirm Password Input */}
@@ -63,7 +53,6 @@ export default function Register() {
                 register={register}
                 type="password"
                 errorMessage={errors.confirm_password?.message}
-                rules={rules.confirm_password}
               />
               {/* End Confirm Password Input */}
               {/* Button */}

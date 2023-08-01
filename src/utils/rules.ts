@@ -1,41 +1,26 @@
-import type { RegisterOptions, UseFormGetValues } from 'react-hook-form'
+import * as yup from 'yup'
 
-type Rules = { [key in 'email' | 'password' | 'confirm_password']?: RegisterOptions }
-
-export const getRules = (getValues?: UseFormGetValues<any>): Rules => ({
-  email: {
-    required: 'Vui lòng nhập email',
-    minLength: {
-      value: 5,
-      message: 'Email phải có đối thiểu 5 ký tự',
-    },
-    maxLength: {
-      value: 160,
-      message: 'Email chỉ được phép có đối đa 160 ký tự',
-    },
-    pattern: {
-      value: /^\S+@\S+\.\S+$/,
-      message: 'Email chưa đúng định dạng',
-    },
-  },
-
-  password: {
-    required: 'Vui lòng nhập password',
-    minLength: {
-      value: 6,
-      message: 'Password phải có đối thiểu 6 ký tự',
-    },
-    maxLength: {
-      value: 160,
-      message: 'Password chỉ được phép có đối đa 160 ký tự',
-    },
-  },
-
-  confirm_password: {
-    required: 'Vui lòng nhập lại password',
-    validate:
-      typeof getRules === 'function'
-        ? (value) => value === getValues?.('password') || 'Các mật khẩu đã nhập không khớp'
-        : undefined,
-  },
+export const registerSchema = yup.object({
+  email: yup
+    .string()
+    .required('Vui lòng nhập email')
+    .email('Email chưa đúng định dạng')
+    .min(5, 'Email phải có đối thiểu 5 ký tự')
+    .max(160, 'Email chỉ được phép có đối đa 160 ký tự'),
+  password: yup
+    .string()
+    .required('Vui lòng nhập password')
+    .min(6, 'Password phải có đối thiểu 6 ký tự')
+    .max(160, 'Password chỉ được phép có đối đa 160 ký tự'),
+  confirm_password: yup
+    .string()
+    .required('Vui lòng nhập lại password')
+    .min(6, 'Password phải có đối thiểu 6 ký tự')
+    .max(160, 'Password chỉ được phép có đối đa 160 ký tự')
+    .oneOf([yup.ref('password')], 'Các mật khẩu đã nhập không khớp'),
 })
+
+export const loginSchema = registerSchema.omit(['confirm_password'])
+
+export type registerType = yup.InferType<typeof registerSchema>
+export type loginType = yup.InferType<typeof loginSchema>
