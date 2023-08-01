@@ -1,19 +1,19 @@
 export default function Footer() {
   return (
-    <footer className="py-16 bg-secondary">
+    <footer className="bg-secondary py-16">
       {/* Container */}
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="mx-auto max-w-7xl px-4">
         {/* Top Footer */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <p className="lg:col-span-1 text-xs">© 2023 Shopee. Tất cả các quyền được bảo lưu.</p>
-          <p className="lg:col-span-2 text-xs">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <p className="text-xs lg:col-span-1">© 2023 Shopee. Tất cả các quyền được bảo lưu.</p>
+          <p className="text-xs lg:col-span-2">
             Quốc gia & Khu vực: Singapore | Indonesia | Đài Loan | Thái Lan | Malaysia | Việt Nam | Philippines | Brazil
             | México | Colombia | Chile
           </p>
         </div>
         {/* End Top Footer */}
         {/* Bottom Footer */}
-        <div className="mt-10 text-sm text-center">
+        <div className="mt-10 text-center text-sm">
           <p>Công ty TNHH Shopee</p>
           <p className="mt-8">
             Địa chỉ: Tầng 4-5-6, Tòa nhà Capital Place, số 29 đường Liễu Giai, Phường Ngọc Khánh, Quận Ba Đình, Thành
