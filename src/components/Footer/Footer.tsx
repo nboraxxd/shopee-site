@@ -2,7 +2,7 @@ export default function Footer() {
   return (
     <footer className="bg-secondary py-16">
       {/* Container */}
-      <div className="mx-auto max-w-7xl px-4">
+      <div className="container">
         {/* Top Footer */}
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           <p className="text-xs lg:col-span-1">© 2023 Shopee. Tất cả các quyền được bảo lưu.</p>

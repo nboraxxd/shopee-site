@@ -2,6 +2,7 @@ import { PATH } from '@/config/path'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { getRules } from '@/utils/rules'
+import { Input } from '@/components/Input'
 
 interface IFormRegister {
   email: string
@@ -26,47 +27,44 @@ export default function Register() {
   return (
     <div className="bg-primary">
       {/* Container */}
-      <div className="mx-auto max-w-7xl px-4">
+      <div className="container">
         <div className="grid grid-cols-1 py-12 lg:grid-cols-5 lg:py-32 lg:pr-10">
           {/* Wrap Form */}
           <div className="lg:col-span-2 lg:col-start-4">
             <form className="rounded bg-white p-10 shadow-sm" onSubmit={onSubmit} noValidate>
-              <p className="text-2xl">Đăng ký</p>
+              <p className="text-center text-2xl">Đăng ký</p>
               {/* Email Input */}
-              <div className="mt-8">
-                <input
-                  type="email"
-                  className="w-full rounded-sm border border-gray-300 p-3 outline-none focus:border-gray-400 focus:shadow-sm"
-                  placeholder="Email"
-                  autoComplete="email"
-                  {...register('email', rules.email)}
-                />
-                <p className="mt-1 min-h-[1rem] text-xs text-red-600">{errors.email?.message}</p>
-              </div>
+              <Input
+                name="email"
+                placeholder="Email"
+                register={register}
+                type="email"
+                autoComplete="email"
+                classNameWrapper="mt-8"
+                errorMessage={errors.email?.message}
+                rules={rules.email}
+              />
               {/* End Email Input */}
               {/* Password Input */}
-              <div className="mt-2">
-                <input
-                  type="password"
-                  className="w-full rounded-sm border border-gray-300 p-3 outline-none focus:border-gray-400 focus:shadow-sm"
-                  placeholder="Password"
-                  autoComplete="new-password"
-                  {...register('password', rules.password)}
-                />
-                <p className="mt-1 min-h-[1rem] text-xs text-red-600">{errors.password?.message}</p>
-              </div>
+              <Input
+                name="password"
+                placeholder="Password"
+                register={register}
+                type="password"
+                autoComplete="new-password"
+                errorMessage={errors.password?.message}
+                rules={rules.password}
+              />
               {/* End Password Input */}
               {/* Confirm Password Input */}
-              <div className="mt-2">
-                <input
-                  type="password"
-                  className="w-full rounded-sm border border-gray-300 p-3 outline-none focus:border-gray-400 focus:shadow-sm"
-                  placeholder="Confirm password"
-                  autoComplete="new-password"
-                  {...register('confirm_password', rules.confirm_password)}
-                />
-                <p className="mt-1 min-h-[1rem] text-xs text-red-600">{errors.confirm_password?.message}</p>
-              </div>
+              <Input
+                name="confirm_password"
+                placeholder="Confirm password"
+                register={register}
+                type="password"
+                errorMessage={errors.confirm_password?.message}
+                rules={rules.confirm_password}
+              />
               {/* End Confirm Password Input */}
               {/* Button */}
               <button
