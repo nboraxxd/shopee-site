@@ -3,14 +3,14 @@ import { PATH } from '@/config/path'
 import { Link } from 'react-router-dom'
 import { Input } from '@/components/Input'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { loginSchema, loginType } from '@/utils/rules'
+import { loginSchema, LoginSchema } from '@/utils/rules'
 
 export default function Login() {
   const {
     register,
     formState: { errors },
     handleSubmit,
-  } = useForm<loginType>({ resolver: yupResolver(loginSchema) })
+  } = useForm<LoginSchema>({ resolver: yupResolver(loginSchema) })
 
   const onSubmit = handleSubmit((data) => {
     console.log(data)

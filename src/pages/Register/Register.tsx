@@ -1,19 +1,34 @@
 import { useForm } from 'react-hook-form'
-import { PATH } from '@/config/path'
-import { Link } from 'react-router-dom'
-import { registerSchema, registerType } from '@/utils/rules'
-import { Input } from '@/components/Input'
+import { useMutation } from '@tanstack/react-query'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { Link } from 'react-router-dom'
+import omit from 'lodash/omit'
+import { PATH } from '@/config/path'
+import { schema, Schema } from '@/utils/rules'
+import { authenticationApi } from '@/apis/authentication.api'
+import { Input } from '@/components/Input'
+
+type FormData = Schema
 
 export default function Register() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<registerType>({ resolver: yupResolver(registerSchema) })
+  } = useForm<FormData>({ resolver: yupResolver(schema) })
+
+  const registerMutation = useMutation({
+    mutationFn: (body: Omit<FormData, 'confirm_password'>) => authenticationApi.register(body),
+  })
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data)
+    const body = omit(data, ['confirm_password'])
+
+    registerMutation.mutate(body, {
+      onSuccess: (data) => {
+        console.log(data)
+      },
+    })
   })
 
   return (

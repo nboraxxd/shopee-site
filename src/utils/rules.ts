@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-export const registerSchema = yup.object({
+export const schema = yup.object({
   email: yup
     .string()
     .required('Vui lòng nhập email')
@@ -20,7 +20,8 @@ export const registerSchema = yup.object({
     .oneOf([yup.ref('password')], 'Các mật khẩu đã nhập không khớp'),
 })
 
-export const loginSchema = registerSchema.omit(['confirm_password'])
+// tạo ra 1 schema mới đã loại bỏ confirm_password
+export const loginSchema = schema.omit(['confirm_password'])
 
-export type registerType = yup.InferType<typeof registerSchema>
-export type loginType = yup.InferType<typeof loginSchema>
+export type Schema = yup.InferType<typeof schema>
+export type LoginSchema = yup.InferType<typeof loginSchema>
