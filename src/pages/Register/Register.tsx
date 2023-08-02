@@ -7,6 +7,8 @@ import { PATH } from '@/config/path'
 import { schema, Schema } from '@/utils/rules'
 import { authenticationApi } from '@/apis/authentication.api'
 import { Input } from '@/components/Input'
+import { isAxiosUnprocessableEntityError } from '@/utils/utils'
+import { ResponseApi } from '@/types/utils.type'
 
 type FormData = Schema
 
@@ -14,6 +16,7 @@ export default function Register() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<FormData>({ resolver: yupResolver(schema) })
 
@@ -27,6 +30,14 @@ export default function Register() {
     registerMutation.mutate(body, {
       onSuccess: (data) => {
         console.log(data)
+      },
+      onError: (error) => {
+        if (isAxiosUnprocessableEntityError<ResponseApi<Omit<FormData, 'confirm_password'>>>(error)) {
+          const formError = error.response?.data.data
+
+          if (formError?.email) setError('email', { message: formError.email, type: 'Server' })
+          if (formError?.password) setError('password', { message: formError.password, type: 'Server' })
+        }
       },
     })
   })
