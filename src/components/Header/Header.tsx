@@ -1,40 +1,27 @@
-import { useRef, useState } from 'react'
-import { FloatingArrow, FloatingPortal, arrow, offset, shift, useFloating } from '@floating-ui/react'
-import { Link } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { Popover } from '@/components/Popover'
 import { PATH } from '@/config/path'
+import { Link } from 'react-router-dom'
+import { ButtonPopover } from '@/components/ButtonPopover'
 
 export default function Header() {
-  const TOOLTIP_GAP = 7
-  const [isOpen, setIsOpen] = useState(false)
-  const arrowRef = useRef(null)
-  const { refs, strategy, x, y, context, middlewareData } = useFloating({
-    middleware: [
-      shift(),
-      arrow({
-        element: arrowRef,
-      }),
-      offset(TOOLTIP_GAP),
-    ],
-  })
-
-  const showPopover = () => {
-    setIsOpen(true)
-  }
-
-  const hidePopover = () => {
-    setIsOpen(false)
-  }
-
   return (
     <header className="bg-[linear-gradient(-180deg,#f53d2d,#F63)] pb-5 pt-2">
       {/* Container */}
       <div className="container">
         {/* Top Bar Menu */}
-        <ul className="-mx-3 flex justify-end">
-          {/* Language */}
-          <li className="relative" ref={refs.setReference} onMouseEnter={showPopover} onMouseLeave={hidePopover}>
-            <div className="flex cursor-pointer items-center px-3 py-1 text-gray-50 transition-all hover:text-gray-200">
+        <ul className="-mx-2 flex justify-end px-5">
+          {/* Language Popover */}
+          <Popover
+            renderPopover={
+              <div className="flex flex-col rounded-sm border border-gray-200 bg-white shadow-md">
+                <ButtonPopover>Tiếng Việt</ButtonPopover>
+                <ButtonPopover>English</ButtonPopover>
+              </div>
+            }
+            className="before:content[''] relative flex cursor-pointer items-center px-2 py-1 text-gray-50 transition-all before:absolute before:bottom-0 before:left-0 before:h-1 before:w-full before:translate-y-full hover:text-gray-200"
+            staticOffsetArrow={30}
+          >
+            <>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -60,69 +47,45 @@ export default function Header() {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
               </svg>
-            </div>
-            <div className=" absolute left-1/2 h-3 w-[114px] -translate-x-1/2"></div>
-            {/* Tooltip */}
-            <AnimatePresence>
-              {isOpen && (
-                <FloatingPortal>
-                  <motion.div
-                    ref={refs.setFloating}
-                    style={{
-                      position: strategy,
-                      top: y ?? 0,
-                      left: x ?? 0,
-                      width: 'max-content',
-                      transformOrigin: `${middlewareData.arrow?.x}px top`,
-                    }}
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0 }}
-                    transition={{
-                      duration: 0.2,
-                    }}
-                  >
-                    <FloatingArrow
-                      ref={arrowRef}
-                      context={context}
-                      fill="white"
-                      height={10}
-                      width={20}
-                      staticOffset={30}
-                      style={{ zIndex: 1, bottom: '99%' }}
-                    />
-                    <div className="flex flex-col rounded-sm border border-gray-200 bg-white shadow-md">
-                      <button className="px-6 py-3 hover:text-primary">Tiếng Việt</button>
-                      <button className="border-t px-6 py-3 hover:text-primary">English</button>
-                    </div>
-                  </motion.div>
-                </FloatingPortal>
-              )}
-            </AnimatePresence>
-            {/* End Tooltip */}
-          </li>
-          {/* End Language */}
-          {/* Account */}
-          <li className="flex cursor-pointer items-center px-3 py-1 text-gray-50 transition-all hover:text-gray-200">
-            <div className="flex h-5 w-5 flex-shrink-0 items-end justify-center rounded-full border bg-white">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="h-4 w-4 text-[#c6c6c6]"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
-                />
-              </svg>
-            </div>
-            <span className="ml-2">bora</span>
-          </li>
-          {/* End Account */}
+            </>
+          </Popover>
+          {/* End Language Popover */}
+          {/* Account Popover */}
+          <Popover
+            renderPopover={
+              <div className="flex flex-col rounded-sm border border-gray-200 bg-white shadow-md">
+                <ButtonPopover as={Link} to="#!">
+                  Tài khoản của tôi
+                </ButtonPopover>
+                <ButtonPopover as={Link} to="#!">
+                  Đơn mua
+                </ButtonPopover>
+                <ButtonPopover>Đăng xuất</ButtonPopover>
+              </div>
+            }
+            className="before:content[''] relative flex cursor-pointer items-center px-2 py-1 text-gray-50 transition-all before:absolute before:bottom-0 before:left-0 before:h-1 before:w-full before:translate-y-full hover:text-gray-200"
+          >
+            <>
+              <div className="flex h-5 w-5 flex-shrink-0 items-end justify-center rounded-full border bg-white">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="h-4 w-4 text-[#c6c6c6]"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                  />
+                </svg>
+              </div>
+              <span className="ml-2">bora</span>
+            </>
+          </Popover>
+          {/* End Account Popover */}
         </ul>
         {/* End Top Bar Menu */}
         {/* Main Header */}
