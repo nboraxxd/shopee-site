@@ -2,12 +2,12 @@ import { Footer } from '@/components/Footer'
 import { RegisterHeader } from '@/components/RegisterHeader'
 import { Outlet } from 'react-router-dom'
 
-export default function RegisterLayout() {
+export default function AuthenticationLayout() {
   return (
-    <div>
+    <>
       <RegisterHeader />
       <Outlet />
       <Footer />
-    </div>
+    </>
   )
 }

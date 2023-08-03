@@ -90,7 +90,7 @@ export default function Register() {
               {/* Button */}
               <button
                 type="submit"
-                className="mt-2 w-full rounded-sm bg-primary px-2 py-4 text-center uppercase text-white hover:opacity-95"
+                className="mt-2 w-full rounded-sm bg-primary px-2 py-4 text-center uppercase text-white transition-all hover:opacity-95"
               >
                 Đăng ký
               </button>

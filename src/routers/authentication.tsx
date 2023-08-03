@@ -1,10 +1,10 @@
 import { PATH } from '@/config/path'
-import { RegisterLayout } from '@/layouts/RegisterLayout'
+import { AuthenticationLayout } from '@/layouts/AuthenticationLayout'
 import { Login } from '@/pages/Login'
 import { Register } from '@/pages/Register'
 
-export const auth = {
-  element: <RegisterLayout />,
+export const authentication = {
+  element: <AuthenticationLayout />,
   children: [
     {
       path: PATH.login,

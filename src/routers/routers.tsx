@@ -1,11 +1,17 @@
+import { MainLayout } from '@/layouts/MainLayout'
 import { ProductList } from '@/pages/ProductList'
-import { auth } from './auth'
+import { authentication } from './authentication'
 
 export const routers = [
   {
-    index: true,
-    element: <ProductList />,
+    element: <MainLayout />,
+    children: [
+      {
+        index: true,
+        element: <ProductList />,
+      },
+    ],
   },
 
-  auth,
+  authentication,
 ]
