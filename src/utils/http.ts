@@ -13,11 +13,12 @@ http.interceptors.response.use(
     return response
   },
   function (error: AxiosError) {
-    console.log(error)
     if (error.response?.status !== HttpStatusCode.UnprocessableEntity) {
       const data: any | undefined = error.response?.data
       const message = data.message || error.message
       toast.error(message)
     }
+
+    return Promise.reject(error)
   }
 )

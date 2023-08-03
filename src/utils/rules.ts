@@ -20,8 +20,8 @@ export const schema = yup.object({
     .oneOf([yup.ref('password')], 'Các mật khẩu đã nhập không khớp'),
 })
 
-// tạo ra 1 schema mới đã loại bỏ confirm_password
-export const loginSchema = schema.omit(['confirm_password'])
+// tạo ra 1 schema mới chỉ lấy email và password
+export const loginSchema = schema.pick(['email', 'password'])
 
+// Yup khai báo kiểu thế nào thì ta xuất ra type kiểu đó
 export type Schema = yup.InferType<typeof schema>
-export type LoginSchema = yup.InferType<typeof loginSchema>
