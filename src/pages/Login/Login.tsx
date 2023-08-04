@@ -1,16 +1,17 @@
+import { useContext } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { toast } from 'react-toastify'
 import { authenticationApi } from '@/apis/authentication.api'
 import { PATH } from '@/config/path'
 import { Schema, loginSchema } from '@/utils/rules'
 import { isAxiosUnprocessableEntityError } from '@/utils/utils'
-import { Input } from '@/components/Input'
 import { ErrorResponse } from '@/types/utils.type'
-import { useContext } from 'react'
+import { Input } from '@/components/Input'
 import { AppContext } from '@/contexts/app.context'
-import { toast } from 'react-toastify'
+import { AuthButton } from '@/components/AuthButton'
 
 export type LoginSchema = Pick<Schema, 'email' | 'password'>
 
@@ -85,12 +86,9 @@ export default function Login() {
               />
               {/* End Password Input */}
               {/* Button */}
-              <button
-                type="submit"
-                className="mt-2 w-full rounded-sm bg-primary px-2 py-4 text-center uppercase text-white transition-all hover:opacity-95"
-              >
+              <AuthButton isLoading={loginMutation.isLoading} disabled={loginMutation.isLoading}>
                 Đăng nhập
-              </button>
+              </AuthButton>
               {/* End Button */}
               {/* Redirect Link */}
               <div className="mt-8 flex items-center justify-center">

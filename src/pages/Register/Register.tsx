@@ -4,6 +4,7 @@ import { useMutation } from '@tanstack/react-query'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Link, useNavigate } from 'react-router-dom'
 import omit from 'lodash/omit'
+import { toast } from 'react-toastify'
 import { authenticationApi } from '@/apis/authentication.api'
 import { AppContext } from '@/contexts/app.context'
 import { PATH } from '@/config/path'
@@ -11,7 +12,7 @@ import { schema, Schema } from '@/utils/rules'
 import { isAxiosUnprocessableEntityError } from '@/utils/utils'
 import { ErrorResponse } from '@/types/utils.type'
 import { Input } from '@/components/Input'
-import { toast } from 'react-toastify'
+import { AuthButton } from '@/components/AuthButton'
 
 type FormData = Schema
 
@@ -96,12 +97,9 @@ export default function Register() {
               />
               {/* End Confirm Password Input */}
               {/* Button */}
-              <button
-                type="submit"
-                className="mt-2 w-full rounded-sm bg-primary px-2 py-4 text-center uppercase text-white transition-all hover:opacity-95"
-              >
+              <AuthButton isLoading={registerMutation.isLoading} disabled={registerMutation.isLoading}>
                 Đăng ký
-              </button>
+              </AuthButton>
               {/* End Button */}
               {/* Redirect Link */}
               <div className="mt-8 flex items-center justify-center">
