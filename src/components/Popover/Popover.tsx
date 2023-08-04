@@ -1,21 +1,27 @@
-import { useRef, useState } from 'react'
-import { FloatingArrow, FloatingPortal, arrow, offset, shift, useFloating } from '@floating-ui/react'
+import { ElementType, useRef, useState } from 'react'
+import { FloatingArrow, FloatingPortal, type Placement, arrow, offset, shift, useFloating } from '@floating-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface Props {
   children: React.ReactNode
   renderPopover: React.ReactNode
-  className?: string
+  wrapClassName?: string
+  crossAxis?: number
   staticOffsetArrow?: string | number
+  as?: ElementType
   initialOpen?: boolean
+  placement?: Placement
 }
 
 export default function Popover({
   children,
   renderPopover,
-  className = '',
+  wrapClassName = '',
+  crossAxis = 0,
   staticOffsetArrow,
+  as: Element = 'li',
   initialOpen = false,
+  placement = 'bottom',
 }: Props) {
   const TOOLTIP_GAP = 3
   const [isOpen, setIsOpen] = useState(initialOpen)
@@ -26,8 +32,12 @@ export default function Popover({
       arrow({
         element: arrowRef,
       }),
-      offset(TOOLTIP_GAP),
+      offset({
+        crossAxis: crossAxis,
+        mainAxis: TOOLTIP_GAP,
+      }),
     ],
+    placement: placement,
   })
 
   const showPopover = () => {
@@ -39,7 +49,12 @@ export default function Popover({
   }
 
   return (
-    <li className={className} ref={refs.setReference} onMouseEnter={showPopover} onMouseLeave={hidePopover}>
+    <Element
+      className={`before:content[''] relative flex cursor-pointer items-center px-2 py-1 text-gray-50 transition-all before:absolute before:bottom-0 before:left-0 before:h-1 before:w-full before:translate-y-full hover:text-gray-200 ${wrapClassName}`}
+      ref={refs.setReference}
+      onMouseEnter={showPopover}
+      onMouseLeave={hidePopover}
+    >
       {children}
       {/* Popover */}
       <AnimatePresence>
@@ -76,6 +91,6 @@ export default function Popover({
         )}
       </AnimatePresence>
       {/* End Popover */}
-    </li>
+    </Element>
   )
 }
