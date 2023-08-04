@@ -18,7 +18,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       {element}
-      <ToastContainer />
+      <ToastContainer autoClose={2000} position="bottom-left" limit={3} hideProgressBar />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   )

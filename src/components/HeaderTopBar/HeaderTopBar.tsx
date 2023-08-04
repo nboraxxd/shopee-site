@@ -1,10 +1,31 @@
+import { useContext } from 'react'
 import { Link } from 'react-router-dom'
+import { userApi } from '@/apis/user.api'
+import { AppContext } from '@/contexts/app.context'
 import { Popover } from '@/components/Popover'
 import { PopoverContent } from '@/components/PopoverContent'
+import { useMutation } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
+import { PATH } from '@/config/path'
 
 export default function TopBarHeader() {
+  const { isAuthenticated, setIsAuthenticated } = useContext(AppContext)
+
+  const { mutate } = useMutation({
+    mutationFn: userApi.logout,
+  })
+
+  const handleLogout = () => {
+    mutate(undefined, {
+      onSuccess: (response) => {
+        toast.success(response.data.message)
+        setIsAuthenticated(false)
+      },
+    })
+  }
+
   return (
-    <ul className="-mx-2 flex justify-end px-5">
+    <ul className="-mx-2 flex items-center justify-end px-5">
       {/* Language Popover */}
       <Popover
         renderPopover={
@@ -13,7 +34,6 @@ export default function TopBarHeader() {
             <PopoverContent>English</PopoverContent>
           </div>
         }
-        // staticOffsetArrow={30}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -42,39 +62,58 @@ export default function TopBarHeader() {
         </svg>
       </Popover>
       {/* End Language Popover */}
+      {/* Auth Link */}
+      {!isAuthenticated && (
+        <>
+          <li className="text-sm text-gray-50 transition-all hover:text-gray-200">
+            <Link className="px-2" to={PATH.signup}>
+              Đăng Ký
+            </Link>
+          </li>
+          <li className="border-l border-l-gray-200 text-sm text-gray-50 transition-all hover:text-gray-200">
+            <Link className="px-2" to={PATH.login}>
+              Đăng Nhập
+            </Link>
+          </li>
+        </>
+      )}
+
+      {/* End Auth Link */}
       {/* Account Popover */}
-      <Popover
-        renderPopover={
-          <div className="flex flex-col rounded-sm border border-gray-200 bg-white shadow-md">
-            <PopoverContent as={Link} to="#!">
-              Tài khoản của tôi
-            </PopoverContent>
-            <PopoverContent as={Link} to="#!">
-              Đơn mua
-            </PopoverContent>
-            <PopoverContent>Đăng xuất</PopoverContent>
+      {isAuthenticated && (
+        <Popover
+          renderPopover={
+            <div className="flex flex-col rounded-sm border border-gray-200 bg-white shadow-md">
+              <PopoverContent as={Link} to="#!">
+                Tài khoản của tôi
+              </PopoverContent>
+              <PopoverContent as={Link} to="#!">
+                Đơn mua
+              </PopoverContent>
+              <PopoverContent onClick={handleLogout}>Đăng xuất</PopoverContent>
+            </div>
+          }
+          placement="bottom-end"
+        >
+          <div className="flex h-5 w-5 flex-shrink-0 items-end justify-center rounded-full border bg-white">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="h-4 w-4 text-[#c6c6c6]"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+              />
+            </svg>
           </div>
-        }
-        placement="bottom-end"
-      >
-        <div className="flex h-5 w-5 flex-shrink-0 items-end justify-center rounded-full border bg-white">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="h-4 w-4 text-[#c6c6c6]"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
-            />
-          </svg>
-        </div>
-        <span className="ml-2 min-w-[40px]">bora</span>
-      </Popover>
+          <span className="ml-2 min-w-[40px]">bora</span>
+        </Popover>
+      )}
       {/* End Account Popover */}
     </ul>
   )

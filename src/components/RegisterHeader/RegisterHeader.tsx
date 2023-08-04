@@ -1,12 +1,14 @@
 import { PATH } from '@/config/path'
-import { Link } from 'react-router-dom'
+import { Link, useMatch } from 'react-router-dom'
 
 export default function RegisterHeader() {
+  const isRegister = useMatch(PATH.signup)
+
   return (
     <header className="py-5">
       {/* Container */}
       <div className="container">
-        <nav className="flex justify-center lg:justify-start">
+        <nav className="flex items-end justify-center gap-4 lg:justify-start">
           <Link to={PATH.home}>
             <svg viewBox="0 0 192 65" className=" h-11 fill-primary">
               <g fillRule="evenodd">
@@ -14,6 +16,7 @@ export default function RegisterHeader() {
               </g>
             </svg>
           </Link>
+          <p className="hidden text-2xl text-[#222] lg:block">{isRegister ? 'Đăng ký' : 'Đăng nhập'}</p>
         </nav>
       </div>
       {/* End Container */}
