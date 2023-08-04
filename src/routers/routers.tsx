@@ -1,6 +1,7 @@
 import { MainLayout } from '@/layouts/MainLayout'
 import { ProductList } from '@/pages/ProductList'
 import { authentication } from './authentication'
+import { profile } from './profile'
 
 export const routers = [
   {
@@ -14,4 +15,6 @@ export const routers = [
   },
 
   authentication,
+
+  profile,
 ]
