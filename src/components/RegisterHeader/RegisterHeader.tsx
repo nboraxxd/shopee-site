@@ -1,4 +1,4 @@
-import { PATH } from '@/config/path'
+import { PATH } from '@/constants/path'
 import { Link, useMatch } from 'react-router-dom'
 
 export default function RegisterHeader() {

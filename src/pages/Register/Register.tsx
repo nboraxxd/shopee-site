@@ -7,7 +7,7 @@ import omit from 'lodash/omit'
 import { toast } from 'react-toastify'
 import { authenticationApi } from '@/apis/authentication.api'
 import { AppContext } from '@/contexts/app.context'
-import { PATH } from '@/config/path'
+import { PATH } from '@/constants/path'
 import { schema, Schema } from '@/utils/rules'
 import { isAxiosUnprocessableEntityError } from '@/utils/utils'
 import { ErrorResponse } from '@/types/utils.type'
@@ -17,7 +17,7 @@ import { AuthButton } from '@/components/AuthButton'
 type FormData = Schema
 
 export default function Register() {
-  const { setIsAuthenticated } = useContext(AppContext)
+  const { setIsAuthenticated, setUser } = useContext(AppContext)
   const navigate = useNavigate()
 
   const {
@@ -37,6 +37,7 @@ export default function Register() {
     registerMutation.mutate(body, {
       onSuccess: (response) => {
         setIsAuthenticated(true)
+        setUser(response.data.data.user)
         toast.success(response.data.message)
         navigate(PATH.home)
       },

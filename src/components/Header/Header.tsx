@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { PATH } from '@/config/path'
+import { PATH } from '@/constants/path'
 import { HeaderTopBar } from '@/components/HeaderTopBar'
 import { Popover } from '@/components/Popover'
 import { PopoverContent } from '@/components/PopoverContent'

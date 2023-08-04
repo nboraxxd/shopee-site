@@ -1,4 +1,4 @@
-import { PATH } from '@/config/path'
+import { PATH } from '@/constants/path'
 import { AuthRouter } from '@/components/Routers'
 import { AuthenticationLayout } from '@/layouts/AuthenticationLayout'
 import { Login } from '@/pages/Login'

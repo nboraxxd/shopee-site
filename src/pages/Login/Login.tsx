@@ -5,7 +5,7 @@ import { useMutation } from '@tanstack/react-query'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { toast } from 'react-toastify'
 import { authenticationApi } from '@/apis/authentication.api'
-import { PATH } from '@/config/path'
+import { PATH } from '@/constants/path'
 import { Schema, loginSchema } from '@/utils/rules'
 import { isAxiosUnprocessableEntityError } from '@/utils/utils'
 import { ErrorResponse } from '@/types/utils.type'
@@ -16,7 +16,7 @@ import { AuthButton } from '@/components/AuthButton'
 export type LoginSchema = Pick<Schema, 'email' | 'password'>
 
 export default function Login() {
-  const { setIsAuthenticated } = useContext(AppContext)
+  const { setIsAuthenticated, setUser } = useContext(AppContext)
   const navigate = useNavigate()
 
   const {
@@ -34,6 +34,7 @@ export default function Login() {
     loginMutation.mutate(data, {
       onSuccess: (response) => {
         setIsAuthenticated(true)
+        setUser(response.data.data.user)
         toast.success(response.data.message)
         navigate(PATH.home)
       },

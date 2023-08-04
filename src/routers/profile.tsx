@@ -1,4 +1,4 @@
-import { PATH } from '@/config/path'
+import { PATH } from '@/constants/path'
 import { PrivateRouter } from '@/components/Routers'
 import { MainLayout } from '@/layouts/MainLayout'
 import { Profile } from '@/pages/Profile'

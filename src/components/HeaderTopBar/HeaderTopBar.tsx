@@ -6,10 +6,10 @@ import { Popover } from '@/components/Popover'
 import { PopoverContent } from '@/components/PopoverContent'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
-import { PATH } from '@/config/path'
+import { PATH } from '@/constants/path'
 
 export default function TopBarHeader() {
-  const { isAuthenticated, setIsAuthenticated } = useContext(AppContext)
+  const { isAuthenticated, setIsAuthenticated, user, setUser } = useContext(AppContext)
 
   const { mutate } = useMutation({
     mutationFn: userApi.logout,
@@ -18,8 +18,9 @@ export default function TopBarHeader() {
   const handleLogout = () => {
     mutate(undefined, {
       onSuccess: (response) => {
-        toast.success(response.data.message)
         setIsAuthenticated(false)
+        setUser(null)
+        toast.success(response.data.message)
       },
     })
   }
@@ -111,7 +112,7 @@ export default function TopBarHeader() {
               />
             </svg>
           </div>
-          <span className="ml-2 min-w-[40px]">bora</span>
+          <span className="ml-2 line-clamp-1 min-w-[40px] max-w-[155px] break-all">{user?.email}</span>
         </Popover>
       )}
       {/* End Account Popover */}
