@@ -7,7 +7,7 @@ export default function ProductList() {
   return (
     <div className="bg-secondary">
       <div className="container">
-        <div className="grid grid-cols-12 gap-6">
+        <div className="grid grid-cols-12 gap-6 py-7">
           <div className="col-span-3">
             <AsideFilter />
           </div>

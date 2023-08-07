@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="bg-secondary py-16">
+    <footer className="border-t-4 border-primary py-16">
       {/* Container */}
       <div className="container">
         {/* Top Footer */}
