@@ -57,7 +57,7 @@ export default function Header() {
               <div className="flex max-w-[400px] flex-col rounded-sm border border-gray-200 bg-white shadow-md">
                 <p className="px-5 py-2.5 text-sm text-gray-300">Sản Phẩm Mới Thêm</p>
                 <div>
-                  <PopoverContent className="flex cursor-default py-5">
+                  <PopoverContent className="flex cursor-default py-5 hover:bg-gray-100">
                     <img
                       className="h-10 w-10 flex-shrink-0 border border-gray-100 object-cover"
                       src="https://images.unsplash.com/photo-1690897136507-b00526414507?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw0Nnx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
@@ -71,7 +71,7 @@ export default function Header() {
                       <p className="ml-10 flex-shrink-0 cursor-text text-primary">đ490.000</p>
                     </div>
                   </PopoverContent>
-                  <PopoverContent className="flex cursor-default py-5">
+                  <PopoverContent className="flex cursor-default py-5 hover:bg-gray-100">
                     <img
                       className="h-10 w-10 flex-shrink-0 border border-gray-100 object-cover"
                       src="https://images.unsplash.com/photo-1690897136507-b00526414507?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw0Nnx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
@@ -85,7 +85,7 @@ export default function Header() {
                       <p className="ml-10 flex-shrink-0 cursor-text text-primary">đ490.000</p>
                     </div>
                   </PopoverContent>
-                  <PopoverContent className="flex cursor-default py-5">
+                  <PopoverContent className="flex cursor-default py-5 hover:bg-gray-100">
                     <img
                       className="h-10 w-10 flex-shrink-0 border border-gray-100 object-cover"
                       src="https://images.unsplash.com/photo-1690897136507-b00526414507?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw0Nnx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
@@ -93,8 +93,7 @@ export default function Header() {
                     />
                     <div className="flex items-center">
                       <p className="ml-2 line-clamp-1 cursor-text text-sm text-gray-800">
-                        ÁO SƠ MI Nhung TẰM Lorem ipsum dolor sit amet, consectetur adipisicing elit. Exercitationem,
-                        alias?
+                        ÁO SƠ MI Nhung TẰM Lorem ipsum dolor sit amet
                       </p>
                       <p className="ml-10 flex-shrink-0 cursor-text text-primary">đ490.000</p>
                     </div>
@@ -105,7 +104,7 @@ export default function Header() {
                   <PopoverContent
                     as={Link}
                     to="#!"
-                    className="rounded-sm !bg-primary text-sm text-white hover:!bg-primary hover:text-white hover:opacity-90"
+                    className="rounded-sm bg-primary text-sm text-white hover:bg-primary hover:text-white hover:opacity-90"
                   >
                     Xem Giỏ Hàng
                   </PopoverContent>

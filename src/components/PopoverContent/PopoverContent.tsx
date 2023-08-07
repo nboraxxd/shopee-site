@@ -9,13 +9,15 @@ interface Props {
   onClick?: () => void
 }
 
-export default function PopoverContent({ children, as: Element = 'button', to, className = '', onClick }: Props) {
+export default function PopoverContent({
+  children,
+  as: Element = 'button',
+  to,
+  className = 'bg-white hover:bg-gray-100 hover:text-primary',
+  onClick,
+}: Props) {
   return (
-    <Element
-      to={to}
-      className={`bg-white px-5 py-2.5 text-left transition-all hover:bg-gray-100 hover:text-primary ${className}`}
-      onClick={onClick}
-    >
+    <Element to={to} className={`px-5 py-2.5 text-left transition-all ${className}`} onClick={onClick}>
       {children}
     </Element>
   )

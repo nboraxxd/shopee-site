@@ -12,7 +12,7 @@ import { schema, Schema } from '@/utils/rules'
 import { isAxiosUnprocessableEntityError } from '@/utils/utils'
 import { ErrorResponse } from '@/types/utils.type'
 import { Input } from '@/components/Input'
-import { AuthButton } from '@/components/AuthButton'
+import { Button } from '@/components/Button'
 
 type FormData = Schema
 
@@ -98,9 +98,9 @@ export default function Register() {
               />
               {/* End Confirm Password Input */}
               {/* Button */}
-              <AuthButton isLoading={registerMutation.isLoading} disabled={registerMutation.isLoading}>
+              <Button isLoading={registerMutation.isLoading} disabled={registerMutation.isLoading}>
                 Đăng ký
-              </AuthButton>
+              </Button>
               {/* End Button */}
               {/* Redirect Link */}
               <div className="mt-8 flex items-center justify-center">

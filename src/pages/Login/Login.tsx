@@ -11,7 +11,7 @@ import { isAxiosUnprocessableEntityError } from '@/utils/utils'
 import { ErrorResponse } from '@/types/utils.type'
 import { Input } from '@/components/Input'
 import { AppContext } from '@/contexts/app.context'
-import { AuthButton } from '@/components/AuthButton'
+import { Button } from '@/components/Button'
 
 export type LoginSchema = Pick<Schema, 'email' | 'password'>
 
@@ -64,7 +64,7 @@ export default function Login() {
           {/* Wrap Form */}
           <div className="lg:col-span-2 lg:col-start-4">
             <form className="rounded bg-white p-10 shadow-sm" noValidate onSubmit={onSubmit}>
-              <p className="text-2xl">Đăng nhập</p>
+              <p className="text-center text-2xl">Đăng nhập</p>
               {/* Email Input */}
               <Input
                 name="email"
@@ -87,9 +87,9 @@ export default function Login() {
               />
               {/* End Password Input */}
               {/* Button */}
-              <AuthButton isLoading={loginMutation.isLoading} disabled={loginMutation.isLoading}>
+              <Button isLoading={loginMutation.isLoading} disabled={loginMutation.isLoading}>
                 Đăng nhập
-              </AuthButton>
+              </Button>
               {/* End Button */}
               {/* Redirect Link */}
               <div className="mt-8 flex items-center justify-center">
