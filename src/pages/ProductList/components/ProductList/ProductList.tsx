@@ -11,13 +11,10 @@ export default function ProductList() {
   const [isShowAside, setIsShowAside] = useState(false)
   const queryParams = useQueryParams()
 
-  const products = useQuery({
+  const { data } = useQuery({
     queryKey: ['products', queryParams],
     queryFn: () => productsApi.getProducts(queryParams),
   })
-
-  console.log(queryParams)
-  console.log(products.data)
 
   return (
     <div className="bg-secondary">
@@ -27,11 +24,11 @@ export default function ProductList() {
           <div className="col-span-12 lg:col-span-9">
             <SortProductList setIsShowAside={setIsShowAside} />
             <div className="mt-6 grid grid-cols-3 gap-3 md:grid-cols-4 xl:grid-cols-5">
-              {Array(30)
-                .fill(0)
-                .map((_, index) => (
-                  <div key={index} className="col-span-1">
-                    <Product />
+              {data &&
+                data.status === 200 &&
+                data.data.data.products.map((product) => (
+                  <div key={product._id} className="col-span-1">
+                    <Product product={product} />
                   </div>
                 ))}
             </div>

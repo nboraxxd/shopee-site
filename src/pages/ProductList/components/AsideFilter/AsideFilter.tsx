@@ -29,8 +29,9 @@ export default function AsideFilter({ isShowAside, setIsShowAside }: Props) {
 
   return (
     <div
-      className={classNames('fixed lg:relative lg:col-span-3 lg:bg-transparent', {
-        'fixed left-0 top-0 h-full w-full bg-black/50': isShowAside,
+      className={classNames('fixed z-10 bg-black transition-all duration-700 lg:relative lg:col-span-3', {
+        'visible left-0 top-0 h-full w-full bg-opacity-50': isShowAside,
+        'invisible bg-opacity-0': !isShowAside,
       })}
     >
       <aside
@@ -38,7 +39,7 @@ export default function AsideFilter({ isShowAside, setIsShowAside }: Props) {
         className={classNames(
           'fixed left-0 top-0 z-10 h-full w-64 -translate-x-64 bg-white shadow-xl transition-transform duration-700 lg:relative lg:transform-none lg:bg-transparent lg:shadow-none',
           {
-            'transform-none': isShowAside,
+            'transform-none overflow-y-auto scrollbar-hide': isShowAside,
           }
         )}
       >

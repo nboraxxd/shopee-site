@@ -17,6 +17,7 @@ export default {
     },
   },
   plugins: [
+    require('tailwind-scrollbar-hide'),
     plugin(function ({ addComponents, theme }) {
       addComponents({
         '.container': {
