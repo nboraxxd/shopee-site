@@ -1,10 +1,23 @@
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { useScrollTop } from '@/hooks/useScrollTop'
 import { AsideFilter, Product, SortProductList } from '@/pages/ProductList'
-import { useState } from 'react'
+import { productsApi } from '@/apis/product.api'
+import useQueryParams from '@/hooks/useQueryParams'
 
 export default function ProductList() {
   useScrollTop()
+
   const [isShowAside, setIsShowAside] = useState(false)
+  const queryParams = useQueryParams()
+
+  const products = useQuery({
+    queryKey: ['products', queryParams],
+    queryFn: () => productsApi.getProducts(queryParams),
+  })
+
+  console.log(queryParams)
+  console.log(products.data)
 
   return (
     <div className="bg-secondary">
