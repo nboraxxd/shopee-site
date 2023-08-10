@@ -1,7 +1,7 @@
 import { useNavigate, createSearchParams } from 'react-router-dom'
 import classNames from 'classnames'
-import { QueryConfig } from '@/pages/ProductList/components/ProductList/ProductList'
 import { PATH } from '@/constants/path'
+import { QueryConfig } from '@/pages/ProductList/components/ProductList/ProductList'
 
 interface Props {
   queryConfig: QueryConfig
@@ -60,7 +60,7 @@ export default function Pagination({ queryConfig, pageSize }: Props) {
               'bg-primary text-white': pageNumber === currentPage,
               'bg-white': pageNumber !== currentPage,
             })}
-            onClick={() => handleChangePageNumber(pageNumber)}
+            onClick={() => handleChangePage(pageNumber)}
           >
             {pageNumber}
           </button>
@@ -68,14 +68,14 @@ export default function Pagination({ queryConfig, pageSize }: Props) {
       })
   }
 
-  function handleChangePageNumber(pageNumber: number) {
+  function handleChangePage(pageNumber: number) {
     const searchParamsToString = createSearchParams({
       ...queryConfig,
       page: pageNumber.toString(),
     }).toString()
 
     navigate({
-      pathname: PATH.home,
+      pathname: PATH.products,
       search: searchParamsToString,
     })
   }
@@ -87,7 +87,7 @@ export default function Pagination({ queryConfig, pageSize }: Props) {
           'cursor-not-allowed opacity-50': currentPage === 1,
         })}
         disabled={currentPage === 1}
-        onClick={() => handleChangePageNumber(currentPage - 1)}
+        onClick={() => handleChangePage(currentPage - 1)}
       >
         Prev
       </button>
@@ -97,7 +97,7 @@ export default function Pagination({ queryConfig, pageSize }: Props) {
           'cursor-not-allowed opacity-50': currentPage === pageSize,
         })}
         disabled={currentPage === pageSize}
-        onClick={() => handleChangePageNumber(currentPage + 1)}
+        onClick={() => handleChangePage(currentPage + 1)}
       >
         Next
       </button>

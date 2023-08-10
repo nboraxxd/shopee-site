@@ -1,11 +1,76 @@
 import { SetStateAction } from 'react'
 import { Tooltip } from 'react-tooltip'
+import classNames from 'classnames'
+import { createSearchParams, useNavigate } from 'react-router-dom'
+import omit from 'lodash/omit'
+
+import { OrderT, SortT } from '@/types/product.type'
+import { sortBy, order as orderConstants } from '@/constants/product'
+import { QueryConfig } from '../ProductList/ProductList'
+import { PATH } from '@/constants/path'
+import { SortButton } from '../SortButton'
 
 interface Props {
   setIsShowAside: React.Dispatch<SetStateAction<boolean>>
+  queryConfig: QueryConfig
+  pageSize?: number
 }
 
-export default function SortProductList({ setIsShowAside }: Props) {
+export default function SortProductList({ setIsShowAside, queryConfig, pageSize }: Props) {
+  const { sort_by = sortBy.createdAt, order } = queryConfig
+  const currentPage = Number(queryConfig.page)
+  const navigate = useNavigate()
+
+  function isActiveSortBy(sortByValue: SortT) {
+    return sort_by === sortByValue
+  }
+
+  function handleSort(sortByValue: SortT) {
+    const searchParamsToString = createSearchParams(
+      omit(
+        {
+          ...queryConfig,
+          sort_by: sortByValue,
+          page: '1',
+        },
+        ['order']
+      )
+    ).toString()
+
+    navigate({
+      pathname: PATH.products,
+      search: searchParamsToString,
+    })
+  }
+
+  function handlePriceOrder(orderValue: OrderT) {
+    const searchParamsToString = createSearchParams({
+      ...queryConfig,
+      sort_by: sortBy.price,
+      order: orderValue,
+      page: '1',
+    }).toString()
+
+    navigate({
+      pathname: PATH.products,
+      search: searchParamsToString,
+    })
+  }
+
+  function handleChangePage(pageNumber: number) {
+    if (pageNumber < 1 || pageNumber > (pageSize as number)) return
+
+    const searchParamsToString = createSearchParams({
+      ...queryConfig,
+      page: pageNumber.toString(),
+    }).toString()
+
+    navigate({
+      pathname: PATH.products,
+      search: searchParamsToString,
+    })
+  }
+
   return (
     <div className="bg-gray-300/40 p-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -39,66 +104,88 @@ export default function SortProductList({ setIsShowAside }: Props) {
           {/* End Show Filter */}
           {/* Sort */}
           <p className="mr-1 hidden text-sm lg:block">Sắp xếp theo</p>
-          <button className="h-8 px-2 text-xs sm:px-3 md:rounded-sm md:bg-primary md:px-4 md:text-sm md:capitalize md:text-white md:transition-all md:hover:opacity-90">
-            Phổ biến
-          </button>
-          <div className="block h-1 w-1 rounded-full bg-gray-600 md:hidden"></div>
-          <button className="h-8 px-2 text-xs sm:px-3 md:rounded-sm md:bg-primary md:px-4 md:text-sm md:capitalize md:text-white md:transition-all md:hover:opacity-90">
+          <SortButton sortValue={sortBy.createdAt} isActive={isActiveSortBy} handleSort={handleSort}>
             Mới nhất
-          </button>
-          <div className="block h-1 w-1 rounded-full bg-gray-600 md:hidden"></div>
-          <button className="h-8 px-2 text-xs sm:px-3 md:rounded-sm md:bg-primary md:px-4 md:text-sm md:capitalize md:text-white md:transition-all md:hover:opacity-90">
+          </SortButton>
+          <SortButton sortValue={sortBy.view} isActive={isActiveSortBy} handleSort={handleSort}>
+            Phổ biến
+          </SortButton>
+          <SortButton sortValue={sortBy.sold} isActive={isActiveSortBy} handleSort={handleSort} endButton={true}>
             Bán chạy
-          </button>
+          </SortButton>
           <select
-            className="hidden h-8 bg-white pl-2 pr-4 text-xs outline-none hover:bg-gray-100 sm:block md:text-sm"
-            defaultValue=""
+            className={classNames(
+              'hidden h-8 bg-white pl-2 pr-4 text-xs text-gray-700 outline-none transition-all hover:bg-gray-100 sm:block md:text-sm',
+              {
+                'text-primary': isActiveSortBy(sortBy.price),
+              }
+            )}
+            value={order || ''}
+            onChange={(ev) => handlePriceOrder(ev.target.value as OrderT)}
           >
             <option value="" disabled>
               Giá
             </option>
-            <option value="price:asc">Thấp đến cao</option>
-            <option value="price:desc">Cao đến thấp</option>
+            <option value={orderConstants.asc} className="text-gray-700">
+              Thấp đến cao
+            </option>
+            <option value={orderConstants.desc} className="text-gray-700">
+              Cao đến thấp
+            </option>
           </select>
         </div>
         {/* End Sort */}
         {/* Pagination */}
-        <div className="ml-2  hidden items-center sm:flex">
-          <div className="mr-2 text-xs md:mr-5 md:text-sm">
-            <span className="text-primary">1</span>
-            <span>/2</span>
-          </div>
-          {/* Previous */}
-          <button
-            className="h-8 rounded-bl-sm rounded-tl-sm bg-white px-3 shadow-sm transition-all hover:bg-gray-100 disabled:bg-white/50"
-            disabled
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="h-3 w-3"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-            </svg>
-          </button>
-          {/* End Previous */}
-          {/* Next */}
-          <button className="h-8 rounded-br-sm rounded-tr-sm bg-white px-3 shadow-sm transition-all hover:bg-gray-100">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="h-3 w-3"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-            </svg>
-          </button>
-          {/* End Next */}
+        <div className="ml-2 hidden items-center sm:flex">
+          {pageSize ? (
+            <>
+              <div className="mr-2 text-xs md:mr-4 md:text-sm">
+                <span className="text-primary">{currentPage}</span>
+                <span>/{pageSize}</span>
+              </div>
+
+              {/* Previous */}
+              <button
+                className="h-8 rounded-bl-sm rounded-tl-sm bg-white px-3 shadow-sm transition-all hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30"
+                disabled={currentPage === 1}
+                onClick={() => handleChangePage(currentPage - 1)}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="h-3 w-3"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                </svg>
+              </button>
+              {/* End Previous */}
+              {/* Next */}
+              <button
+                className="h-8 rounded-br-sm rounded-tr-sm bg-white px-3 shadow-sm transition-all hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30"
+                disabled={currentPage === pageSize}
+                onClick={() => handleChangePage(currentPage + 1)}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="h-3 w-3"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                </svg>
+              </button>
+              {/* End Next */}
+            </>
+          ) : (
+            <div role="status" className="max-w-sm animate-pulse">
+              <div className="h-8 w-28 rounded bg-gray-300"></div>
+            </div>
+          )}
         </div>
         {/* End Pagination */}
       </div>

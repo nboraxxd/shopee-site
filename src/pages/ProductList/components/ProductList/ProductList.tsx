@@ -66,7 +66,12 @@ export default function ProductList() {
           {/* Product Main */}
 
           <div className="col-span-12 lg:col-span-9">
-            <SortProductList setIsShowAside={setIsShowAside} />
+            <SortProductList
+              setIsShowAside={setIsShowAside}
+              queryConfig={queryConfig}
+              pageSize={data?.data.data.pagination.page_size}
+            />
+
             {/* Product List */}
             {isLoading && (
               <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
