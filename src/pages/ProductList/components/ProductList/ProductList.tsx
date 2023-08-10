@@ -5,7 +5,9 @@ import omitBy from 'lodash/omitBy'
 import isUndefined from 'lodash/isUndefined'
 
 import useQueryParams from '@/hooks/useQueryParams'
-import { productsApi } from '@/apis/product.api'
+import productsApi from '@/apis/products.api'
+import categoriesApi from '@/apis/categories.api'
+import PARAMETER_KEY from '@/constants/parameter'
 import { ProductListConfig } from '@/types/product.type'
 import { AsideFilter, Product, SortProductList } from '@/pages/ProductList'
 import { Pagination } from '@/components/Pagination'
@@ -19,25 +21,31 @@ export default function ProductList() {
   const queryParams: QueryConfig = useQueryParams()
   const queryConfig: QueryConfig = omitBy(
     {
-      page: queryParams.page || '1',
-      limit: queryParams.limit || '12',
-      sort_by: queryParams.sort_by,
-      exclude: queryParams.exclude,
-      name: queryParams.name,
-      order: queryParams.order,
-      price_max: queryParams.price_max,
-      price_min: queryParams.price_min,
-      rating_filter: queryParams.rating_filter,
+      [PARAMETER_KEY.page]: queryParams.page || '1',
+      [PARAMETER_KEY.limit]: queryParams.limit || '12',
+      [PARAMETER_KEY.sort_by]: queryParams.sort_by,
+      [PARAMETER_KEY.exclude]: queryParams.exclude,
+      [PARAMETER_KEY.name]: queryParams.name,
+      [PARAMETER_KEY.order]: queryParams.order,
+      [PARAMETER_KEY.price_max]: queryParams.price_max,
+      [PARAMETER_KEY.price_min]: queryParams.price_min,
+      [PARAMETER_KEY.rating_filter]: queryParams.rating_filter,
+      [PARAMETER_KEY.category]: queryParams.category,
     },
     isUndefined
   )
 
   const [isShowAside, setIsShowAside] = useState(false)
 
-  const { data, isLoading, isSuccess } = useQuery({
+  const productsQuery = useQuery({
     queryKey: ['products', queryConfig],
     queryFn: () => productsApi.getProducts(queryConfig as ProductListConfig),
     keepPreviousData: true,
+  })
+
+  const categoriesQuery = useQuery({
+    queryKey: ['categories'],
+    queryFn: () => categoriesApi.getCategories(),
   })
 
   useEffect(() => {
@@ -60,20 +68,25 @@ export default function ProductList() {
               'left-0 top-0 h-full w-full bg-black/50': isShowAside,
             })}
           >
-            <AsideFilter isShowAside={isShowAside} setIsShowAside={setIsShowAside} />
+            <AsideFilter
+              isShowAside={isShowAside}
+              setIsShowAside={setIsShowAside}
+              categories={categoriesQuery.data?.data.data || []}
+              queryConfig={queryConfig}
+            />
           </div>
           {/* End AsideFilter */}
           {/* Product Main */}
-
           <div className="col-span-12 lg:col-span-9">
             <SortProductList
               setIsShowAside={setIsShowAside}
               queryConfig={queryConfig}
-              pageSize={data?.data.data.pagination.page_size}
+              pageSize={productsQuery.data?.data.data.pagination.page_size}
+              isLoading={productsQuery.isLoading}
+              isSuccess={productsQuery.isSuccess}
             />
-
             {/* Product List */}
-            {isLoading && (
+            {productsQuery.isLoading && (
               <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
                 {Array(Number(queryConfig.limit))
                   .fill(0)
@@ -82,11 +95,11 @@ export default function ProductList() {
                   ))}
               </div>
             )}
-            {isSuccess && data && (
+            {productsQuery.isSuccess && productsQuery.data && (
               <>
                 <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
-                  {data.status === 200 &&
-                    data.data.data.products.map((product) => (
+                  {productsQuery.data.status === 200 &&
+                    productsQuery.data.data.data.products.map((product) => (
                       <div key={product._id} className="col-span-1">
                         <Product product={product} />
                       </div>
@@ -94,7 +107,7 @@ export default function ProductList() {
                 </div>
                 {/* End Product List */}
                 {/* Pagination */}
-                <Pagination queryConfig={queryConfig} pageSize={data.data.data.pagination.page_size} />
+                <Pagination queryConfig={queryConfig} pageSize={productsQuery.data.data.data.pagination.page_size} />
                 {/* End Pagination */}
               </>
             )}

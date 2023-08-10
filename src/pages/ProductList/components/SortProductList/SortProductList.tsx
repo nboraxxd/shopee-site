@@ -4,19 +4,22 @@ import classNames from 'classnames'
 import { createSearchParams, useNavigate } from 'react-router-dom'
 import omit from 'lodash/omit'
 
-import { OrderT, SortT } from '@/types/product.type'
+import PARAMETER_KEY from '@/constants/parameter'
 import { sortBy, order as orderConstants } from '@/constants/product'
-import { QueryConfig } from '../ProductList/ProductList'
 import { PATH } from '@/constants/path'
+import { OrderT, SortT } from '@/types/product.type'
+import { QueryConfig } from '../ProductList/ProductList'
 import { SortButton } from '../SortButton'
 
 interface Props {
   setIsShowAside: React.Dispatch<SetStateAction<boolean>>
   queryConfig: QueryConfig
   pageSize?: number
+  isLoading: boolean
+  isSuccess: boolean
 }
 
-export default function SortProductList({ setIsShowAside, queryConfig, pageSize }: Props) {
+export default function SortProductList({ setIsShowAside, queryConfig, pageSize, isLoading, isSuccess }: Props) {
   const { sort_by = sortBy.createdAt, order } = queryConfig
   const currentPage = Number(queryConfig.page)
   const navigate = useNavigate()
@@ -25,35 +28,30 @@ export default function SortProductList({ setIsShowAside, queryConfig, pageSize 
     return sort_by === sortByValue
   }
 
-  function handleSort(sortByValue: SortT) {
-    const searchParamsToString = createSearchParams(
+  function searchParamsToString(parameters: { sort_by: SortT; order?: OrderT }, filterOmit: string[] = []) {
+    return createSearchParams(
       omit(
         {
           ...queryConfig,
-          sort_by: sortByValue,
-          page: '1',
+          ...parameters,
+          [PARAMETER_KEY.page]: '1',
         },
-        ['order']
+        filterOmit
       )
     ).toString()
+  }
 
+  function handleSort(sortByValue: SortT) {
     navigate({
       pathname: PATH.products,
-      search: searchParamsToString,
+      search: searchParamsToString({ [PARAMETER_KEY.sort_by]: sortByValue }, [PARAMETER_KEY.order]),
     })
   }
 
   function handlePriceOrder(orderValue: OrderT) {
-    const searchParamsToString = createSearchParams({
-      ...queryConfig,
-      sort_by: sortBy.price,
-      order: orderValue,
-      page: '1',
-    }).toString()
-
     navigate({
       pathname: PATH.products,
-      search: searchParamsToString,
+      search: searchParamsToString({ [PARAMETER_KEY.sort_by]: sortBy.price, [PARAMETER_KEY.order]: orderValue }),
     })
   }
 
@@ -62,7 +60,7 @@ export default function SortProductList({ setIsShowAside, queryConfig, pageSize 
 
     const searchParamsToString = createSearchParams({
       ...queryConfig,
-      page: pageNumber.toString(),
+      [PARAMETER_KEY.page]: pageNumber.toString(),
     }).toString()
 
     navigate({
@@ -137,17 +135,19 @@ export default function SortProductList({ setIsShowAside, queryConfig, pageSize 
         {/* End Sort */}
         {/* Pagination */}
         <div className="ml-2 hidden items-center sm:flex">
-          {pageSize ? (
+          {isLoading === false ? (
             <>
-              <div className="mr-2 text-xs md:mr-4 md:text-sm">
-                <span className="text-primary">{currentPage}</span>
-                <span>/{pageSize}</span>
-              </div>
+              {isSuccess && (
+                <div className="mr-2 text-xs md:mr-4 md:text-sm">
+                  <span className="text-primary">{currentPage}</span>
+                  <span>/{pageSize}</span>
+                </div>
+              )}
 
               {/* Previous */}
               <button
                 className="h-8 rounded-bl-sm rounded-tl-sm bg-white px-3 shadow-sm transition-all hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30"
-                disabled={currentPage === 1}
+                disabled={currentPage === 1 || isSuccess === false}
                 onClick={() => handleChangePage(currentPage - 1)}
               >
                 <svg
@@ -165,7 +165,7 @@ export default function SortProductList({ setIsShowAside, queryConfig, pageSize 
               {/* Next */}
               <button
                 className="h-8 rounded-br-sm rounded-tr-sm bg-white px-3 shadow-sm transition-all hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30"
-                disabled={currentPage === pageSize}
+                disabled={currentPage === pageSize || isSuccess === false}
                 onClick={() => handleChangePage(currentPage + 1)}
               >
                 <svg
@@ -183,7 +183,7 @@ export default function SortProductList({ setIsShowAside, queryConfig, pageSize 
             </>
           ) : (
             <div role="status" className="max-w-sm animate-pulse">
-              <div className="h-8 w-28 rounded bg-gray-300"></div>
+              <div className="h-8 w-28 rounded bg-gray-100"></div>
             </div>
           )}
         </div>

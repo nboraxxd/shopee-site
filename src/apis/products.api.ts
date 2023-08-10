@@ -3,7 +3,7 @@ import { SuccessResponse } from '@/types/utils.type'
 import { http } from '@/utils/http'
 
 const PRODUCTS_URL = '/products'
-export const productsApi = {
+const productsApi = {
   getProducts(params: ProductListConfig) {
     return http.get<SuccessResponse<ProductList>>(PRODUCTS_URL, {
       params,
@@ -14,3 +14,5 @@ export const productsApi = {
     return http.get<SuccessResponse<Product>>(`${PRODUCTS_URL}/${id}`)
   },
 }
+
+export default productsApi

@@ -6,7 +6,7 @@ type AuthenticationForm = {
   password: string
 }
 
-export const authenticationApi = {
+const authenticationApi = {
   register(body: AuthenticationForm) {
     return http.post<AuthResponse>('/register', body)
   },
@@ -15,3 +15,5 @@ export const authenticationApi = {
     return http.post<AuthResponse>('/login', body)
   },
 }
+
+export default authenticationApi

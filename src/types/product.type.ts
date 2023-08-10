@@ -36,6 +36,7 @@ export interface ProductListConfig {
   price_min?: number | string
   price_max?: number | string
   name?: string
+  category?: string
 }
 
 export type SortT = Exclude<ProductListConfig['sort_by'], undefined>

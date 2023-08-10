@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 import { Link } from 'react-router-dom'
-import { userApi } from '@/apis/user.api'
+import userApi from '@/apis/user.api'
 import { AppContext } from '@/contexts/app.context'
 import { Popover } from '@/components/Popover'
 import { PopoverContent } from '@/components/PopoverContent'
