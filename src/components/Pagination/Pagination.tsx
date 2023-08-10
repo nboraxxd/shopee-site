@@ -1,14 +1,18 @@
+import { useNavigate, createSearchParams } from 'react-router-dom'
 import classNames from 'classnames'
-import { Dispatch, SetStateAction } from 'react'
+import { QueryConfig } from '@/pages/ProductList/components/ProductList/ProductList'
+import { PATH } from '@/constants/path'
 
 interface Props {
-  currentPage: number
-  setCurrentPage: Dispatch<SetStateAction<number>>
+  queryConfig: QueryConfig
   pageSize: number
 }
 
 const RANGE = 1
-export default function Pagination({ currentPage, setCurrentPage, pageSize }: Props) {
+export default function Pagination({ queryConfig, pageSize }: Props) {
+  const currentPage = Number(queryConfig.page)
+  const navigate = useNavigate()
+
   function renderPagination() {
     let dotBefore = false
     let dotAfter = false
@@ -17,9 +21,9 @@ export default function Pagination({ currentPage, setCurrentPage, pageSize }: Pr
       if (dotBefore === false) {
         dotBefore = true
         return (
-          <button key={index} className="mx-1 rounded bg-white px-3 py-2 shadow-sm">
+          <span key={index} className="mx-1 rounded bg-white px-3 py-2 shadow-sm">
             ...
-          </button>
+          </span>
         )
       }
       return null
@@ -29,9 +33,9 @@ export default function Pagination({ currentPage, setCurrentPage, pageSize }: Pr
       if (dotAfter === false) {
         dotAfter = true
         return (
-          <button key={index} className="mx-1 rounded bg-white px-3 py-2 shadow-sm">
+          <span key={index} className="mx-1 rounded bg-white px-3 py-2 shadow-sm">
             ...
-          </button>
+          </span>
         )
       }
       return null
@@ -56,7 +60,7 @@ export default function Pagination({ currentPage, setCurrentPage, pageSize }: Pr
               'bg-primary text-white': pageNumber === currentPage,
               'bg-white': pageNumber !== currentPage,
             })}
-            onClick={() => setCurrentPage(pageNumber)}
+            onClick={() => handleChangePageNumber(pageNumber)}
           >
             {pageNumber}
           </button>
@@ -64,11 +68,39 @@ export default function Pagination({ currentPage, setCurrentPage, pageSize }: Pr
       })
   }
 
+  function handleChangePageNumber(pageNumber: number) {
+    const searchParamsToString = createSearchParams({
+      ...queryConfig,
+      page: pageNumber.toString(),
+    }).toString()
+
+    navigate({
+      pathname: PATH.home,
+      search: searchParamsToString,
+    })
+  }
+
   return (
     <div className="mt-6 flex flex-wrap justify-center">
-      <button className="mx-2 min-w-[60px] rounded bg-white px-3 py-2 shadow-sm">Prev</button>
+      <button
+        className={classNames('mx-2 min-w-[60px] rounded bg-white px-3 py-2 shadow-sm', {
+          'cursor-not-allowed opacity-50': currentPage === 1,
+        })}
+        disabled={currentPage === 1}
+        onClick={() => handleChangePageNumber(currentPage - 1)}
+      >
+        Prev
+      </button>
       <div className="hidden sm:block">{renderPagination()}</div>
-      <button className="mx-2 min-w-[60px] rounded bg-white px-3 py-2 shadow-sm">Next</button>
+      <button
+        className={classNames('mx-2 min-w-[60px] rounded bg-white px-3 py-2 shadow-sm', {
+          'cursor-not-allowed opacity-50': currentPage === pageSize,
+        })}
+        disabled={currentPage === pageSize}
+        onClick={() => handleChangePageNumber(currentPage + 1)}
+      >
+        Next
+      </button>
     </div>
   )
 }
