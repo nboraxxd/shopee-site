@@ -5,7 +5,6 @@ import { formatCurrency, formatNumberToSocialStyle } from '@/utils/utils'
 import { ProductRating } from '@/components/ProductRating'
 
 export default function Product({ product }: { product: Product }) {
-  console.log(product)
   return (
     <Link to={PATH.home}>
       {/* Container */}
@@ -25,8 +24,8 @@ export default function Product({ product }: { product: Product }) {
           <div className="line-clamp-2 min-h-[2rem] text-xs">{product.name}</div>
           {/* End Product Name */}
           {/* Product Price */}
-          <div className="mt-3 flex items-center gap-[2px]">
-            <div className="line-clamp-1 max-w-[50%] text-sm text-gray-400 line-through">
+          <div className="mt-2 flex items-center gap-[2px] md:mt-3">
+            <div className="line-clamp-1 hidden max-w-[50%] text-sm text-gray-400 line-through sm:block">
               <span>₫</span>
               <span>{formatCurrency(product.price_before_discount)}</span>
             </div>
@@ -37,14 +36,14 @@ export default function Product({ product }: { product: Product }) {
           </div>
           {/* End Product Price */}
           {/* Product Statics */}
-          <div className="mt-3 flex items-baseline">
+          <div className="mt-2 flex items-baseline md:mt-3">
             {/* Rating */}
-            <div className="flex items-center">
+            <div className="hidden items-center sm:flex">
               <ProductRating rating={product.rating} />
             </div>
             {/* End Rating */}
             {/* Sold */}
-            <div className="ml-2 flex items-center gap-[2px] text-sm">
+            <div className="flex items-center gap-[2px] text-xs sm:ml-2 sm:text-sm">
               <span>Đã bán</span>
               <span>{formatNumberToSocialStyle(product.sold)}</span>
             </div>

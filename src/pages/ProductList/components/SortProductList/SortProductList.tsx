@@ -32,25 +32,28 @@ export default function SortProductList({ setIsShowAside }: Props) {
                   d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"
                 />
               </svg>
-              <span className="ml-1 text-sm">Lọc</span>
+              <span className="ml-1 hidden text-sm sm:inline">Lọc</span>
             </button>
           </div>
-          <Tooltip id="filter-btn" place="bottom" style={{ fontSize: '12px', padding: '8px' }} />
+          <Tooltip id="filter-btn" place="bottom" style={{ fontSize: '12px', padding: '8px', zIndex: '1' }} />
           {/* End Show Filter */}
           {/* Sort */}
           <p className="mr-1 hidden text-sm lg:block">Sắp xếp theo</p>
-          <button className="h-8 px-3 text-xs md:rounded-sm md:bg-primary md:px-4 md:text-sm md:capitalize md:text-white md:transition-all md:hover:opacity-90">
+          <button className="h-8 px-2 text-xs sm:px-3 md:rounded-sm md:bg-primary md:px-4 md:text-sm md:capitalize md:text-white md:transition-all md:hover:opacity-90">
             Phổ biến
           </button>
           <div className="block h-1 w-1 rounded-full bg-gray-600 md:hidden"></div>
-          <button className="h-8 px-3 text-xs md:rounded-sm md:bg-primary md:px-4 md:text-sm md:capitalize md:text-white md:transition-all md:hover:opacity-90">
+          <button className="h-8 px-2 text-xs sm:px-3 md:rounded-sm md:bg-primary md:px-4 md:text-sm md:capitalize md:text-white md:transition-all md:hover:opacity-90">
             Mới nhất
           </button>
           <div className="block h-1 w-1 rounded-full bg-gray-600 md:hidden"></div>
-          <button className="h-8 px-3 text-xs md:rounded-sm md:bg-primary md:px-4 md:text-sm md:capitalize md:text-white md:transition-all md:hover:opacity-90">
+          <button className="h-8 px-2 text-xs sm:px-3 md:rounded-sm md:bg-primary md:px-4 md:text-sm md:capitalize md:text-white md:transition-all md:hover:opacity-90">
             Bán chạy
           </button>
-          <select className="h-8 bg-white pl-2 pr-4 text-xs outline-none hover:bg-gray-100 md:text-sm" defaultValue="">
+          <select
+            className="hidden h-8 bg-white pl-2 pr-4 text-xs outline-none hover:bg-gray-100 sm:block md:text-sm"
+            defaultValue=""
+          >
             <option value="" disabled>
               Giá
             </option>
@@ -60,7 +63,7 @@ export default function SortProductList({ setIsShowAside }: Props) {
         </div>
         {/* End Sort */}
         {/* Pagination */}
-        <div className="ml-2 flex items-center">
+        <div className="ml-2  hidden items-center sm:flex">
           <div className="mr-2 text-xs md:mr-5 md:text-sm">
             <span className="text-primary">1</span>
             <span>/2</span>

@@ -84,6 +84,7 @@ export default function Popover({
                 width={20}
                 staticOffset={staticOffsetArrow}
                 style={{ zIndex: 1, bottom: '99%' }}
+                className="hidden md:block"
               />
               {renderPopover}
             </motion.div>
