@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { createSearchParams, useNavigate } from 'react-router-dom'
 import classNames from 'classnames'
+import omit from 'lodash/omit'
 import omitBy from 'lodash/omitBy'
 import isUndefined from 'lodash/isUndefined'
 
@@ -9,9 +11,9 @@ import productsApi from '@/apis/products.api'
 import categoriesApi from '@/apis/categories.api'
 import PARAMETER_KEY from '@/constants/parameter'
 import { ProductListConfig } from '@/types/product.type'
-import { AsideFilter, Product, SortProductList } from '@/pages/ProductList'
+import { PATH } from '@/constants/path'
+import { AsideFilter, Product, SortProductList, ProductSkeleton } from '@/pages/ProductList'
 import { Pagination } from '@/components/Pagination'
-import { ProductSkeleton } from '../ProductSkeleton'
 import { Button } from '@/components/Button'
 
 export type QueryConfig = {
@@ -38,6 +40,8 @@ export default function ProductList() {
 
   const [isShowAside, setIsShowAside] = useState(false)
 
+  const navigate = useNavigate()
+
   const productsQuery = useQuery({
     queryKey: ['products', queryConfig],
     queryFn: () => productsApi.getProducts(queryConfig as ProductListConfig),
@@ -48,6 +52,23 @@ export default function ProductList() {
     queryKey: ['categories'],
     queryFn: () => categoriesApi.getCategories(),
   })
+
+  function handleClearFilter() {
+    const searchParamsToString = createSearchParams(
+      omit(
+        {
+          ...queryConfig,
+          [PARAMETER_KEY.page]: '1',
+        },
+        [PARAMETER_KEY.category, PARAMETER_KEY.price_min, PARAMETER_KEY.price_max, PARAMETER_KEY.rating_filter]
+      )
+    ).toString()
+
+    navigate({
+      pathname: PATH.products,
+      search: searchParamsToString,
+    })
+  }
 
   useEffect(() => {
     const body = document.body
@@ -74,6 +95,7 @@ export default function ProductList() {
               setIsShowAside={setIsShowAside}
               categories={categoriesQuery.data?.data.data || []}
               queryConfig={queryConfig}
+              handleClearFilter={handleClearFilter}
             />
           </div>
           {/* End AsideFilter */}
@@ -116,7 +138,9 @@ export default function ProductList() {
                         <p>Hix. Không có sản phẩm nào.</p>
                         <p className="mt-3">Bạn thử tắt điều kiện lọc và tìm lại nhé?</p>
                       </div>
-                      <Button className="mt-6 w-fit px-2 py-3">Xoá bộ lọc</Button>
+                      <Button className="mt-6 max-w-[12rem] px-2 py-3" onClick={handleClearFilter}>
+                        Xoá bộ lọc
+                      </Button>
                     </div>
                   )}
                 </div>

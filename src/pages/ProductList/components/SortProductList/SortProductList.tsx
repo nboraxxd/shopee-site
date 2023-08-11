@@ -9,7 +9,7 @@ import { sortBy, order as orderConstants } from '@/constants/product'
 import { PATH } from '@/constants/path'
 import { OrderT, SortT } from '@/types/product.type'
 import { QueryConfig } from '../ProductList/ProductList'
-import { SortButton } from '../SortButton'
+import { SortButton } from '@/pages/ProductList'
 
 interface Props {
   setIsShowAside: React.Dispatch<SetStateAction<boolean>>

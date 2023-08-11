@@ -11,6 +11,7 @@ import { schema } from '@/utils/rules'
 import { Category } from '@/types/category.type'
 import { Button } from '@/components/Button'
 import { InputNumber } from '@/components/InputNumber'
+import { RatingStars } from '@/pages/ProductList'
 import { QueryConfig } from '../ProductList/ProductList'
 
 interface Props {
@@ -18,6 +19,7 @@ interface Props {
   setIsShowAside: React.Dispatch<SetStateAction<boolean>>
   categories: Category[]
   queryConfig: QueryConfig
+  handleClearFilter: () => void
 }
 
 type PriceSchema = {
@@ -33,7 +35,8 @@ type ParametersT = Partial<{
   [key in keyof typeof PARAMETER_KEY]: string
 }>
 
-export default function AsideFilter({ isShowAside, setIsShowAside, categories, queryConfig }: Props) {
+export default function AsideFilter(props: Props) {
+  const { isShowAside, setIsShowAside, categories, queryConfig, handleClearFilter } = props
   const filterRef = useRef<HTMLElement>(null)
 
   const { category: categoryQuery } = queryConfig
@@ -68,7 +71,6 @@ export default function AsideFilter({ isShowAside, setIsShowAside, categories, q
         [PARAMETER_KEY.price_max]: data.price_max,
       }),
     })
-    console.log(data)
     setIsShowAside(false)
   })
 
@@ -114,7 +116,7 @@ export default function AsideFilter({ isShowAside, setIsShowAside, categories, q
       </div>
       {/* End Sidebar Title */}
       {/* Sidebar Main */}
-      <div className="px-6 py-4 lg:py-0 lg:pl-0 lg:pr-3">
+      <div className="mb-5 px-6 py-4 lg:py-0 lg:pl-0 lg:pr-3">
         {/* Category */}
         <div>
           <div className="flex items-center font-semibold">
@@ -135,56 +137,60 @@ export default function AsideFilter({ isShowAside, setIsShowAside, categories, q
             <p>Danh Mục</p>
           </div>
           <ul>
-            <li className="mt-1 py-1 pl-4">
-              <Link
-                to={{
-                  pathname: PATH.products,
-                  search: createSearchParams(
-                    omit(
-                      {
-                        ...queryConfig,
-                        [PARAMETER_KEY.page]: '1',
-                      },
-                      [PARAMETER_KEY.category]
-                    )
-                  ).toString(),
-                }}
-                className={classNames('relative inline-block py-2 font-semibold', {
-                  'text-primary': categoryQuery === undefined,
-                })}
-                onClick={() => setIsShowAside(false)}
-              >
-                {categoryQuery === undefined && (
-                  <svg viewBox="0 0 2 7" className="absolute -left-4 top-1/2 h-2 w-2 -translate-y-1/2 fill-primary">
-                    <polygon points="4 3.5 0 0 0 7"></polygon>
-                  </svg>
-                )}
-                Tất cả
-              </Link>
-            </li>
-
             {categories.length !== 0 ? (
-              categories.map((category) => (
-                <li key={category._id} className="py-1 pl-4">
+              <>
+                <li className="mt-1 py-1 pl-4">
                   <Link
                     to={{
                       pathname: PATH.products,
-                      search: searchParamsToString({ [PARAMETER_KEY.category]: category._id }),
+                      search: createSearchParams(
+                        omit(
+                          {
+                            ...queryConfig,
+                            [PARAMETER_KEY.page]: '1',
+                          },
+                          [PARAMETER_KEY.category]
+                        )
+                      ).toString(),
                     }}
-                    className={classNames('relative inline-block py-2', {
-                      'text-primary': categoryQuery === category._id,
+                    className={classNames('relative inline-block py-2 font-semibold', {
+                      'text-primary': categoryQuery === undefined,
                     })}
                     onClick={() => setIsShowAside(false)}
                   >
-                    {categoryQuery === category._id && (
+                    {categoryQuery === undefined && (
                       <svg viewBox="0 0 2 7" className="absolute -left-4 top-1/2 h-2 w-2 -translate-y-1/2 fill-primary">
                         <polygon points="4 3.5 0 0 0 7"></polygon>
                       </svg>
                     )}
-                    {category.name}
+                    Tất cả
                   </Link>
                 </li>
-              ))
+                {categories.map((category) => (
+                  <li key={category._id} className="py-1 pl-4">
+                    <Link
+                      to={{
+                        pathname: PATH.products,
+                        search: searchParamsToString({ [PARAMETER_KEY.category]: category._id }),
+                      }}
+                      className={classNames('relative inline-block py-2', {
+                        'text-primary': categoryQuery === category._id,
+                      })}
+                      onClick={() => setIsShowAside(false)}
+                    >
+                      {categoryQuery === category._id && (
+                        <svg
+                          viewBox="0 0 2 7"
+                          className="absolute -left-4 top-1/2 h-2 w-2 -translate-y-1/2 fill-primary"
+                        >
+                          <polygon points="4 3.5 0 0 0 7"></polygon>
+                        </svg>
+                      )}
+                      {category.name}
+                    </Link>
+                  </li>
+                ))}
+              </>
             ) : (
               <div role="status" className="mt-2 max-w-sm animate-pulse">
                 {Array(4)
@@ -217,7 +223,9 @@ export default function AsideFilter({ isShowAside, setIsShowAside, categories, q
               />
             </svg>
             <p className="font-semibold">Bộ lọc</p>
-            <button className="ml-auto px-1.5 py-1.5 text-sm font-semibold text-primary">Xoá lọc</button>
+            <button className="ml-auto px-1.5 py-1.5 text-sm font-semibold text-primary" onClick={handleClearFilter}>
+              Xoá lọc
+            </button>
           </div>
           {/* End Title */}
           {/* Price Filter */}
@@ -276,75 +284,7 @@ export default function AsideFilter({ isShowAside, setIsShowAside, categories, q
           {/* Rating Filter */}
           <div className="mt-4">
             <p className="text-sm">Đánh giá</p>
-            <ul className="mt-2">
-              <li>
-                <button className="flex items-center gap-1 py-1">
-                  {Array(5)
-                    .fill(0)
-                    .map((_, index) => (
-                      <svg viewBox="0 0 9.5 8" className="h-[14px] w-[14px]" key={index}>
-                        <defs>
-                          <linearGradient id="ratingStarGradient" x1="50%" x2="50%" y1="0%" y2="100%">
-                            <stop offset={0} stopColor="#ffca11" />
-                            <stop offset={1} stopColor="#ffad27" />
-                          </linearGradient>
-                          <polygon
-                            id="ratingStar"
-                            points="14.910357 6.35294118 12.4209136 7.66171903 12.896355 4.88968305 10.8823529 2.92651626 13.6656353 2.52208166 14.910357 0 16.1550787 2.52208166 18.9383611 2.92651626 16.924359 4.88968305 17.3998004 7.66171903"
-                          />
-                        </defs>
-                        <g fill="url(#ratingStarGradient)" fillRule="evenodd" stroke="none" strokeWidth={1}>
-                          <g transform="translate(-876 -1270)">
-                            <g transform="translate(155 992)">
-                              <g transform="translate(600 29)">
-                                <g transform="translate(10 239)">
-                                  <g transform="translate(101 10)">
-                                    <use stroke="#ffa727" strokeWidth=".5" xlinkHref="#ratingStar" />
-                                  </g>
-                                </g>
-                              </g>
-                            </g>
-                          </g>
-                        </g>
-                      </svg>
-                    ))}
-                </button>
-              </li>
-              <li className="mt-1">
-                <button className="flex items-center gap-1 py-1">
-                  {Array(5)
-                    .fill(0)
-                    .map((_, index) => (
-                      <svg viewBox="0 0 9.5 8" className="h-[14px] w-[14px]" key={index}>
-                        <defs>
-                          <linearGradient id="ratingStarGradient" x1="50%" x2="50%" y1="0%" y2="100%">
-                            <stop offset={0} stopColor="#ffca11" />
-                            <stop offset={1} stopColor="#ffad27" />
-                          </linearGradient>
-                          <polygon
-                            id="ratingStar"
-                            points="14.910357 6.35294118 12.4209136 7.66171903 12.896355 4.88968305 10.8823529 2.92651626 13.6656353 2.52208166 14.910357 0 16.1550787 2.52208166 18.9383611 2.92651626 16.924359 4.88968305 17.3998004 7.66171903"
-                          />
-                        </defs>
-                        <g fill="url(#ratingStarGradient)" fillRule="evenodd" stroke="none" strokeWidth={1}>
-                          <g transform="translate(-876 -1270)">
-                            <g transform="translate(155 992)">
-                              <g transform="translate(600 29)">
-                                <g transform="translate(10 239)">
-                                  <g transform="translate(101 10)">
-                                    <use stroke="#ffa727" strokeWidth=".5" xlinkHref="#ratingStar" />
-                                  </g>
-                                </g>
-                              </g>
-                            </g>
-                          </g>
-                        </g>
-                      </svg>
-                    ))}
-                  <span className="text-sm text-gray-700">trở lên</span>
-                </button>
-              </li>
-            </ul>
+            <RatingStars queryConfig={queryConfig} />
           </div>
           {/* End Rating Filter */}
         </div>
