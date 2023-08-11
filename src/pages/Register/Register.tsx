@@ -8,13 +8,15 @@ import { toast } from 'react-toastify'
 import authenticationApi from '@/apis/authentication.api'
 import { AppContext } from '@/contexts/app.context'
 import { PATH } from '@/constants/path'
-import { schema, Schema } from '@/utils/rules'
+import { Schema, schema } from '@/utils/rules'
 import { isAxiosUnprocessableEntityError } from '@/utils/utils'
 import { ErrorResponse } from '@/types/utils.type'
 import { Input } from '@/components/Input'
 import { Button } from '@/components/Button'
 
-type FormData = Schema
+// tạo ra 1 schema mới lấy email, password và confirm_password
+type LoginSchema = Pick<Schema, 'email' | 'password' | 'confirm_password'>
+const registerSchema = schema.pick(['email', 'password', 'confirm_password'])
 
 export default function Register() {
   const { setIsAuthenticated, setUser } = useContext(AppContext)
@@ -25,10 +27,10 @@ export default function Register() {
     handleSubmit,
     setError,
     formState: { errors },
-  } = useForm<FormData>({ resolver: yupResolver(schema) })
+  } = useForm<LoginSchema>({ resolver: yupResolver(registerSchema) })
 
   const registerMutation = useMutation({
-    mutationFn: (body: Omit<FormData, 'confirm_password'>) => authenticationApi.register(body),
+    mutationFn: (body: Omit<LoginSchema, 'confirm_password'>) => authenticationApi.register(body),
   })
 
   const onSubmit = handleSubmit((data) => {
@@ -42,13 +44,13 @@ export default function Register() {
         navigate(PATH.home)
       },
       onError: (error) => {
-        if (isAxiosUnprocessableEntityError<ErrorResponse<Omit<FormData, 'confirm_password'>>>(error)) {
+        if (isAxiosUnprocessableEntityError<ErrorResponse<Omit<LoginSchema, 'confirm_password'>>>(error)) {
           const formError = error.response?.data.data
 
           if (formError) {
             Object.keys(formError).forEach((key) => {
-              setError(key as keyof Omit<FormData, 'confirm_password'>, {
-                message: formError[key as keyof Omit<FormData, 'confirm_password'>],
+              setError(key as keyof Omit<LoginSchema, 'confirm_password'>, {
+                message: formError[key as keyof Omit<LoginSchema, 'confirm_password'>],
                 type: 'Server',
               })
             })

@@ -6,14 +6,16 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { toast } from 'react-toastify'
 import authenticationApi from '@/apis/authentication.api'
 import { PATH } from '@/constants/path'
-import { Schema, loginSchema } from '@/utils/rules'
+import { Schema, schema } from '@/utils/rules'
 import { isAxiosUnprocessableEntityError } from '@/utils/utils'
 import { ErrorResponse } from '@/types/utils.type'
 import { Input } from '@/components/Input'
 import { AppContext } from '@/contexts/app.context'
 import { Button } from '@/components/Button'
 
-export type LoginSchema = Pick<Schema, 'email' | 'password'>
+// tạo ra 1 schema mới chỉ lấy email và password
+type LoginSchema = Pick<Schema, 'email' | 'password'>
+const loginSchema = schema.pick(['email', 'password'])
 
 export default function Login() {
   const { setIsAuthenticated, setUser } = useContext(AppContext)

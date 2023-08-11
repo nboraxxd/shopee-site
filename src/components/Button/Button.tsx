@@ -9,7 +9,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 export default function Button({ className = 'mt-2 px-2 py-4', isLoading, disabled, children, ...rest }: ButtonProps) {
   return (
     <button
-      className={classNames(`w-full rounded-sm bg-primary text-center uppercase text-white ${className}`, {
+      className={classNames(`w-full rounded-sm bg-primary text-center text-white ${className}`, {
         'cursor-not-allowed opacity-70': disabled,
         'transition-all hover:opacity-90': !disabled,
         'flex items-center justify-center gap-1': isLoading,

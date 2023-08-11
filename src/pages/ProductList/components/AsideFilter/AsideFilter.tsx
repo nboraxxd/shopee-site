@@ -1,13 +1,16 @@
 import { SetStateAction, useEffect, useRef } from 'react'
 import classNames from 'classnames'
-import { Link, createSearchParams } from 'react-router-dom'
+import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import omit from 'lodash/omit'
+import { useForm, Controller } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
 
 import { PATH } from '@/constants/path'
 import PARAMETER_KEY from '@/constants/parameter'
+import { schema } from '@/utils/rules'
 import { Category } from '@/types/category.type'
 import { Button } from '@/components/Button'
-import { Input } from '@/components/Input'
+import { InputNumber } from '@/components/InputNumber'
 import { QueryConfig } from '../ProductList/ProductList'
 
 interface Props {
@@ -17,17 +20,57 @@ interface Props {
   queryConfig: QueryConfig
 }
 
+type PriceSchema = {
+  price_min: string | undefined
+  price_max: string | undefined
+}
+
+// tạo ra 1 schema mới chỉ lấy price_min và price_max
+// type PriceSchema = NoUndefinedField<Pick<Schema, 'price_min' | 'price_max'>>
+const priceSchema = schema.pick(['price_min', 'price_max'])
+
+type ParametersT = Partial<{
+  [key in keyof typeof PARAMETER_KEY]: string
+}>
+
 export default function AsideFilter({ isShowAside, setIsShowAside, categories, queryConfig }: Props) {
   const filterRef = useRef<HTMLElement>(null)
-  const { category: categoryQuery } = queryConfig
 
-  function searchParamsToString(categoryId: string) {
+  const { category: categoryQuery } = queryConfig
+  const navigate = useNavigate()
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    trigger,
+  } = useForm<PriceSchema>({
+    defaultValues: {
+      price_min: '',
+      price_max: '',
+    },
+    resolver: yupResolver(priceSchema),
+  })
+
+  function searchParamsToString(parameters: ParametersT) {
     return createSearchParams({
       ...queryConfig,
-      [PARAMETER_KEY.category]: categoryId,
+      ...parameters,
       [PARAMETER_KEY.page]: '1',
     }).toString()
   }
+
+  const onSubmit = handleSubmit((data) => {
+    navigate({
+      pathname: PATH.products,
+      search: searchParamsToString({
+        [PARAMETER_KEY.price_min]: data.price_min,
+        [PARAMETER_KEY.price_max]: data.price_max,
+      }),
+    })
+    console.log(data)
+    setIsShowAside(false)
+  })
 
   useEffect(() => {
     const handler = (ev: MouseEvent) => {
@@ -124,7 +167,10 @@ export default function AsideFilter({ isShowAside, setIsShowAside, categories, q
               categories.map((category) => (
                 <li key={category._id} className="py-1 pl-4">
                   <Link
-                    to={{ pathname: PATH.products, search: searchParamsToString(category._id) }}
+                    to={{
+                      pathname: PATH.products,
+                      search: searchParamsToString({ [PARAMETER_KEY.category]: category._id }),
+                    }}
                     className={classNames('relative inline-block py-2', {
                       'text-primary': categoryQuery === category._id,
                     })}
@@ -177,25 +223,53 @@ export default function AsideFilter({ isShowAside, setIsShowAside, categories, q
           {/* Price Filter */}
           <div className="mt-4">
             <p className="text-sm">Khoảng giá</p>
-            <form className="mt-2">
+            <form className="mt-2" onSubmit={onSubmit}>
               <div className="flex items-center">
-                <Input
-                  classNameWrapper="grow"
-                  classNameInput="p-[4.5px_2px_4.5px_5px] placeholder:text-xs"
-                  classNameError="min-h-0"
-                  placeholder="₫ TỪ"
-                  name="from"
+                <Controller
+                  control={control}
+                  name="price_min"
+                  render={({ field }) => {
+                    return (
+                      <InputNumber
+                        classNameWrapper="grow"
+                        classNameInput="p-[4.5px_2px_4.5px_5px] placeholder:text-xs"
+                        classNameError="min-h-0"
+                        placeholder="₫ TỪ"
+                        onChange={(event) => {
+                          field.onChange(event)
+                          trigger('price_max')
+                        }}
+                        value={field.value}
+                        ref={field.ref}
+                      />
+                    )
+                  }}
                 />
+
                 <div className="mx-3 h-[1px] w-3 shrink-0 bg-[#bdbdbd]" />
-                <Input
-                  classNameWrapper="grow"
-                  classNameInput="p-[4.5px_2px_4.5px_5px] placeholder:text-xs"
-                  classNameError="min-h-0"
-                  placeholder="₫ ĐẾN"
-                  name="to"
+                <Controller
+                  control={control}
+                  name="price_max"
+                  render={({ field }) => {
+                    return (
+                      <InputNumber
+                        classNameWrapper="grow"
+                        classNameInput="p-[4.5px_2px_4.5px_5px] placeholder:text-xs"
+                        classNameError="min-h-0"
+                        placeholder="₫ ĐẾN"
+                        onChange={(ev) => {
+                          field.onChange(ev)
+                          trigger('price_min')
+                        }}
+                        value={field.value}
+                        ref={field.ref}
+                      />
+                    )
+                  }}
                 />
               </div>
-              <Button className="mt-4 px-1.5 py-1.5 text-sm">Áp dụng</Button>
+              <p className={`mb-1 min-h-[1rem] text-xs text-red-600`}>{errors.price_min?.message}</p>
+              <Button className="px-1.5 py-1.5 text-sm">Áp dụng</Button>
             </form>
           </div>
           {/* End Price Filter */}

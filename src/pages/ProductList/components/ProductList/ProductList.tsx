@@ -12,6 +12,7 @@ import { ProductListConfig } from '@/types/product.type'
 import { AsideFilter, Product, SortProductList } from '@/pages/ProductList'
 import { Pagination } from '@/components/Pagination'
 import { ProductSkeleton } from '../ProductSkeleton'
+import { Button } from '@/components/Button'
 
 export type QueryConfig = {
   [key in keyof ProductListConfig]: string
@@ -98,16 +99,32 @@ export default function ProductList() {
             {productsQuery.isSuccess && productsQuery.data && (
               <>
                 <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
-                  {productsQuery.data.status === 200 &&
+                  {productsQuery.data.status === 200 && productsQuery.data.data.data.products.length !== 0 ? (
                     productsQuery.data.data.data.products.map((product) => (
                       <div key={product._id} className="col-span-1">
                         <Product product={product} />
                       </div>
-                    ))}
+                    ))
+                  ) : (
+                    <div className="col-span-2 flex flex-col items-center sm:col-span-3 md:col-span-4 xl:col-span-5">
+                      <img
+                        src="https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/categorypage/a60759ad1dabe909c46a817ecbf71878.png"
+                        alt="empty products"
+                        className="w-28"
+                      />
+                      <div className="mt-3 text-center text-gray-500 md:text-xl">
+                        <p>Hix. Không có sản phẩm nào.</p>
+                        <p className="mt-3">Bạn thử tắt điều kiện lọc và tìm lại nhé?</p>
+                      </div>
+                      <Button className="mt-6 w-fit px-2 py-3">Xoá bộ lọc</Button>
+                    </div>
+                  )}
                 </div>
                 {/* End Product List */}
                 {/* Pagination */}
-                <Pagination queryConfig={queryConfig} pageSize={productsQuery.data.data.data.pagination.page_size} />
+                {productsQuery.data.status === 200 && productsQuery.data.data.data.products.length !== 0 && (
+                  <Pagination queryConfig={queryConfig} pageSize={productsQuery.data.data.data.pagination.page_size} />
+                )}
                 {/* End Pagination */}
               </>
             )}
