@@ -62,7 +62,8 @@ export default function ProductDetail() {
 
     const image = imageRef.current as HTMLImageElement
     const { naturalHeight, naturalWidth } = image
-    const { offsetX, offsetY } = ev.nativeEvent
+    const offsetY = ev.pageY - (rect.y + window.scrollY)
+    const offsetX = ev.pageX - (rect.x + window.scrollX)
 
     const top = offsetY * (1 - naturalHeight / rect.height)
     const left = offsetX * (1 - naturalWidth / rect.width)
@@ -102,7 +103,7 @@ export default function ProductDetail() {
                 <img
                   src={activeImage}
                   alt={product.name}
-                  className="pointer-events-none absolute left-0 top-0 h-full w-full bg-white object-cover"
+                  className="absolute left-0 top-0 h-full w-full bg-white object-cover"
                   ref={imageRef}
                 />
               </div>
