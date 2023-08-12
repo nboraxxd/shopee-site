@@ -1,12 +1,14 @@
-import { Link } from 'react-router-dom'
+import { Link, generatePath } from 'react-router-dom'
 import { PATH } from '@/constants/path'
 import { Product } from '@/types/product.type'
 import { formatCurrency, formatNumberToSocialStyle } from '@/utils/utils'
 import { ProductRating } from '@/components/ProductRating'
 
 export default function Product({ product }: { product: Product }) {
+  const courseDetailPath = generatePath(PATH.productDetail, { id: product._id })
+
   return (
-    <Link to={PATH.home}>
+    <Link to={courseDetailPath}>
       {/* Container */}
       <div className="overflow-hidden rounded-sm bg-white shadow transition-all duration-200 hover:-mt-[1px] hover:shadow-xl">
         {/* Product Image */}

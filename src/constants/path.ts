@@ -1,6 +1,9 @@
+const PRODUCTS = '/products'
+
 export const PATH = {
   home: '/',
-  products: '/products',
+  products: PRODUCTS,
+  productDetail: PRODUCTS + '/:id',
   login: '/login',
   signup: '/register',
   logout: '/logout',

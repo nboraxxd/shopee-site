@@ -136,9 +136,9 @@ export default function ProductList() {
                       />
                       <div className="mt-3 text-center text-gray-500 md:text-xl">
                         <p>Hix. Không có sản phẩm nào.</p>
-                        <p className="mt-3">Bạn thử tắt điều kiện lọc và tìm lại nhé?</p>
+                        <p className="mt-3">Bạn thử xoá điều kiện lọc và tìm lại nhé?</p>
                       </div>
-                      <Button className="mt-6 max-w-[12rem] px-2 py-3" onClick={handleClearFilter}>
+                      <Button className="mt-6 max-w-[12rem] rounded-sm p-3" onClick={handleClearFilter}>
                         Xoá bộ lọc
                       </Button>
                     </div>

@@ -6,10 +6,16 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode
 }
 
-export default function Button({ className = 'mt-2 px-2 py-4', isLoading, disabled, children, ...rest }: ButtonProps) {
+export default function Button({
+  className = 'mt-2 w-full rounded-sm px-2 py-4',
+  isLoading,
+  disabled,
+  children,
+  ...rest
+}: ButtonProps) {
   return (
     <button
-      className={classNames(`w-full rounded-sm bg-primary text-center text-white ${className}`, {
+      className={classNames(`bg-primary text-center text-white ${className}`, {
         'cursor-not-allowed opacity-70': disabled,
         'transition-all hover:opacity-90': !disabled,
         'flex items-center justify-center gap-1': isLoading,

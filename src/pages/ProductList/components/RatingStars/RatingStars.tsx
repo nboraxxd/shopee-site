@@ -1,3 +1,4 @@
+import { SetStateAction } from 'react'
 import { createSearchParams, useNavigate } from 'react-router-dom'
 import { QueryConfig } from '../ProductList/ProductList'
 import { PATH } from '@/constants/path'
@@ -5,11 +6,13 @@ import PARAMETER_KEY from '@/constants/parameter'
 
 interface Props {
   queryConfig: QueryConfig
+  setIsShowAside: React.Dispatch<SetStateAction<boolean>>
 }
 
 const MAX_STAR_COUNT = 5
 const TOTAL_FILTERED_RATING_ROWS = 5
-export default function RatingStars({ queryConfig }: Props) {
+
+export default function RatingStars({ queryConfig, setIsShowAside }: Props) {
   const navigate = useNavigate()
 
   function handleRatingFilter(starsNumber: number) {
@@ -23,6 +26,8 @@ export default function RatingStars({ queryConfig }: Props) {
       pathname: PATH.products,
       search: searchParamsToString,
     })
+
+    setIsShowAside(false)
   }
 
   return (

@@ -11,7 +11,7 @@ const InputNumber = forwardRef<HTMLInputElement, Props>(function (
   {
     classNameWrapper = 'mt-2',
     errorMessage,
-    classNameInput = 'p-3 focus:border-gray-400',
+    classNameInput = 'w-full p-3 focus:border-gray-400',
     classNameError = 'min-h-[1rem]',
     onChange,
     ...rest
@@ -28,7 +28,7 @@ const InputNumber = forwardRef<HTMLInputElement, Props>(function (
   return (
     <div className={classNameWrapper}>
       <input
-        className={`w-full rounded-sm border border-gray-300 outline-none focus:shadow-sm ${classNameInput}`}
+        className={`rounded-sm border border-gray-300 outline-none focus:shadow-sm ${classNameInput}`}
         onChange={handleChange}
         ref={ref}
         {...rest}

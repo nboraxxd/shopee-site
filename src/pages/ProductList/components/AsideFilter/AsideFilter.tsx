@@ -55,6 +55,8 @@ export default function AsideFilter(props: Props) {
     resolver: yupResolver(priceSchema),
   })
 
+  console.log(errors)
+
   function searchParamsToString(parameters: ParametersT) {
     return createSearchParams({
       ...queryConfig,
@@ -223,7 +225,14 @@ export default function AsideFilter(props: Props) {
               />
             </svg>
             <p className="font-semibold">Bộ lọc</p>
-            <button className="ml-auto px-1.5 py-1.5 text-sm font-semibold text-primary" onClick={handleClearFilter}>
+            <button
+              className="ml-auto px-1.5 py-1.5 text-sm font-semibold text-primary"
+              onClick={() => {
+                handleClearFilter()
+                setIsShowAside(false)
+                errors.price_min = undefined
+              }}
+            >
               Xoá lọc
             </button>
           </div>
@@ -240,7 +249,7 @@ export default function AsideFilter(props: Props) {
                     return (
                       <InputNumber
                         classNameWrapper="grow"
-                        classNameInput="p-[4.5px_2px_4.5px_5px] placeholder:text-xs"
+                        classNameInput="w-full p-[4.5px_2px_4.5px_5px] placeholder:text-xs"
                         classNameError="min-h-0"
                         placeholder="₫ TỪ"
                         onChange={(event) => {
@@ -262,7 +271,7 @@ export default function AsideFilter(props: Props) {
                     return (
                       <InputNumber
                         classNameWrapper="grow"
-                        classNameInput="p-[4.5px_2px_4.5px_5px] placeholder:text-xs"
+                        classNameInput="w-full p-[4.5px_2px_4.5px_5px] placeholder:text-xs"
                         classNameError="min-h-0"
                         placeholder="₫ ĐẾN"
                         onChange={(ev) => {
@@ -277,14 +286,14 @@ export default function AsideFilter(props: Props) {
                 />
               </div>
               <p className={`mb-1 min-h-[1rem] text-xs text-red-600`}>{errors.price_min?.message}</p>
-              <Button className="px-1.5 py-1.5 text-sm">Áp dụng</Button>
+              <Button className="w-full rounded-sm px-1.5 py-1.5 text-sm">Áp dụng</Button>
             </form>
           </div>
           {/* End Price Filter */}
           {/* Rating Filter */}
           <div className="mt-4">
             <p className="text-sm">Đánh giá</p>
-            <RatingStars queryConfig={queryConfig} />
+            <RatingStars queryConfig={queryConfig} setIsShowAside={setIsShowAside} />
           </div>
           {/* End Rating Filter */}
         </div>

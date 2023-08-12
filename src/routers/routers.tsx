@@ -1,8 +1,9 @@
-import { MainLayout } from '@/layouts/MainLayout'
-import { ProductList } from '@/pages/ProductList'
+import { PATH } from '@/constants/path'
 import { authentication } from './authentication'
 import { profile } from './profile'
-import { PATH } from '@/constants/path'
+import { MainLayout } from '@/layouts/MainLayout'
+import { ProductList } from '@/pages/ProductList'
+import { ProductDetail } from '@/pages/ProductDetail'
 
 export const routers = [
   {
@@ -15,6 +16,10 @@ export const routers = [
       {
         path: PATH.products,
         element: <ProductList />,
+      },
+      {
+        path: PATH.productDetail,
+        element: <ProductDetail />,
       },
     ],
   },
