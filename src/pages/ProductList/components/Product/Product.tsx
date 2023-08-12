@@ -1,11 +1,13 @@
 import { Link, generatePath } from 'react-router-dom'
 import { PATH } from '@/constants/path'
 import { Product } from '@/types/product.type'
-import { formatCurrency, formatNumberToSocialStyle } from '@/utils/utils'
+import { formatCurrency, formatNumberToSocialStyle, generateSlug } from '@/utils/utils'
 import { ProductRating } from '@/components/ProductRating'
 
 export default function Product({ product }: { product: Product }) {
-  const courseDetailPath = generatePath(PATH.productDetail, { id: product._id })
+  const courseDetailPath = generatePath(PATH.productDetail, {
+    id: generateSlug({ name: product.name, id: product._id }),
+  })
 
   return (
     <Link to={courseDetailPath}>

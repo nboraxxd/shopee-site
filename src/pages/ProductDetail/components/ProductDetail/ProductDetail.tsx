@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import DOMPurify from 'dompurify'
 
 import productsApi from '@/apis/products.api'
-import { calcDiscountPercentage, formatCurrency, formatNumberToSocialStyle } from '@/utils/utils'
+import { calcDiscountPercentage, formatCurrency, formatNumberToSocialStyle, getIdFromSlug } from '@/utils/utils'
 import { Product } from '@/types/product.type'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { ProductRating } from '@/components/ProductRating'
@@ -12,7 +12,9 @@ import { InputNumber } from '@/components/InputNumber'
 import { Button } from '@/components/Button'
 
 export default function ProductDetail() {
-  const { id } = useParams()
+  const { id: productSlug } = useParams()
+  console.log('🔥 ~ ProductDetail ~ productSlug:', productSlug)
+  const id = getIdFromSlug(productSlug as string)
 
   const [currentImagesIndex, setCurrentImagesIndex] = useState([0, 5])
   const [activeImage, setActiveImage] = useState('')
