@@ -1,24 +1,23 @@
 import { ChangeEvent, InputHTMLAttributes, forwardRef } from 'react'
 
-interface Props extends InputHTMLAttributes<HTMLInputElement> {
+export interface InputNumberProps extends InputHTMLAttributes<HTMLInputElement> {
   errorMessage?: string
   classNameWrapper?: string
   classNameInput?: string
   classNameError?: string
 }
 
-const InputNumber = forwardRef<HTMLInputElement, Props>(function (
-  {
+const InputNumber = forwardRef<HTMLInputElement, InputNumberProps>(function (props, ref) {
+  const {
     classNameWrapper = 'mt-2',
     errorMessage,
     classNameInput = 'w-full p-3 focus:border-gray-400',
     classNameError = 'min-h-[1rem]',
     onChange,
     ...rest
-  },
-  ref
-) {
-  function handleChange(event: ChangeEvent<HTMLInputElement>) {
+  } = props
+
+  function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
     const { value } = event.target
     if ((/^\d+$/.test(value) || value === '') && onChange) {
       onChange(event)
@@ -29,7 +28,7 @@ const InputNumber = forwardRef<HTMLInputElement, Props>(function (
     <div className={classNameWrapper}>
       <input
         className={`rounded-sm border border-gray-300 outline-none focus:shadow-sm ${classNameInput}`}
-        onChange={handleChange}
+        onChange={handleInputChange}
         ref={ref}
         {...rest}
       />
