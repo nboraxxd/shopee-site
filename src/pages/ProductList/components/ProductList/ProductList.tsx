@@ -3,40 +3,19 @@ import { useQuery } from '@tanstack/react-query'
 import { createSearchParams, useNavigate } from 'react-router-dom'
 import classNames from 'classnames'
 import omit from 'lodash/omit'
-import omitBy from 'lodash/omitBy'
-import isUndefined from 'lodash/isUndefined'
 
-import useQueryParams from '@/hooks/useQueryParams'
 import productsApi from '@/apis/products.api'
 import categoriesApi from '@/apis/categories.api'
 import PARAMETER_KEY from '@/constants/parameter'
 import { ProductListConfig } from '@/types/product.type'
 import { PATH } from '@/constants/path'
+import useQueryConfig from '@/hooks/useQueryConfig'
 import { AsideFilter, Product, SortProductList, ProductSkeleton } from '@/pages/ProductList'
 import { Pagination } from '@/components/Pagination'
 import { Button } from '@/components/Button'
 
-export type QueryConfig = {
-  [key in keyof ProductListConfig]: string
-}
-
 export default function ProductList() {
-  const queryParams: QueryConfig = useQueryParams()
-  const queryConfig: QueryConfig = omitBy(
-    {
-      [PARAMETER_KEY.page]: queryParams.page || '1',
-      [PARAMETER_KEY.limit]: queryParams.limit || '12',
-      [PARAMETER_KEY.sort_by]: queryParams.sort_by,
-      [PARAMETER_KEY.exclude]: queryParams.exclude,
-      [PARAMETER_KEY.name]: queryParams.name,
-      [PARAMETER_KEY.order]: queryParams.order,
-      [PARAMETER_KEY.price_max]: queryParams.price_max,
-      [PARAMETER_KEY.price_min]: queryParams.price_min,
-      [PARAMETER_KEY.rating_filter]: queryParams.rating_filter,
-      [PARAMETER_KEY.category]: queryParams.category,
-    },
-    isUndefined
-  )
+  const queryConfig = useQueryConfig()
 
   const [isShowAside, setIsShowAside] = useState(false)
 

@@ -8,11 +8,11 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { PATH } from '@/constants/path'
 import PARAMETER_KEY from '@/constants/parameter'
 import { schema } from '@/utils/rules'
+import { QueryConfig } from '@/types/query.type'
 import { Category } from '@/types/category.type'
+import { RatingStars } from '@/pages/ProductList'
 import { Button } from '@/components/Button'
 import { InputNumber } from '@/components/InputNumber'
-import { RatingStars } from '@/pages/ProductList'
-import { QueryConfig } from '../ProductList/ProductList'
 
 interface Props {
   isShowAside: boolean
@@ -54,8 +54,6 @@ export default function AsideFilter(props: Props) {
     },
     resolver: yupResolver(priceSchema),
   })
-
-  console.log(errors)
 
   function searchParamsToString(parameters: ParametersT) {
     return createSearchParams({

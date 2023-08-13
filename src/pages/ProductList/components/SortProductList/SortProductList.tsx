@@ -8,7 +8,7 @@ import PARAMETER_KEY from '@/constants/parameter'
 import { sortBy, order as orderConstants } from '@/constants/product'
 import { PATH } from '@/constants/path'
 import { OrderT, SortT } from '@/types/product.type'
-import { QueryConfig } from '../ProductList/ProductList'
+import { QueryConfig } from '@/types/query.type'
 import { SortButton } from '@/pages/ProductList'
 
 interface Props {

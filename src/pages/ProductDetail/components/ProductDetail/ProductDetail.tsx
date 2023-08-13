@@ -13,7 +13,6 @@ import { Button } from '@/components/Button'
 
 export default function ProductDetail() {
   const { id: productSlug } = useParams()
-  console.log('🔥 ~ ProductDetail ~ productSlug:', productSlug)
   const id = getIdFromSlug(productSlug as string)
 
   const [currentImagesIndex, setCurrentImagesIndex] = useState([0, 5])
@@ -92,7 +91,7 @@ export default function ProductDetail() {
             <div className="col-span-12 md:col-span-5">
               {/* Active Image */}
               <div
-                className="relative cursor-zoom-in overflow-hidden pt-[100%] md:w-full"
+                className="relative overflow-hidden pt-[100%] md:w-full md:cursor-zoom-in"
                 onMouseMove={(ev) => {
                   if (windowWidth < 768) return
                   handleZoom(ev)

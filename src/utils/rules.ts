@@ -37,6 +37,7 @@ export const schema = yup.object({
     message: 'Khoảng giá không phù hợp',
     test: testPriceMinMax,
   }),
+  searchProduct: yup.string().trim().required(),
 })
 
 // Yup khai báo kiểu thế nào thì ta xuất ra type kiểu đó

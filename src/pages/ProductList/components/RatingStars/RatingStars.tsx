@@ -1,6 +1,6 @@
 import { SetStateAction } from 'react'
 import { createSearchParams, useNavigate } from 'react-router-dom'
-import { QueryConfig } from '../ProductList/ProductList'
+import { QueryConfig } from '@/types/query.type'
 import { PATH } from '@/constants/path'
 import PARAMETER_KEY from '@/constants/parameter'
 
