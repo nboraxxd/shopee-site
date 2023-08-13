@@ -25,6 +25,7 @@ export default function ProductList() {
     queryKey: ['products', queryConfig],
     queryFn: () => productsApi.getProducts(queryConfig as ProductListConfig),
     keepPreviousData: true,
+    staleTime: 3 * 60 * 1000,
   })
 
   const categoriesQuery = useQuery({
@@ -132,7 +133,6 @@ export default function ProductList() {
               </>
             )}
           </div>
-
           {/* End Product Main */}
         </div>
         {/* End Wrapper */}

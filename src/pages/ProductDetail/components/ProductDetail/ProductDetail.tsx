@@ -5,8 +5,10 @@ import DOMPurify from 'dompurify'
 
 import productsApi from '@/apis/products.api'
 import { calcDiscountPercentage, formatCurrency, formatNumberToSocialStyle, getIdFromSlug } from '@/utils/utils'
-import { Product } from '@/types/product.type'
+import { Product as ProductType, ProductListConfig } from '@/types/product.type'
+import PARAMETER_KEY from '@/constants/parameter'
 import { useWindowSize } from '@/hooks/useWindowSize'
+import { ProductSkeleton, Product } from '@/pages/ProductList'
 import { ProductRating } from '@/components/ProductRating'
 import { InputNumber } from '@/components/InputNumber'
 import { Button } from '@/components/Button'
@@ -32,6 +34,21 @@ export default function ProductDetail() {
     [currentImagesIndex, product]
   )
 
+  const queryConfig: ProductListConfig = {
+    [PARAMETER_KEY.page]: '1',
+    [PARAMETER_KEY.limit]: '12',
+    [PARAMETER_KEY.category]: product?.category._id,
+  }
+
+  const productsCategory = useQuery({
+    queryKey: ['products', queryConfig],
+    queryFn: () => productsApi.getProducts(queryConfig),
+    staleTime: 3 * 60 * 1000,
+    enabled: Boolean(product),
+  })
+
+  console.log(productsCategory)
+
   useEffect(() => {
     if (product && product.images.length > 0) {
       setActiveImage(product.images[0])
@@ -54,7 +71,7 @@ export default function ProductDetail() {
   }
 
   function nextCurrentImages() {
-    if (currentImagesIndex[1] >= (product as Product).images.length) return
+    if (currentImagesIndex[1] >= (product as ProductType).images.length) return
     setCurrentImagesIndex((prev) => [prev[0] + 1, prev[1] + 1])
   }
 
@@ -291,6 +308,33 @@ export default function ProductDetail() {
           ></div>
         </section>
         {/* End Product Description */}
+        {/* Related products */}
+        {!productsCategory.isError && (
+          <section className="mt-4 text-black/80">
+            <h2 className="text-lg">CÓ THỂ BẠN CŨNG THÍCH</h2>
+            {productsCategory.isLoading && (
+              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6 xl:grid-cols-6">
+                {Array(Number(queryConfig.limit))
+                  .fill(0)
+                  .map((_, index) => (
+                    <ProductSkeleton key={index} />
+                  ))}
+              </div>
+            )}
+            {productsCategory.isSuccess && productsCategory.data && (
+              <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6">
+                {productsCategory.data.status === 200 &&
+                  productsCategory.data.data.data.products.length !== 0 &&
+                  productsCategory.data.data.data.products.map((product) => (
+                    <div key={product._id} className="col-span-1">
+                      <Product product={product} />
+                    </div>
+                  ))}
+              </div>
+            )}
+          </section>
+        )}
+        {/* End Related products */}
       </div>
     </div>
   )
