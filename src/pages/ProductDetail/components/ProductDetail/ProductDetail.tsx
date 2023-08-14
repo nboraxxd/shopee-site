@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import DOMPurify from 'dompurify'
 
 import productsApi from '@/apis/products.api'
+import purchasesApi from '@/apis/purchases.api'
 import { calcDiscountPercentage, formatCurrency, formatNumberToSocialStyle, getIdFromSlug } from '@/utils/utils'
 import { Product as ProductType, ProductListConfig } from '@/types/product.type'
 import PARAMETER_KEY from '@/constants/parameter'
@@ -49,7 +50,9 @@ export default function ProductDetail() {
     enabled: Boolean(product),
   })
 
-  console.log(productsCategory)
+  const addToCartMutation = useMutation({
+    mutationFn: (body: { product_id: string; buy_count: number }) => purchasesApi.addToCart(body),
+  })
 
   useEffect(() => {
     if (product && product.images.length > 0) {
@@ -101,6 +104,17 @@ export default function ProductDetail() {
 
   function handleBuyCount(value: number) {
     setBuyCount(value)
+  }
+
+  function hanldeAddToCartBtn(data: { product_id: string; buy_count: number }) {
+    addToCartMutation.mutate(data, {
+      onSuccess: (response) => {
+        console.log(response)
+      },
+      onError: (error) => {
+        console.log(error)
+      },
+    })
   }
 
   if (!product) return null
@@ -245,7 +259,16 @@ export default function ProductDetail() {
               {/* End Quantity */}
               {/* CTA */}
               <div className="mt-8 flex items-center justify-center">
-                <button className="flex h-12 items-center justify-center rounded-sm border border-primary bg-primary/10 px-2 text-xs text-primary shadow-sm transition-all hover:bg-primary/5 md:px-5 md:text-base">
+                {/* Add To Cart */}
+                <button
+                  className="flex h-12 items-center justify-center rounded-sm border border-primary bg-primary/10 px-2 text-xs text-primary shadow-sm transition-all hover:bg-primary/5 md:px-5 md:text-base"
+                  onClick={() =>
+                    hanldeAddToCartBtn({
+                      product_id: product._id,
+                      buy_count: buyCount,
+                    })
+                  }
+                >
                   <svg
                     enableBackground="new 0 0 15 15"
                     viewBox="0 0 15 15"
@@ -271,9 +294,12 @@ export default function ProductDetail() {
                   </svg>
                   Thêm Vào Giỏ Hàng
                 </button>
+                {/* End Add To Cart */}
+                {/* Buy Now */}
                 <Button className="ml-4 h-12 min-w-[5rem] rounded-sm px-2 text-xs md:px-5 md:text-base">
                   Mua Ngay
                 </Button>
+                {/* End Buy Now */}
               </div>
               {/* End CTA */}
             </section>
