@@ -10,6 +10,8 @@ import PARAMETER_KEY from '@/constants/parameter'
 import { schema } from '@/utils/rules'
 import { QueryConfig } from '@/types/query.type'
 import { Category } from '@/types/category.type'
+import { trimLeadingZeros } from '@/utils/utils'
+
 import { RatingStars } from '@/pages/ProductList'
 import { Button } from '@/components/Button'
 import { InputNumber } from '@/components/InputNumber'
@@ -39,7 +41,7 @@ export default function AsideFilter(props: Props) {
   const { isShowAside, setIsShowAside, categories, queryConfig, handleClearFilter } = props
   const filterRef = useRef<HTMLElement>(null)
 
-  const { category: categoryQuery } = queryConfig
+  const { category: categoryQuery, price_min, price_max } = queryConfig
   const navigate = useNavigate()
 
   const {
@@ -47,10 +49,11 @@ export default function AsideFilter(props: Props) {
     handleSubmit,
     formState: { errors },
     trigger,
+    reset,
   } = useForm<PriceSchema>({
     defaultValues: {
-      price_min: '',
-      price_max: '',
+      price_min: price_min || '',
+      price_max: price_max || '',
     },
     resolver: yupResolver(priceSchema),
   })
@@ -64,12 +67,19 @@ export default function AsideFilter(props: Props) {
   }
 
   const onSubmit = handleSubmit((data) => {
+    const priceMinTrimed = trimLeadingZeros(data.price_min as string)
+    const priceMaxTrimed = trimLeadingZeros(data.price_max as string)
+
     navigate({
       pathname: PATH.products,
       search: searchParamsToString({
-        [PARAMETER_KEY.price_min]: data.price_min,
-        [PARAMETER_KEY.price_max]: data.price_max,
+        [PARAMETER_KEY.price_min]: priceMinTrimed,
+        [PARAMETER_KEY.price_max]: priceMaxTrimed,
       }),
+    })
+    reset({
+      price_min: priceMinTrimed,
+      price_max: priceMaxTrimed,
     })
     setIsShowAside(false)
   })
@@ -228,7 +238,7 @@ export default function AsideFilter(props: Props) {
               onClick={() => {
                 handleClearFilter()
                 setIsShowAside(false)
-                errors.price_min = undefined
+                reset({ price_min: '', price_max: '' })
               }}
             >
               Xoá lọc

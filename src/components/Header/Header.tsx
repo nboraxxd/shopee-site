@@ -45,7 +45,6 @@ export default function Header() {
   })
 
   const purchasesInCartData = purchasesInCartQuery.data?.data.data
-  console.log('🔥 ~ Header ~ purchasesInCartData:', purchasesInCartData)
 
   const onSubmitSearch = handleSubmit((data) => {
     const omitDependency = queryConfig.order ? [PARAMETER_KEY.order, PARAMETER_KEY.sort_by] : []
