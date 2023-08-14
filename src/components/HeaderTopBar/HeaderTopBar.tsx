@@ -40,7 +40,7 @@ export default function TopBarHeader() {
       {/* End Logo */}
       {/* Language Popover */}
       <Popover
-        wrapClassName="ml-auto"
+        classNameWrap="ml-auto"
         renderPopover={
           <div className="flex flex-col rounded-sm border border-gray-200 bg-white shadow-md">
             <PopoverContent>Tiếng Việt</PopoverContent>

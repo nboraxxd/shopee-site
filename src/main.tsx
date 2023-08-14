@@ -7,7 +7,7 @@ import ScrollToTop from './hooks/useScrollTop'
 import App from '@/App'
 import '@/index.css'
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,

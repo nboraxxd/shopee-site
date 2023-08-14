@@ -1,22 +1,36 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import DOMPurify from 'dompurify'
+import { toast } from 'react-toastify'
 
+import { useWindowSize } from '@/hooks/useWindowSize'
+import { AppContext } from '@/contexts/app.context'
 import productsApi from '@/apis/products.api'
 import purchasesApi from '@/apis/purchases.api'
 import { calcDiscountPercentage, formatCurrency, formatNumberToSocialStyle, getIdFromSlug } from '@/utils/utils'
 import { Product as ProductType, ProductListConfig } from '@/types/product.type'
 import PARAMETER_KEY from '@/constants/parameter'
-import { useWindowSize } from '@/hooks/useWindowSize'
+import PURCHASES_STATUS from '@/constants/purchase'
+import { queryClient } from '@/main'
+
 import { ProductSkeleton, Product } from '@/pages/ProductList'
 import { ProductRating } from '@/components/ProductRating'
 import { Button } from '@/components/Button'
 import { QuantityController } from '@/components/QuantityController'
+import { PATH } from '@/constants/path'
+
+export type StateType = {
+  redirect: string
+}
 
 export default function ProductDetail() {
   const { id: productSlug } = useParams()
   const id = getIdFromSlug(productSlug as string)
+
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const { user, isAuthenticated } = useContext(AppContext)
 
   const [currentImagesIndex, setCurrentImagesIndex] = useState([0, 5])
   const [activeImage, setActiveImage] = useState('')
@@ -107,9 +121,18 @@ export default function ProductDetail() {
   }
 
   function hanldeAddToCartBtn(data: { product_id: string; buy_count: number }) {
+    const state: StateType = { redirect: pathname }
+
+    if (!user || !isAuthenticated) {
+      navigate(PATH.login, { state })
+      toast.warn('Vui lòng đăng nhập trước khi chọn sản phẩm')
+      return
+    }
+
     addToCartMutation.mutate(data, {
       onSuccess: (response) => {
-        console.log(response)
+        toast.success(response.data.message)
+        queryClient.invalidateQueries({ queryKey: ['purchases', { status: PURCHASES_STATUS.inCart }] })
       },
       onError: (error) => {
         console.log(error)
@@ -258,7 +281,7 @@ export default function ProductDetail() {
               </div>
               {/* End Quantity */}
               {/* CTA */}
-              <div className="mt-8 flex items-center justify-center">
+              <div className="mt-8 flex items-center justify-center md:justify-start">
                 {/* Add To Cart */}
                 <button
                   className="flex h-12 items-center justify-center rounded-sm border border-primary bg-primary/10 px-2 text-xs text-primary shadow-sm transition-all hover:bg-primary/5 md:px-5 md:text-base"

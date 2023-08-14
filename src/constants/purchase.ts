@@ -1,4 +1,4 @@
-const PURCHASE_STATUS = {
+const PURCHASES_STATUS = {
   inCart: -1,
   all: 0,
   waitForConfirmation: 1,
@@ -8,4 +8,4 @@ const PURCHASE_STATUS = {
   cancelled: 5,
 } as const
 
-export default PURCHASE_STATUS
+export default PURCHASES_STATUS

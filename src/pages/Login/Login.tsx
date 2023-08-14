@@ -1,9 +1,10 @@
 import { useContext } from 'react'
 import { useForm } from 'react-hook-form'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { toast } from 'react-toastify'
+
 import authenticationApi from '@/apis/authentication.api'
 import { PATH } from '@/constants/path'
 import { Schema, schema } from '@/utils/rules'
@@ -12,6 +13,7 @@ import { ErrorResponse } from '@/types/utils.type'
 import { Input } from '@/components/Input'
 import { AppContext } from '@/contexts/app.context'
 import { Button } from '@/components/Button'
+import { StateType } from '../ProductDetail/components/ProductDetail/ProductDetail'
 
 // tạo ra 1 schema mới chỉ lấy email và password
 type LoginSchema = Pick<Schema, 'email' | 'password'>
@@ -20,6 +22,8 @@ const loginSchema = schema.pick(['email', 'password'])
 export default function Login() {
   const { setIsAuthenticated, setUser } = useContext(AppContext)
   const navigate = useNavigate()
+  const { state } = useLocation()
+  const typedState = state as StateType
 
   const {
     register,
@@ -38,7 +42,7 @@ export default function Login() {
         setIsAuthenticated(true)
         setUser(response.data.data.user)
         toast.success(response.data.message)
-        navigate(PATH.home)
+        navigate(typedState.redirect || PATH.home)
       },
       onError: (error) => {
         console.log(error)

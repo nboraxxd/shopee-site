@@ -1,22 +1,35 @@
+import { useContext } from 'react'
 import { Link, createSearchParams, useNavigate } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import omit from 'lodash/omit'
+import cloneDeep from 'lodash/cloneDeep'
+import moment from 'moment/moment'
 
+import useQueryConfig from '@/hooks/useQueryConfig'
 import { PATH } from '@/constants/path'
 import { Schema, schema } from '@/utils/rules'
-import useQueryConfig from '@/hooks/useQueryConfig'
+import { formatCurrency } from '@/utils/utils'
+import { Purchase } from '@/types/purchase.type'
+import { AppContext } from '@/contexts/app.context'
+import PURCHASES_STATUS from '@/constants/purchase'
+import purchasesApi from '@/apis/purchases.api'
+
 import { HeaderTopBar } from '@/components/HeaderTopBar'
 import { Popover } from '@/components/Popover'
 import { PopoverContent } from '@/components/PopoverContent'
 import PARAMETER_KEY from '@/constants/parameter'
+import noProduct from '@/assets/images/no-product-in-cart.png'
 
 type SearchProductSchema = Pick<Schema, 'searchProduct'>
 const searchProductSchema = schema.pick(['searchProduct'])
+const MAX_PRODUCTS_IN_CART = 5
 
 export default function Header() {
   const navigate = useNavigate()
   const queryConfig = useQueryConfig()
+  const { user } = useContext(AppContext)
 
   const { register, handleSubmit } = useForm<SearchProductSchema>({
     defaultValues: {
@@ -24,6 +37,15 @@ export default function Header() {
     },
     resolver: yupResolver(searchProductSchema),
   })
+
+  const purchasesInCartQuery = useQuery({
+    queryKey: ['purchases', { status: PURCHASES_STATUS.inCart }],
+    queryFn: () => purchasesApi.getPurchases({ status: PURCHASES_STATUS.inCart }),
+    enabled: Boolean(user),
+  })
+
+  const purchasesInCartData = purchasesInCartQuery.data?.data.data
+  console.log('🔥 ~ Header ~ purchasesInCartData:', purchasesInCartData)
 
   const onSubmitSearch = handleSubmit((data) => {
     const omitDependency = queryConfig.order ? [PARAMETER_KEY.order, PARAMETER_KEY.sort_by] : []
@@ -50,6 +72,21 @@ export default function Header() {
       search: searchParamsToString,
     })
   })
+
+  function getFiveLatestProducts(products: Purchase[]) {
+    const clonedProducts = cloneDeep(products)
+
+    clonedProducts.sort((prev, curr) => {
+      if (moment(prev.updatedAt).isBefore(curr.updatedAt) === true) {
+        return 1
+      } else if (moment(prev.updatedAt).isBefore(curr.updatedAt) === false) {
+        return -1
+      }
+      return 0
+    })
+
+    return clonedProducts.slice(0, MAX_PRODUCTS_IN_CART)
+  }
 
   return (
     <header className="bg-[linear-gradient(-180deg,#f53d2d,#F63)] pb-5 pt-2">
@@ -97,68 +134,88 @@ export default function Header() {
           {/* Cart */}
           <Popover
             as="div"
-            wrapClassName="ml-auto lg:mr-20 mr-5"
+            classNameWrap="ml-auto lg:mr-20 mr-5"
+            classNameArrow="hidden md:block"
             placement="bottom-end"
             renderPopover={
               <div className="hidden max-w-[400px] flex-col rounded-sm border border-gray-200 bg-white shadow-md md:flex">
-                <p className="px-5 py-2.5 text-sm text-gray-300">Sản Phẩm Mới Thêm</p>
                 <div>
-                  <PopoverContent className="flex cursor-default py-5 hover:bg-gray-100">
-                    <img
-                      className="h-10 w-10 flex-shrink-0 border border-gray-100 object-cover"
-                      src="https://images.unsplash.com/photo-1690897136507-b00526414507?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw0Nnx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                      alt="image"
-                    />
-                    <div className="flex items-center">
-                      <p className="ml-2 line-clamp-1 cursor-text text-sm text-gray-800">
-                        ÁO SƠ MI Nhung TẰM Lorem ipsum dolor sit amet, consectetur adipisicing elit. Exercitationem,
-                        alias?
-                      </p>
-                      <p className="ml-10 flex-shrink-0 cursor-text text-primary">đ490.000</p>
+                  {user &&
+                    purchasesInCartQuery.isFetching &&
+                    Array(MAX_PRODUCTS_IN_CART)
+                      .fill(0)
+                      .map((_, index) => (
+                        <PopoverContent
+                          key={index}
+                          as="div"
+                          className="w-[398px] cursor-default py-3 hover:bg-gray-100"
+                        >
+                          <div role="status" className="flex animate-pulse items-center space-x-8 space-y-0">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-gray-300">
+                              <img
+                                src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 54 61' fill='%23e5e4e4'%3E%3Cpath d='M51.2 16.9H38.7C38.7 11.6 36 .6 27 .5 17.4.4 15.2 12.4 15.2 16.9H2.8c-3.4 0-2.7 3.4-2.7 3.4l2.4 33s-.1 7.3 6.3 7.5h36.5c6.2-.4 6.3-7.5 6.3-7.5l2.4-33c0-.1.5-3.5-2.8-3.4zM27.1 4.2c7.1.2 7.9 11.7 7.7 12.6H19.1c-.1-.9.4-12.4 8-12.6zm9.1 44.6c-1 1.7-2.7 3-5 3.7-1.2.4-2.4.5-3.6.5-3.2 0-6.5-1.1-9.3-3.3-.8-.6-1-1.5-.5-2.3.2-.4.7-.7 1.2-.8.4-.1.9 0 1.2.3 3.2 2.4 8.3 4 11.9 1.6 1.4-.9 2.1-2.7 1.6-4.3-.5-1.6-2.2-2.7-3.5-3.4-1-.6-2.1-1-3.3-1.4-.9-.3-1.9-.7-2.9-1.2-2.4-1.2-4-2.6-4.8-4.2-1.2-2.3-.6-5.4 1.4-7.5 3.6-3.8 10-3.2 14-.4.9.6.9 1.7.4 2.5s-1.4.9-2.2.4c-2-1.4-4.4-2-6.4-1.7-2 .3-4.7 2-4.4 4.6.2 1.5 2 2.6 3.3 3.3.8.4 1.5.7 2.3.9 4.3 1.3 7.2 3.3 8.6 5.7 1.2 2.1 1.2 4.9 0 7z'/%3E%3C/svg%3E"
+                                alt="img-skeleton"
+                                className="h-6 w-6"
+                              />
+                            </div>
+                            <div className="grow">
+                              <div className="mb-2.5 h-2.5 w-full flex-shrink-0 rounded-full bg-gray-200" />
+                              <div className="h-2.5 w-full flex-shrink-0 rounded-full bg-gray-200" />
+                            </div>
+                          </div>
+                        </PopoverContent>
+                      ))}
+                  {(!user ||
+                    (!purchasesInCartQuery.isLoading &&
+                      (!purchasesInCartData || purchasesInCartData.length === 0))) && (
+                    <div className="w-[398px] py-10 text-center">
+                      <img src={noProduct} alt="not purchase" className="mx-auto w-1/3" />
+                      <p className="mt-8 text-gray-500">Chưa có sản phẩm</p>
                     </div>
-                  </PopoverContent>
-                  <PopoverContent className="flex cursor-default py-5 hover:bg-gray-100">
-                    <img
-                      className="h-10 w-10 flex-shrink-0 border border-gray-100 object-cover"
-                      src="https://images.unsplash.com/photo-1690897136507-b00526414507?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw0Nnx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                      alt="image"
-                    />
-                    <div className="flex items-center">
-                      <p className="ml-2 line-clamp-1 cursor-text text-sm text-gray-800">
-                        ÁO SƠ MI Nhung TẰM Lorem ipsum dolor sit amet, consectetur adipisicing elit. Exercitationem,
-                        alias?
-                      </p>
-                      <p className="ml-10 flex-shrink-0 cursor-text text-primary">đ490.000</p>
-                    </div>
-                  </PopoverContent>
-                  <PopoverContent className="flex cursor-default py-5 hover:bg-gray-100">
-                    <img
-                      className="h-10 w-10 flex-shrink-0 border border-gray-100 object-cover"
-                      src="https://images.unsplash.com/photo-1690897136507-b00526414507?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw0Nnx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                      alt="image"
-                    />
-                    <div className="flex items-center">
-                      <p className="ml-2 line-clamp-1 cursor-text text-sm text-gray-800">
-                        ÁO SƠ MI Nhung TẰM Lorem ipsum dolor sit amet
-                      </p>
-                      <p className="ml-10 flex-shrink-0 cursor-text text-primary">đ490.000</p>
-                    </div>
-                  </PopoverContent>
-                </div>
-                <div className="flex items-center justify-between px-5 py-2.5">
-                  <span className="text-xs text-gray-500">Thêm Hàng Vào Giỏ</span>
-                  <PopoverContent
-                    as={Link}
-                    to="#!"
-                    className="rounded-sm bg-primary text-sm text-white hover:bg-primary hover:text-white hover:opacity-90"
-                  >
-                    Xem Giỏ Hàng
-                  </PopoverContent>
+                  )}
+                  {user &&
+                    !purchasesInCartQuery.isFetching &&
+                    purchasesInCartData &&
+                    purchasesInCartData.length > 0 && (
+                      <>
+                        <p className="px-5 py-2.5 text-sm text-gray-300">Sản Phẩm Mới Thêm</p>
+                        {getFiveLatestProducts(purchasesInCartData).map((item) => {
+                          return (
+                            <PopoverContent key={item._id} className="flex cursor-default py-3 hover:bg-gray-100">
+                              <img
+                                className="h-10 w-10 flex-shrink-0 border border-gray-100 object-cover"
+                                src={item.product.image}
+                                alt={item.product.name}
+                              />
+                              <div className="flex cursor-text items-center text-sm">
+                                <p className="ml-2 line-clamp-1 text-gray-800">{item.product.name}</p>
+                                <p className="ml-5 flex-shrink-0 text-primary">₫{formatCurrency(item.product.price)}</p>
+                              </div>
+                            </PopoverContent>
+                          )
+                        })}
+                        <div className="flex items-center px-5 py-2.5">
+                          {purchasesInCartData.length >= 5 && (
+                            <span className="text-xs text-gray-500">
+                              {purchasesInCartData.length - MAX_PRODUCTS_IN_CART} Thêm Hàng Vào Giỏ
+                            </span>
+                          )}
+
+                          <PopoverContent
+                            as={Link}
+                            to="#!"
+                            className="ml-auto rounded-sm bg-primary text-sm text-white hover:bg-primary hover:text-white hover:opacity-90"
+                          >
+                            Xem Giỏ Hàng
+                          </PopoverContent>
+                        </div>
+                      </>
+                    )}
                 </div>
               </div>
             }
           >
-            <Link to="#!">
+            <Link to="#!" className="relative">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -173,6 +230,11 @@ export default function Header() {
                   d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
                 />
               </svg>
+              {user && purchasesInCartData && (
+                <span className="absolute left-full top-0 -translate-x-1/2 -translate-y-1/3 rounded-full bg-white px-2 text-sm text-primary">
+                  {purchasesInCartData?.length}
+                </span>
+              )}
             </Link>
           </Popover>
 

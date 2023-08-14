@@ -13,6 +13,7 @@ import useQueryConfig from '@/hooks/useQueryConfig'
 import { AsideFilter, Product, SortProductList, ProductSkeleton } from '@/pages/ProductList'
 import { Pagination } from '@/components/Pagination'
 import { Button } from '@/components/Button'
+import noProduct from '@/assets/images/no-products.png'
 
 export default function ProductList() {
   const queryConfig = useQueryConfig()
@@ -109,11 +110,7 @@ export default function ProductList() {
                     ))
                   ) : (
                     <div className="col-span-2 flex flex-col items-center sm:col-span-3 md:col-span-4 xl:col-span-5">
-                      <img
-                        src="https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/categorypage/a60759ad1dabe909c46a817ecbf71878.png"
-                        alt="empty products"
-                        className="w-28"
-                      />
+                      <img src={noProduct} alt="empty products" className="w-28" />
                       <div className="mt-3 text-center text-gray-500 md:text-xl">
                         <p>Hix. Không có sản phẩm nào.</p>
                         <p className="mt-3">Bạn thử xoá điều kiện lọc và tìm lại nhé?</p>

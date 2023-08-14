@@ -2,10 +2,11 @@ import { ElementType, useRef, useState } from 'react'
 import { FloatingArrow, FloatingPortal, type Placement, arrow, offset, shift, useFloating } from '@floating-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-interface Props {
+interface PopoverProps {
   children: React.ReactNode
   renderPopover: React.ReactNode
-  wrapClassName?: string
+  classNameWrap?: string
+  classNameArrow?: string
   crossAxis?: number
   staticOffsetArrow?: string | number
   as?: ElementType
@@ -13,16 +14,19 @@ interface Props {
   placement?: Placement
 }
 
-export default function Popover({
-  children,
-  renderPopover,
-  wrapClassName = '',
-  crossAxis = 0,
-  staticOffsetArrow,
-  as: Element = 'li',
-  initialOpen = false,
-  placement = 'bottom',
-}: Props) {
+export default function Popover(props: PopoverProps) {
+  const {
+    children,
+    renderPopover,
+    classNameWrap = '',
+    classNameArrow = '',
+    crossAxis = 0,
+    staticOffsetArrow,
+    as: Element = 'li',
+    initialOpen = false,
+    placement = 'bottom',
+  } = props
+
   const TOOLTIP_GAP = 3
   const [isOpen, setIsOpen] = useState(initialOpen)
   const arrowRef = useRef(null)
@@ -50,7 +54,7 @@ export default function Popover({
 
   return (
     <Element
-      className={`before:content[''] relative flex cursor-pointer items-center px-2 py-1 text-gray-50 transition-all before:absolute before:bottom-0 before:left-0 before:h-1 before:w-full before:translate-y-full hover:text-gray-200 ${wrapClassName}`}
+      className={`before:content[''] relative flex cursor-pointer items-center px-2 py-1 text-gray-50 transition-all before:absolute before:bottom-0 before:left-0 before:h-1 before:w-full before:translate-y-full hover:text-gray-200 ${classNameWrap}`}
       ref={refs.setReference}
       onMouseEnter={showPopover}
       onMouseLeave={hidePopover}
@@ -84,7 +88,7 @@ export default function Popover({
                 width={20}
                 staticOffset={staticOffsetArrow}
                 style={{ zIndex: 1, bottom: '99%' }}
-                className="hidden md:block"
+                className={classNameArrow}
               />
               {renderPopover}
             </motion.div>
