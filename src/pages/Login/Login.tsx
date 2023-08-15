@@ -42,7 +42,7 @@ export default function Login() {
         setIsAuthenticated(true)
         setUser(response.data.data.user)
         toast.success(response.data.message)
-        navigate(typedState.redirect || PATH.home)
+        navigate(typedState?.redirect || PATH.home)
       },
       onError: (error) => {
         console.log(error)

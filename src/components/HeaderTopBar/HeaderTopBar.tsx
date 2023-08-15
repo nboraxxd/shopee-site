@@ -1,12 +1,15 @@
 import { useContext } from 'react'
 import { Link } from 'react-router-dom'
-import userApi from '@/apis/user.api'
-import { AppContext } from '@/contexts/app.context'
-import { Popover } from '@/components/Popover'
-import { PopoverContent } from '@/components/PopoverContent'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
+
+import { queryClient } from '@/main'
+import userApi from '@/apis/user.api'
+import { AppContext } from '@/contexts/app.context'
 import { PATH } from '@/constants/path'
+import PURCHASES_STATUS from '@/constants/purchase'
+import { Popover } from '@/components/Popover'
+import { PopoverContent } from '@/components/PopoverContent'
 
 export default function TopBarHeader() {
   const { isAuthenticated, setIsAuthenticated, user, setUser } = useContext(AppContext)
@@ -21,6 +24,7 @@ export default function TopBarHeader() {
         setIsAuthenticated(false)
         setUser(null)
         toast.success(response.data.message)
+        queryClient.removeQueries({ queryKey: ['purchases', { status: PURCHASES_STATUS.inCart }] })
       },
     })
   }

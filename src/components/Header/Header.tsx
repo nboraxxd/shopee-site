@@ -29,7 +29,7 @@ const MAX_PRODUCTS_IN_CART = 5
 export default function Header() {
   const navigate = useNavigate()
   const queryConfig = useQueryConfig()
-  const { user } = useContext(AppContext)
+  const { isAuthenticated } = useContext(AppContext)
 
   const { register, handleSubmit } = useForm<SearchProductSchema>({
     defaultValues: {
@@ -41,7 +41,7 @@ export default function Header() {
   const purchasesInCartQuery = useQuery({
     queryKey: ['purchases', { status: PURCHASES_STATUS.inCart }],
     queryFn: () => purchasesApi.getPurchases({ status: PURCHASES_STATUS.inCart }),
-    enabled: Boolean(user),
+    enabled: isAuthenticated,
   })
 
   const purchasesInCartData = purchasesInCartQuery.data?.data.data
@@ -139,7 +139,7 @@ export default function Header() {
             renderPopover={
               <div className="hidden max-w-[400px] flex-col rounded-sm border border-gray-200 bg-white shadow-md md:flex">
                 <div>
-                  {user &&
+                  {isAuthenticated &&
                     purchasesInCartQuery.isFetching &&
                     Array(MAX_PRODUCTS_IN_CART)
                       .fill(0)
@@ -164,57 +164,55 @@ export default function Header() {
                           </div>
                         </PopoverContent>
                       ))}
-                  {(!user ||
-                    (!purchasesInCartQuery.isLoading &&
-                      (!purchasesInCartData || purchasesInCartData.length === 0))) && (
+                  {isAuthenticated &&
+                  !purchasesInCartQuery.isFetching &&
+                  purchasesInCartData &&
+                  purchasesInCartData.length > 0 ? (
+                    <>
+                      <p className="px-5 py-2.5 text-sm text-gray-300">Sản Phẩm Mới Thêm</p>
+                      {getFiveLatestProducts(purchasesInCartData).map((item) => {
+                        return (
+                          <PopoverContent key={item._id} className="flex cursor-default py-3 hover:bg-gray-100">
+                            <img
+                              className="h-10 w-10 flex-shrink-0 border border-gray-100 object-cover"
+                              src={item.product.image}
+                              alt={item.product.name}
+                            />
+                            <div className="flex cursor-text items-center text-sm">
+                              <p className="ml-2 line-clamp-1 text-gray-800">{item.product.name}</p>
+                              <p className="ml-5 flex-shrink-0 text-primary">₫{formatCurrency(item.product.price)}</p>
+                            </div>
+                          </PopoverContent>
+                        )
+                      })}
+                      <div className="flex items-center px-5 py-2.5">
+                        {purchasesInCartData.length >= 5 && (
+                          <span className="text-xs text-gray-500">
+                            {purchasesInCartData.length - MAX_PRODUCTS_IN_CART} Thêm Hàng Vào Giỏ
+                          </span>
+                        )}
+
+                        <PopoverContent
+                          as={Link}
+                          to={PATH.cart}
+                          className="ml-auto rounded-sm bg-primary text-sm text-white hover:bg-primary hover:text-white hover:opacity-90"
+                        >
+                          Xem Giỏ Hàng
+                        </PopoverContent>
+                      </div>
+                    </>
+                  ) : (
                     <div className="w-[398px] py-10 text-center">
                       <img src={noProduct} alt="not purchase" className="mx-auto w-1/3" />
                       <p className="mt-8 text-gray-500">Chưa có sản phẩm</p>
                     </div>
                   )}
-                  {user &&
-                    !purchasesInCartQuery.isFetching &&
-                    purchasesInCartData &&
-                    purchasesInCartData.length > 0 && (
-                      <>
-                        <p className="px-5 py-2.5 text-sm text-gray-300">Sản Phẩm Mới Thêm</p>
-                        {getFiveLatestProducts(purchasesInCartData).map((item) => {
-                          return (
-                            <PopoverContent key={item._id} className="flex cursor-default py-3 hover:bg-gray-100">
-                              <img
-                                className="h-10 w-10 flex-shrink-0 border border-gray-100 object-cover"
-                                src={item.product.image}
-                                alt={item.product.name}
-                              />
-                              <div className="flex cursor-text items-center text-sm">
-                                <p className="ml-2 line-clamp-1 text-gray-800">{item.product.name}</p>
-                                <p className="ml-5 flex-shrink-0 text-primary">₫{formatCurrency(item.product.price)}</p>
-                              </div>
-                            </PopoverContent>
-                          )
-                        })}
-                        <div className="flex items-center px-5 py-2.5">
-                          {purchasesInCartData.length >= 5 && (
-                            <span className="text-xs text-gray-500">
-                              {purchasesInCartData.length - MAX_PRODUCTS_IN_CART} Thêm Hàng Vào Giỏ
-                            </span>
-                          )}
-
-                          <PopoverContent
-                            as={Link}
-                            to="#!"
-                            className="ml-auto rounded-sm bg-primary text-sm text-white hover:bg-primary hover:text-white hover:opacity-90"
-                          >
-                            Xem Giỏ Hàng
-                          </PopoverContent>
-                        </div>
-                      </>
-                    )}
                 </div>
               </div>
             }
           >
-            <Link to="#!" className="relative">
+            {/* Cart Icon */}
+            <Link to={PATH.cart} className="relative">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -229,14 +227,14 @@ export default function Header() {
                   d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
                 />
               </svg>
-              {user && purchasesInCartData && (
+              {isAuthenticated && purchasesInCartData && (
                 <span className="absolute left-full top-0 -translate-x-1/2 -translate-y-1/3 rounded-full bg-white px-2 text-sm text-primary">
                   {purchasesInCartData?.length}
                 </span>
               )}
             </Link>
+            {/* End Cart Icon */}
           </Popover>
-
           {/* End Cart */}
         </div>
       </div>

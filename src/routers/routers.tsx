@@ -4,6 +4,8 @@ import { profile } from './profile'
 import { MainLayout } from '@/layouts/MainLayout'
 import { ProductList } from '@/pages/ProductList'
 import { ProductDetail } from '@/pages/ProductDetail'
+import { PrivateRouter } from '@/components/Routers'
+import { Cart } from '@/pages/Cart'
 
 export const routers = [
   {
@@ -27,4 +29,19 @@ export const routers = [
   authentication,
 
   profile,
+
+  {
+    element: <PrivateRouter />,
+    children: [
+      {
+        element: <MainLayout />,
+        children: [
+          {
+            path: PATH.cart,
+            element: <Cart />,
+          },
+        ],
+      },
+    ],
+  },
 ]
