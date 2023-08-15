@@ -15,6 +15,7 @@ import { trimLeadingZeros } from '@/utils/utils'
 import { RatingStars } from '@/pages/ProductList'
 import { Button } from '@/components/Button'
 import { InputNumber } from '@/components/InputNumber'
+import { InputController } from '@/components/InputController'
 
 interface Props {
   isShowAside: boolean
@@ -250,27 +251,18 @@ export default function AsideFilter(props: Props) {
             <p className="text-sm">Khoảng giá</p>
             <form className="mt-2" onSubmit={onSubmit}>
               <div className="flex items-center">
-                <Controller
+                <InputController
                   control={control}
                   name="price_min"
-                  render={({ field }) => {
-                    return (
-                      <InputNumber
-                        classNameWrapper="grow"
-                        classNameInput="w-full p-[4.5px_2px_4.5px_5px] placeholder:text-xs"
-                        classNameError="min-h-0"
-                        placeholder="₫ TỪ"
-                        onChange={(event) => {
-                          field.onChange(event)
-                          trigger('price_max')
-                        }}
-                        value={field.value}
-                        ref={field.ref}
-                      />
-                    )
+                  type="number"
+                  classNameWrapper="grow"
+                  classNameInput="w-full p-[4.5px_2px_4.5px_5px] placeholder:text-xs"
+                  classNameError="min-h-0"
+                  placeholder="₫ TỪ"
+                  onChange={() => {
+                    trigger('price_max')
                   }}
                 />
-
                 <div className="mx-3 h-[1px] w-3 shrink-0 bg-[#bdbdbd]" />
                 <Controller
                   control={control}
@@ -282,6 +274,7 @@ export default function AsideFilter(props: Props) {
                         classNameInput="w-full p-[4.5px_2px_4.5px_5px] placeholder:text-xs"
                         classNameError="min-h-0"
                         placeholder="₫ ĐẾN"
+                        {...field}
                         onChange={(ev) => {
                           field.onChange(ev)
                           trigger('price_min')
