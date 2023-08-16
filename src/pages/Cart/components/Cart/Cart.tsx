@@ -1,18 +1,29 @@
+import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link, generatePath } from 'react-router-dom'
 import classNames from 'classnames'
 import { useInView } from 'react-intersection-observer'
+import { produce } from 'immer'
 
 import purchasesApi from '@/apis/purchases.api'
 import PURCHASES_STATUS from '@/constants/purchase'
 import { PATH } from '@/constants/path'
 import { formatCurrency, generateSlug, sortProductsByLatestUpdate } from '@/utils/utils'
+import { Purchase } from '@/types/purchase.type'
 
 import { QuantityController } from '@/components/QuantityController'
 import { ButtonSelect, InputCheckbox } from '@/pages/Cart'
 import { Button } from '@/components/Button'
 
+export interface ExtendedPurchase extends Purchase {
+  disabled: boolean
+  checked: boolean
+}
+
 export default function Cart() {
+  const [extendedPurchases, setExtendedPurchases] = useState<ExtendedPurchase[]>([])
+  const isAllChecked = extendedPurchases.every((purchase) => purchase.checked === true)
+
   const { ref, inView } = useInView({
     threshold: 1,
   })
@@ -22,6 +33,16 @@ export default function Cart() {
     queryFn: () => purchasesApi.getPurchases({ status: PURCHASES_STATUS.inCart }),
   })
   const purchasesInCartData = purchasesInCartQuery.data?.data.data
+
+  useEffect(() => {
+    setExtendedPurchases(
+      purchasesInCartData?.map((purchase) => ({ ...purchase, disabled: false, checked: false })) || []
+    )
+  }, [purchasesInCartData])
+
+  function handleAllChecked() {
+    setExtendedPurchases((purchases) => purchases.map((purchase) => ({ ...purchase, checked: !isAllChecked })))
+  }
 
   return (
     <div className="bg-secondary py-3 md:py-8">
@@ -34,7 +55,7 @@ export default function Cart() {
             <div className="flex items-center">
               {/* Input Checkbox */}
               <div className="mr-3 flex shrink-0 items-center justify-center">
-                <InputCheckbox />
+                <InputCheckbox checked={isAllChecked} handleAllChecked={handleAllChecked} />
               </div>
               {/* End Input Checkbox */}
               <div className="grow text-gray-700">Sản phẩm</div>
@@ -55,12 +76,21 @@ export default function Cart() {
         {/* End Table Header */}
         {/* Table Data */}
         <div className="my-3 rounded-sm bg-white p-3 shadow md:px-5 md:py-7">
-          {purchasesInCartData &&
-            purchasesInCartData.length > 0 &&
-            sortProductsByLatestUpdate(purchasesInCartData).map((purchase) => {
+          {extendedPurchases.length > 0 &&
+            sortProductsByLatestUpdate(extendedPurchases).map((purchase) => {
               const productDetailPath = generatePath(PATH.productDetail, {
                 id: generateSlug({ name: purchase.product.name, id: purchase.product._id }),
               })
+
+              function handleChecked(productId: string) {
+                return function (ev: React.ChangeEvent<HTMLInputElement>) {
+                  setExtendedPurchases(
+                    produce((draft) => {
+                      ;(draft.find((item) => item._id === productId) as ExtendedPurchase).checked = ev.target.checked
+                    })
+                  )
+                }
+              }
 
               return (
                 <div
@@ -75,6 +105,8 @@ export default function Cart() {
                         <InputCheckbox
                           classNameInput="h-4 w-4 md:h-5 md:w-5"
                           classNameChecked="h-[0.7rem] w-[0.7rem] md:h-3.5 md:w-3.5"
+                          checked={purchase.checked}
+                          handleChecked={handleChecked(purchase._id)}
                         />
                       </div>
                       {/* End Input Checkbox */}
@@ -168,20 +200,21 @@ export default function Cart() {
       {/* Sticky CTA */}
       <div className="sticky bottom-0 z-10 md:container">
         <div
-          className={classNames(
-            'flex items-center rounded-sm bg-white px-3 py-3 transition-all md:px-7 md:px-9 md:py-6',
-            {
-              shadow: inView,
-              'shadow-[0px_-25px_32px_-23px_rgba(0,0,0,0.2)]': !inView,
-            }
-          )}
+          className={classNames('flex items-center rounded-sm bg-white px-3 py-3 transition-all md:px-9 md:py-6', {
+            shadow: inView,
+            'shadow-[0px_-25px_32px_-23px_rgba(0,0,0,0.2)]': !inView,
+          })}
         >
           <div className="flex shrink-0 items-center justify-center">
             <InputCheckbox
               classNameInput="h-4 w-4 md:h-5 md:w-5"
               classNameChecked="h-[0.7rem] w-[0.7rem] md:h-3.5 md:w-3.5"
+              checked={isAllChecked}
+              handleAllChecked={handleAllChecked}
             />
-            <ButtonSelect className="text-[0.5rem] md:ml-3 md:text-base">Chọn tất cả</ButtonSelect>
+            <ButtonSelect className="text-[0.5rem] md:ml-3 md:text-base" handleAllChecked={handleAllChecked}>
+              Chọn tất cả ({extendedPurchases.length})
+            </ButtonSelect>
             <ButtonSelect className="ml-2 hidden md:block">Xoá</ButtonSelect>
           </div>
           <div className="ml-auto flex items-center">

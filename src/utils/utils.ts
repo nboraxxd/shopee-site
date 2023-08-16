@@ -47,7 +47,7 @@ export function trimLeadingZeros(str: string) {
   return str.replace(/^0+/, '')
 }
 
-export function sortProductsByLatestUpdate(products: Purchase[]) {
+export function sortProductsByLatestUpdate<T extends Purchase>(products: T[]): T[] {
   const clonedProducts = cloneDeep(products)
 
   return clonedProducts.sort((prev, curr) => {

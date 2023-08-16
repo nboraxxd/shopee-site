@@ -2,9 +2,14 @@ import { ReactNode } from 'react'
 
 interface Props {
   children: ReactNode
+  handleAllChecked?: () => void
   className?: string
 }
 
-export default function ButtonSelect({ children, className = '' }: Props) {
-  return <button className={`px-[0.375rem] py-[0.0625rem] ${className}`}>{children}</button>
+export default function ButtonSelect({ children, handleAllChecked, className = '' }: Props) {
+  return (
+    <button className={`px-[0.375rem] py-[0.0625rem] ${className}`} onClick={handleAllChecked}>
+      {children}
+    </button>
+  )
 }
