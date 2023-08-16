@@ -54,7 +54,7 @@ export default function Popover(props: PopoverProps) {
 
   return (
     <Element
-      className={`before:content[''] relative flex cursor-pointer items-center px-2 py-1 text-gray-50 transition-all before:absolute before:bottom-0 before:left-0 before:h-1 before:w-full before:translate-y-full hover:text-gray-200 ${classNameWrap}`}
+      className={`before:content[''] relative flex cursor-pointer items-center px-1 py-1 text-gray-50 transition-all before:absolute before:bottom-0 before:left-0 before:h-1 before:w-full before:translate-y-full hover:text-gray-200 sm:px-2 ${classNameWrap}`}
       ref={refs.setReference}
       onMouseEnter={showPopover}
       onMouseLeave={hidePopover}

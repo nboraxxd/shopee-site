@@ -5,12 +5,12 @@ import { formatCurrency, formatNumberToSocialStyle, generateSlug } from '@/utils
 import { ProductRating } from '@/components/ProductRating'
 
 export default function Product({ product }: { product: Product }) {
-  const courseDetailPath = generatePath(PATH.productDetail, {
+  const productDetailPath = generatePath(PATH.productDetail, {
     id: generateSlug({ name: product.name, id: product._id }),
   })
 
   return (
-    <Link to={courseDetailPath}>
+    <Link to={productDetailPath}>
       {/* Container */}
       <div className="overflow-hidden rounded-sm bg-white shadow transition-all duration-200 hover:-mt-[1px] hover:shadow-xl">
         {/* Product Image */}

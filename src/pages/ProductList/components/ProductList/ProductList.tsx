@@ -53,15 +53,15 @@ export default function ProductList() {
 
   useEffect(() => {
     const body = document.body
-    isShowAside ? body.classList.add('overflow-hidden') : body.classList.remove('overflow-hidden')
+    isShowAside ? (body.style.cssText = 'overflow: hidden') : body.removeAttribute('style')
 
     return () => {
-      body.classList.remove('overflow-hidden')
+      body.removeAttribute('style')
     }
   }, [isShowAside])
 
   return (
-    <div className="bg-secondary">
+    <div className="overflow-hidden bg-secondary">
       <div className="container">
         {/* Wrapper */}
         <div className="grid grid-cols-12 gap-6 py-7">

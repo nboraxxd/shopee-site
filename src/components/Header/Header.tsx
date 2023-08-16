@@ -1,16 +1,14 @@
 import { useContext } from 'react'
-import { Link, createSearchParams, useNavigate } from 'react-router-dom'
+import { Link, createSearchParams, generatePath, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import omit from 'lodash/omit'
-import cloneDeep from 'lodash/cloneDeep'
-import moment from 'moment/moment'
 
 import useQueryConfig from '@/hooks/useQueryConfig'
 import { PATH } from '@/constants/path'
 import { Schema, schema } from '@/utils/rules'
-import { formatCurrency } from '@/utils/utils'
+import { formatCurrency, generateSlug, sortProductsByLatestUpdate } from '@/utils/utils'
 import { Purchase } from '@/types/purchase.type'
 import { AppContext } from '@/contexts/app.context'
 import PURCHASES_STATUS from '@/constants/purchase'
@@ -73,18 +71,9 @@ export default function Header() {
   })
 
   function getFiveLatestProducts(products: Purchase[]) {
-    const clonedProducts = cloneDeep(products)
+    const latestUpdatedProducts = sortProductsByLatestUpdate(products)
 
-    clonedProducts.sort((prev, curr) => {
-      if (moment(prev.updatedAt).isBefore(curr.updatedAt) === true) {
-        return 1
-      } else if (moment(prev.updatedAt).isBefore(curr.updatedAt) === false) {
-        return -1
-      }
-      return 0
-    })
-
-    return clonedProducts.slice(0, MAX_PRODUCTS_IN_CART)
+    return latestUpdatedProducts.slice(0, MAX_PRODUCTS_IN_CART)
   }
 
   return (
@@ -171,8 +160,17 @@ export default function Header() {
                     <>
                       <p className="px-5 py-2.5 text-sm text-gray-300">Sản Phẩm Mới Thêm</p>
                       {getFiveLatestProducts(purchasesInCartData).map((item) => {
+                        const productDetailPath = generatePath(PATH.productDetail, {
+                          id: generateSlug({ name: item.product.name, id: item.product._id }),
+                        })
+
                         return (
-                          <PopoverContent key={item._id} className="flex cursor-default py-3 hover:bg-gray-100">
+                          <PopoverContent
+                            as={Link}
+                            to={productDetailPath}
+                            key={item._id}
+                            className="flex cursor-default py-3 hover:bg-gray-100"
+                          >
                             <img
                               className="h-10 w-10 flex-shrink-0 border border-gray-100 object-cover"
                               src={item.product.image}
