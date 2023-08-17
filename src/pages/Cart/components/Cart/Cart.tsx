@@ -1,9 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useMutation } from '@tanstack/react-query'
 import { Link, generatePath } from 'react-router-dom'
 import classNames from 'classnames'
 import { useInView } from 'react-intersection-observer'
 import { produce } from 'immer'
+import keyBy from 'lodash/keyBy'
+import { toast } from 'react-toastify'
 
 import usePurchasesByStatus from '@/hooks/usePurchasesInCartQuery'
 import { Purchase } from '@/types/purchase.type'
@@ -15,8 +18,8 @@ import { PATH } from '@/constants/path'
 import { QuantityController } from '@/components/QuantityController'
 import { ButtonSelect, InputCheckbox } from '@/pages/Cart'
 import { Button } from '@/components/Button'
-import { toast } from 'react-toastify'
-import { keyBy } from 'lodash'
+import { Modal } from '@/components/Modal'
+import useHiddenScroll from '@/hooks/useHiddenScroll'
 
 export interface ExtendedPurchase extends Purchase {
   disabled: boolean
@@ -26,7 +29,13 @@ export interface ExtendedPurchase extends Purchase {
 export default function Cart() {
   const [purchasesOriginal, setPurchasesOriginal] = useState<Purchase[]>([])
   const [extendedPurchases, setExtendedPurchases] = useState<ExtendedPurchase[]>([])
+  const [isShowModal, setIsShowModal] = useState<boolean>(false)
+
   const isAllChecked = extendedPurchases.every((purchase) => purchase.checked === true)
+  const checkedExtendedPurchases = extendedPurchases.filter((item) => item.checked === true)
+
+  const ModalId = useId()
+  useHiddenScroll(isShowModal)
 
   const { ref, inView } = useInView({
     threshold: 1,
@@ -58,6 +67,10 @@ export default function Cart() {
     },
   })
 
+  const deletePurchaseMutation = useMutation({
+    mutationFn: (purchaseIds: string[]) => purchasesApi.deletePurchases(purchaseIds),
+  })
+
   useEffect(() => {
     setExtendedPurchases(
       purchasesInCartData?.map((purchase) => ({ ...purchase, disabled: false, checked: false })) || []
@@ -67,6 +80,24 @@ export default function Cart() {
 
   function handleAllChecked() {
     setExtendedPurchases((purchases) => purchases.map((purchase) => ({ ...purchase, checked: !isAllChecked })))
+  }
+
+  function handleDeletePurchase(purchaseIds: string[]) {
+    setExtendedPurchases((prev) => prev.filter((item) => !purchaseIds.includes(item._id)))
+
+    deletePurchaseMutation.mutate(purchaseIds)
+  }
+
+  function handleShowModal() {
+    if (checkedExtendedPurchases.length > 0) {
+      setIsShowModal(true)
+    } else {
+      toast.warn('Vui lòng chọn sản phẩm')
+    }
+  }
+
+  function handleConfirmDeletePurchases() {
+    handleDeletePurchase(checkedExtendedPurchases.map((item) => item._id))
   }
 
   return (
@@ -192,12 +223,29 @@ export default function Cart() {
                               {/* End Unit Price */}
                               {/* Quantity */}
                               <div className="mt-2">
-                                <QuantityController value={purchase.buy_count} max={purchase.product.quantity} />
+                                <QuantityController
+                                  value={purchase.buy_count}
+                                  max={purchase.product.quantity}
+                                  onDecrease={(value) => handleCartQuantity(purchase.product._id, value)}
+                                  onIncrease={(value) =>
+                                    handleCartQuantity(purchase.product._id, value, purchase.product.quantity)
+                                  }
+                                  onType={handleTypeCartQuantity(purchase.product._id)}
+                                  onFocusOutInput={(value) => {
+                                    const purchasesOriginalObj = keyBy(purchasesOriginal, '_id')
+                                    if (value !== purchasesOriginalObj[purchase._id].buy_count) {
+                                      handleCartQuantity(purchase.product._id, value)
+                                    }
+                                  }}
+                                  disabled={purchase.disabled}
+                                />
                               </div>
                               {/* End Quantity */}
                               {/* Actions */}
                               <div className="mt-2">
-                                <ButtonSelect>Xoá</ButtonSelect>
+                                <ButtonSelect handleDeletePurchase={() => handleDeletePurchase([purchase._id])}>
+                                  Xoá
+                                </ButtonSelect>
                               </div>
                               {/* End Actions */}
                             </div>
@@ -249,7 +297,12 @@ export default function Cart() {
                       {/* End Total Price */}
                       {/* Actions */}
                       <div className="col-span-1">
-                        <ButtonSelect className="transition-all hover:text-primary/80">Xoá</ButtonSelect>
+                        <ButtonSelect
+                          className="transition-all hover:text-primary/80"
+                          handleDeletePurchase={() => handleDeletePurchase([purchase._id])}
+                        >
+                          Xoá
+                        </ButtonSelect>
                       </div>
                       {/* End Actions */}
                     </div>
@@ -280,8 +333,20 @@ export default function Cart() {
             <ButtonSelect className="text-[0.5rem] md:ml-3 md:text-base" handleAllChecked={handleAllChecked}>
               Chọn tất cả ({extendedPurchases.length})
             </ButtonSelect>
-            <ButtonSelect className="ml-2 hidden md:block">Xoá</ButtonSelect>
+            <ButtonSelect className="ml-2 hidden md:block" handleShowModal={handleShowModal}>
+              Xoá
+            </ButtonSelect>
           </div>
+          {isShowModal &&
+            createPortal(
+              <Modal
+                ModalId={ModalId}
+                setIsShowModal={setIsShowModal}
+                handleConfirm={handleConfirmDeletePurchases}
+                quantity={checkedExtendedPurchases.length}
+              />,
+              document.body
+            )}
           <div className="ml-auto flex items-center">
             <div className="text-gray-700">
               <div className="flex items-center justify-end">

@@ -183,7 +183,7 @@ export default function ProductDetail() {
               <div className="relative mt-4 grid grid-cols-5 gap-1">
                 {/* Previous */}
                 <button
-                  className="absolute left-0 top-1/2 z-10 h-8 w-4 -translate-y-1/2 text-white transition-all duration-1000"
+                  className="absolute -left-3.5 top-1/2 z-10 h-8 w-4 -translate-y-1/2 text-gray-400 transition-all duration-1000 md:left-0 md:text-white"
                   onClick={prevCurrentImages}
                 >
                   <svg
@@ -192,7 +192,7 @@ export default function ProductDetail() {
                     viewBox="0 0 24 24"
                     strokeWidth={3}
                     stroke="currentColor"
-                    className="h-6 w-6"
+                    className="h-5 w-5 md:h-6 md:w-6"
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                   </svg>
@@ -214,7 +214,7 @@ export default function ProductDetail() {
                 })}
                 {/* Next */}
                 <button
-                  className="absolute right-[0.375rem] top-1/2 z-10 h-8 w-4 -translate-y-1/2 text-white transition-all duration-1000"
+                  className="absolute -right-2.5 top-1/2 z-10 h-8 w-4 -translate-y-1/2 text-gray-400 transition-all duration-1000 md:right-[0.375rem] md:text-white"
                   onClick={nextCurrentImages}
                 >
                   <svg
@@ -223,7 +223,7 @@ export default function ProductDetail() {
                     viewBox="0 0 24 24"
                     strokeWidth={3}
                     stroke="currentColor"
-                    className="h-6 w-6"
+                    className="h-5 w-5 md:h-6 md:w-6"
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                   </svg>

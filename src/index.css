@@ -38,3 +38,20 @@ body {
 .Toastify__toast-container {
   width: max-content;
 }
+
+@media only screen and (max-width: 480px) {
+  .Toastify__toast-container--top-center {
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .Toastify__toast-body {
+    font-size: 12px;
+  }
+
+  .Toastify__toast-icon {
+    width: 14px;
+    margin-inline-end: 4px;
+  }
+}

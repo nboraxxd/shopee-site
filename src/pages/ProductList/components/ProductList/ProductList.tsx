@@ -1,15 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { createSearchParams, useNavigate } from 'react-router-dom'
 import classNames from 'classnames'
 import omit from 'lodash/omit'
 
+import useHiddenScroll from '@/hooks/useHiddenScroll'
 import productsApi from '@/apis/products.api'
 import categoriesApi from '@/apis/categories.api'
 import PARAMETER_KEY from '@/constants/parameter'
 import { ProductListConfig } from '@/types/product.type'
 import { PATH } from '@/constants/path'
 import useQueryConfig from '@/hooks/useQueryConfig'
+
 import { AsideFilter, Product, SortProductList, ProductSkeleton } from '@/pages/ProductList'
 import { Pagination } from '@/components/Pagination'
 import { Button } from '@/components/Button'
@@ -21,6 +23,8 @@ export default function ProductList() {
   const [isShowAside, setIsShowAside] = useState(false)
 
   const navigate = useNavigate()
+
+  useHiddenScroll(isShowAside)
 
   const productsQuery = useQuery({
     queryKey: ['products', queryConfig],
@@ -50,15 +54,6 @@ export default function ProductList() {
       search: searchParamsToString,
     })
   }
-
-  useEffect(() => {
-    const body = document.body
-    isShowAside ? (body.style.cssText = 'overflow: hidden') : body.removeAttribute('style')
-
-    return () => {
-      body.removeAttribute('style')
-    }
-  }, [isShowAside])
 
   return (
     <div className="overflow-hidden bg-secondary">
