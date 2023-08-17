@@ -9,6 +9,7 @@ import keyBy from 'lodash/keyBy'
 import { toast } from 'react-toastify'
 
 import usePurchasesByStatus from '@/hooks/usePurchasesInCartQuery'
+import useHiddenScroll from '@/hooks/useHiddenScroll'
 import { Purchase } from '@/types/purchase.type'
 import { formatCurrency, generateSlug, sortProductsByLatestUpdate } from '@/utils/utils'
 import purchasesApi from '@/apis/purchases.api'
@@ -19,7 +20,6 @@ import { QuantityController } from '@/components/QuantityController'
 import { ButtonSelect, InputCheckbox } from '@/pages/Cart'
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal'
-import useHiddenScroll from '@/hooks/useHiddenScroll'
 
 export interface ExtendedPurchase extends Purchase {
   disabled: boolean
@@ -34,6 +34,16 @@ export default function Cart() {
   const isAllChecked = extendedPurchases.every((purchase) => purchase.checked === true)
   const checkedExtendedPurchases = extendedPurchases.filter((item) => item.checked === true)
 
+  const totalPayment = checkedExtendedPurchases.reduce(
+    (result, current) => result + current.price * current.buy_count,
+    0
+  )
+  const totalSavings = checkedExtendedPurchases.reduce(
+    (result, current) =>
+      result + (current.price_before_discount * current.buy_count - current.price * current.buy_count),
+    0
+  )
+
   const ModalId = useId()
   useHiddenScroll(isShowModal)
 
@@ -46,6 +56,7 @@ export default function Cart() {
 
   const updatePurchaseMutation = useMutation({
     mutationFn: (body: { product_id: string; buy_count: number }) => purchasesApi.updatePurchases(body),
+
     onSuccess: (response) => {
       setPurchasesOriginal((prev) =>
         prev.map((item) => {
@@ -55,7 +66,6 @@ export default function Cart() {
           return item
         })
       )
-
       setExtendedPurchases((prev) =>
         prev.map((item) => {
           if (item._id === response.data.data._id) {
@@ -65,10 +75,23 @@ export default function Cart() {
         })
       )
     },
+
+    onError: (error) => {
+      console.log(error)
+    },
   })
 
-  const deletePurchaseMutation = useMutation({
+  const deletePurchasesMutation = useMutation({
     mutationFn: (purchaseIds: string[]) => purchasesApi.deletePurchases(purchaseIds),
+  })
+
+  const buyPurchasesMutation = useMutation({
+    mutationFn: (
+      body: {
+        product_id: string
+        buy_count: number
+      }[]
+    ) => purchasesApi.buyProducts(body),
   })
 
   useEffect(() => {
@@ -83,9 +106,14 @@ export default function Cart() {
   }
 
   function handleDeletePurchase(purchaseIds: string[]) {
-    setExtendedPurchases((prev) => prev.filter((item) => !purchaseIds.includes(item._id)))
-
-    deletePurchaseMutation.mutate(purchaseIds)
+    deletePurchasesMutation.mutate(purchaseIds, {
+      onSuccess: () => {
+        setExtendedPurchases((prev) => prev.filter((item) => !purchaseIds.includes(item._id)))
+      },
+      onError: (error) => {
+        console.log(error)
+      },
+    })
   }
 
   function handleShowModal() {
@@ -98,6 +126,25 @@ export default function Cart() {
 
   function handleConfirmDeletePurchases() {
     handleDeletePurchase(checkedExtendedPurchases.map((item) => item._id))
+  }
+
+  function handlebuyPurchases() {
+    const PurchasesToBuy = checkedExtendedPurchases.map((item) => ({
+      product_id: item.product._id,
+      buy_count: item.buy_count,
+    }))
+
+    if (checkedExtendedPurchases.length > 0) {
+      buyPurchasesMutation.mutate(PurchasesToBuy, {
+        onSuccess: (response) => {
+          const boughtPurchaseIds = PurchasesToBuy.map((item) => item.product_id)
+          setExtendedPurchases((prev) => prev.filter((item) => !boughtPurchaseIds.includes(item.product._id)))
+          toast.success(response.data.message)
+        },
+      })
+    } else {
+      toast.warn('Bạn vẫn chưa chọn sản phẩm nào để mua')
+    }
   }
 
   return (
@@ -350,16 +397,23 @@ export default function Cart() {
           <div className="ml-auto flex items-center">
             <div className="text-gray-700">
               <div className="flex items-center justify-end">
-                <div className="hidden shrink-0 md:block">Tổng thanh toán (0 sản phẩm):</div>
-                <div className="block shrink-0 text-[0.625rem] md:hidden">Tổng thanh toán</div>
-                <div className="ml-2 text-sm text-primary md:text-2xl">₫138000</div>
+                <div className="hidden shrink-0 md:block">
+                  Tổng thanh toán ({checkedExtendedPurchases.length} sản phẩm):
+                </div>
+                <div className="block shrink-0 text-[0.625rem] md:hidden">Tổng tiền</div>
+                <div className="ml-2 text-xs text-primary md:text-2xl">₫{formatCurrency(totalPayment)}</div>
               </div>
               <div className="flex items-center justify-end text-[0.625rem] md:text-sm">
                 <div className="text-gray-500">Tiết kiệm</div>
-                <div className="ml-2 md:ml-4">₫138000</div>
+                <div className="ml-2 md:ml-4">₫{formatCurrency(totalSavings)}</div>
               </div>
             </div>
-            <Button className="ml-2 mt-0 rounded-sm px-1 py-2 text-xs md:ml-4 md:px-2 md:py-4 md:text-base">
+            <Button
+              className="ml-2 mt-0 rounded-sm px-1 py-2 text-xs md:ml-4 md:px-2 md:py-4 md:text-base"
+              onClick={handlebuyPurchases}
+              disabled={buyPurchasesMutation.isLoading}
+              isLoading={buyPurchasesMutation.isLoading}
+            >
               Mua hàng
             </Button>
           </div>
