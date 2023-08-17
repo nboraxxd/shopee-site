@@ -5,17 +5,28 @@ interface Props extends InputNumberProps {
   max?: number
   onDecrease?: (value: number) => void
   onIncrease?: (value: number) => void
+  onFocusOutInput?: (value: number) => void
   onType?: (value: number) => void
 }
 
 export default function QuantityController(props: Props) {
-  const { max, onIncrease, onDecrease, onType, classNameWrapper = '', value, ...rest } = props
+  const {
+    max,
+    onIncrease,
+    onDecrease,
+    onType,
+    classNameWrapper = '',
+    value,
+    disabled,
+    onFocusOutInput,
+    ...rest
+  } = props
 
   const [localValue, setLocalValue] = useState<number>(Number(value || 1))
 
   function handleInputChange(ev: ChangeEvent<HTMLInputElement>) {
     let _value = Number(ev.target.value)
-    if (max !== undefined && _value > max) {
+    if (max !== undefined && _value > max && max > 0) {
       _value = max
     } else if (_value < 1) {
       _value = 1
@@ -41,12 +52,17 @@ export default function QuantityController(props: Props) {
     setLocalValue(_value)
   }
 
+  function handleBlur(ev: React.FocusEvent<HTMLInputElement, Element>) {
+    onFocusOutInput && onFocusOutInput(Number(ev.target.value))
+  }
+
   return (
     <div className={`flex items-center ${classNameWrapper}`}>
       {/* Decrease Button */}
       <button
-        className="flex h-8 w-8 items-center justify-center rounded-l-sm border border-gray-300"
+        className="flex h-8 w-8 items-center justify-center rounded-l-sm border border-gray-300 disabled:cursor-default disabled:bg-[#FAFAFA]"
         onClick={handleDecrease}
+        disabled={disabled}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -62,16 +78,19 @@ export default function QuantityController(props: Props) {
       {/* End Decrease Button */}
       <InputNumber
         classNameWrapper=" "
-        classNameInput="h-8 w-12 border-l-0 border-r-0 rounded-l-none rounded-r-none text-center"
+        classNameInput="h-8 w-12 border-l-0 border-r-0 rounded-l-none rounded-r-none text-center text-gray-800"
         classNameError="hidden"
         onChange={handleInputChange}
         value={value || localValue}
+        disabled={disabled}
+        onBlur={handleBlur}
         {...rest}
       />
       {/* Increase Button */}
       <button
-        className="flex h-8 w-8 items-center justify-center rounded-r-sm border border-gray-300"
+        className="flex h-8 w-8 items-center justify-center rounded-r-sm border border-gray-300 text-gray-800 disabled:cursor-default disabled:bg-[#FAFAFA]"
         onClick={handleIncrease}
+        disabled={disabled}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

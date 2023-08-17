@@ -1,19 +1,22 @@
 import { useEffect, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { Link, generatePath } from 'react-router-dom'
 import classNames from 'classnames'
 import { useInView } from 'react-intersection-observer'
 import { produce } from 'immer'
 
+import usePurchasesByStatus from '@/hooks/usePurchasesInCartQuery'
+import { Purchase } from '@/types/purchase.type'
+import { formatCurrency, generateSlug, sortProductsByLatestUpdate } from '@/utils/utils'
 import purchasesApi from '@/apis/purchases.api'
 import PURCHASES_STATUS from '@/constants/purchase'
 import { PATH } from '@/constants/path'
-import { formatCurrency, generateSlug, sortProductsByLatestUpdate } from '@/utils/utils'
-import { Purchase } from '@/types/purchase.type'
 
 import { QuantityController } from '@/components/QuantityController'
 import { ButtonSelect, InputCheckbox } from '@/pages/Cart'
 import { Button } from '@/components/Button'
+import { toast } from 'react-toastify'
+import { keyBy } from 'lodash'
 
 export interface ExtendedPurchase extends Purchase {
   disabled: boolean
@@ -21,6 +24,7 @@ export interface ExtendedPurchase extends Purchase {
 }
 
 export default function Cart() {
+  const [purchasesOriginal, setPurchasesOriginal] = useState<Purchase[]>([])
   const [extendedPurchases, setExtendedPurchases] = useState<ExtendedPurchase[]>([])
   const isAllChecked = extendedPurchases.every((purchase) => purchase.checked === true)
 
@@ -28,16 +32,37 @@ export default function Cart() {
     threshold: 1,
   })
 
-  const purchasesInCartQuery = useQuery({
-    queryKey: ['purchases', { status: PURCHASES_STATUS.inCart }],
-    queryFn: () => purchasesApi.getPurchases({ status: PURCHASES_STATUS.inCart }),
-  })
+  const purchasesInCartQuery = usePurchasesByStatus(PURCHASES_STATUS.inCart)
   const purchasesInCartData = purchasesInCartQuery.data?.data.data
+
+  const updatePurchaseMutation = useMutation({
+    mutationFn: (body: { product_id: string; buy_count: number }) => purchasesApi.updatePurchases(body),
+    onSuccess: (response) => {
+      setPurchasesOriginal((prev) =>
+        prev.map((item) => {
+          if (item._id === response.data.data._id) {
+            return { ...item, buy_count: response.data.data.buy_count }
+          }
+          return item
+        })
+      )
+
+      setExtendedPurchases((prev) =>
+        prev.map((item) => {
+          if (item._id === response.data.data._id) {
+            return { ...item, buy_count: response.data.data.buy_count, disabled: false }
+          }
+          return item
+        })
+      )
+    },
+  })
 
   useEffect(() => {
     setExtendedPurchases(
       purchasesInCartData?.map((purchase) => ({ ...purchase, disabled: false, checked: false })) || []
     )
+    setPurchasesOriginal(purchasesInCartData || [])
   }, [purchasesInCartData])
 
   function handleAllChecked() {
@@ -82,11 +107,39 @@ export default function Cart() {
                 id: generateSlug({ name: purchase.product.name, id: purchase.product._id }),
               })
 
-              function handleChecked(productId: string) {
+              function handleChecked(purchaseId: string) {
                 return function (ev: React.ChangeEvent<HTMLInputElement>) {
                   setExtendedPurchases(
                     produce((draft) => {
-                      ;(draft.find((item) => item._id === productId) as ExtendedPurchase).checked = ev.target.checked
+                      ;(draft.find((item) => item._id === purchaseId) as ExtendedPurchase).checked = ev.target.checked
+                    })
+                  )
+                }
+              }
+
+              function handleCartQuantity(productId: string, value: number, totalProductQuantity?: number) {
+                const extendedPurchasesObj = keyBy(extendedPurchases, 'product._id')
+                if (extendedPurchasesObj[productId].buy_count === totalProductQuantity) {
+                  return toast.warn(`Mặt hàng này chỉ còn ${totalProductQuantity} sản phẩm`)
+                }
+
+                setExtendedPurchases(
+                  produce((draft) => {
+                    ;(draft.find((item) => item.product._id === productId) as ExtendedPurchase).disabled = true
+                  })
+                )
+
+                updatePurchaseMutation.mutate({
+                  product_id: productId,
+                  buy_count: value,
+                })
+              }
+
+              function handleTypeCartQuantity(productId: string) {
+                return function (value: number) {
+                  setExtendedPurchases(
+                    produce((draft) => {
+                      ;(draft.find((item) => item.product._id === productId) as ExtendedPurchase).buy_count = value
                     })
                   )
                 }
@@ -174,6 +227,18 @@ export default function Cart() {
                           classNameWrapper="justify-center"
                           value={purchase.buy_count}
                           max={purchase.product.quantity}
+                          onDecrease={(value) => handleCartQuantity(purchase.product._id, value)}
+                          onIncrease={(value) =>
+                            handleCartQuantity(purchase.product._id, value, purchase.product.quantity)
+                          }
+                          onType={handleTypeCartQuantity(purchase.product._id)}
+                          onFocusOutInput={(value) => {
+                            const purchasesOriginalObj = keyBy(purchasesOriginal, '_id')
+                            if (value !== purchasesOriginalObj[purchase._id].buy_count) {
+                              handleCartQuantity(purchase.product._id, value)
+                            }
+                          }}
+                          disabled={purchase.disabled}
                         />
                       </div>
                       {/* End Quantity */}

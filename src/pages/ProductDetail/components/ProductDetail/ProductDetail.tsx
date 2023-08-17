@@ -5,6 +5,7 @@ import DOMPurify from 'dompurify'
 import { toast } from 'react-toastify'
 
 import { useWindowSize } from '@/hooks/useWindowSize'
+import usePurchasesByStatus from '@/hooks/usePurchasesInCartQuery'
 import { AppContext } from '@/contexts/app.context'
 import productsApi from '@/apis/products.api'
 import purchasesApi from '@/apis/purchases.api'
@@ -12,7 +13,6 @@ import { calcDiscountPercentage, formatCurrency, formatNumberToSocialStyle, getI
 import { Product as ProductType, ProductListConfig } from '@/types/product.type'
 import PARAMETER_KEY from '@/constants/parameter'
 import PURCHASES_STATUS from '@/constants/purchase'
-import { queryClient } from '@/main'
 
 import { ProductSkeleton, Product } from '@/pages/ProductList'
 import { ProductRating } from '@/components/ProductRating'
@@ -30,7 +30,7 @@ export default function ProductDetail() {
 
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const { user, isAuthenticated } = useContext(AppContext)
+  const { isAuthenticated } = useContext(AppContext)
 
   const [currentImagesIndex, setCurrentImagesIndex] = useState([0, 5])
   const [activeImage, setActiveImage] = useState('')
@@ -63,6 +63,11 @@ export default function ProductDetail() {
     staleTime: 3 * 60 * 1000,
     enabled: Boolean(product),
   })
+
+  const purchasesInCartQuery = usePurchasesByStatus(PURCHASES_STATUS.inCart, isAuthenticated)
+  const purchasesInCartData = purchasesInCartQuery.data?.data.data
+  const purchaseInCartQty =
+    purchasesInCartData?.find((purchase) => purchase.product._id === product?._id)?.buy_count ?? 0
 
   const addToCartMutation = useMutation({
     mutationFn: (body: { product_id: string; buy_count: number }) => purchasesApi.addToCart(body),
@@ -123,16 +128,21 @@ export default function ProductDetail() {
   function hanldeAddToCartBtn(data: { product_id: string; buy_count: number }) {
     const state: StateType = { redirect: pathname }
 
-    if (!user || !isAuthenticated) {
+    if (!isAuthenticated) {
       navigate(PATH.login, { state })
       toast.warn('Vui lòng đăng nhập trước khi chọn sản phẩm')
+      return
+    }
+
+    if (purchaseInCartQty >= (product as ProductType).quantity) {
+      toast.warn(`Bạn đã có ${purchaseInCartQty} sản phẩm trong giỏ hàng`)
       return
     }
 
     addToCartMutation.mutate(data, {
       onSuccess: (response) => {
         toast.success(response.data.message)
-        queryClient.invalidateQueries({ queryKey: ['purchases', { status: PURCHASES_STATUS.inCart }] })
+        purchasesInCartQuery.refetch()
       },
       onError: (error) => {
         console.log(error)
@@ -273,7 +283,7 @@ export default function ProductDetail() {
                     onIncrease={handleBuyCount}
                     onType={handleBuyCount}
                     value={buyCount}
-                    max={product.quantity}
+                    max={product.quantity - purchaseInCartQty}
                   />
                   {/* End Quantity Controller */}
                   <div className="mt-2 text-xs text-[#757575]">{product.quantity} sản phẩm có sẵn</div>

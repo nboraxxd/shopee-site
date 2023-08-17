@@ -1,18 +1,17 @@
 import { useContext } from 'react'
 import { Link, createSearchParams, generatePath, useNavigate } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import omit from 'lodash/omit'
 
 import useQueryConfig from '@/hooks/useQueryConfig'
+import usePurchasesByStatus from '@/hooks/usePurchasesInCartQuery'
 import { PATH } from '@/constants/path'
 import { Schema, schema } from '@/utils/rules'
 import { formatCurrency, generateSlug, sortProductsByLatestUpdate } from '@/utils/utils'
 import { Purchase } from '@/types/purchase.type'
 import { AppContext } from '@/contexts/app.context'
 import PURCHASES_STATUS from '@/constants/purchase'
-import purchasesApi from '@/apis/purchases.api'
 
 import { HeaderTopBar } from '@/components/HeaderTopBar'
 import { Popover } from '@/components/Popover'
@@ -36,12 +35,7 @@ export default function Header() {
     resolver: yupResolver(searchProductSchema),
   })
 
-  const purchasesInCartQuery = useQuery({
-    queryKey: ['purchases', { status: PURCHASES_STATUS.inCart }],
-    queryFn: () => purchasesApi.getPurchases({ status: PURCHASES_STATUS.inCart }),
-    enabled: isAuthenticated,
-  })
-
+  const purchasesInCartQuery = usePurchasesByStatus(PURCHASES_STATUS.inCart, isAuthenticated)
   const purchasesInCartData = purchasesInCartQuery.data?.data.data
 
   const onSubmitSearch = handleSubmit((data) => {
