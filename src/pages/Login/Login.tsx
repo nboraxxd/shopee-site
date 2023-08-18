@@ -24,6 +24,7 @@ export default function Login() {
   const navigate = useNavigate()
   const { state } = useLocation()
   const typedState = state as StateType
+  console.log('🔥 ~ Login ~ state:', state)
 
   const {
     register,

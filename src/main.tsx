@@ -2,8 +2,9 @@
 import ReactDOM from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router-dom'
+
 import { AppProvider } from '@/contexts/app.context'
-import ScrollToTop from './hooks/useScrollTop'
+import { ScrollToTop } from '@/components/ScrollTop'
 import App from '@/App'
 import '@/index.css'
 

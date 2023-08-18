@@ -15,3 +15,8 @@ export interface Purchase {
   createdAt: string
   updatedAt: string
 }
+
+export interface ExtendedPurchaseI extends Purchase {
+  disabled: boolean
+  checked: boolean
+}

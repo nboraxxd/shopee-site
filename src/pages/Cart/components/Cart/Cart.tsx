@@ -1,7 +1,7 @@
-import { useEffect, useId, useState } from 'react'
+import { useContext, useEffect, useId, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useMutation } from '@tanstack/react-query'
-import { Link, generatePath } from 'react-router-dom'
+import { Link, generatePath, useLocation } from 'react-router-dom'
 import classNames from 'classnames'
 import { useInView } from 'react-intersection-observer'
 import { produce } from 'immer'
@@ -10,7 +10,8 @@ import { toast } from 'react-toastify'
 
 import usePurchasesByStatus from '@/hooks/usePurchasesInCartQuery'
 import useHiddenScroll from '@/hooks/useHiddenScroll'
-import { Purchase } from '@/types/purchase.type'
+import { AppContext } from '@/contexts/app.context'
+import { ExtendedPurchaseI, Purchase } from '@/types/purchase.type'
 import { formatCurrency, generateSlug, sortProductsByLatestUpdate } from '@/utils/utils'
 import purchasesApi from '@/apis/purchases.api'
 import PURCHASES_STATUS from '@/constants/purchase'
@@ -20,28 +21,40 @@ import { QuantityController } from '@/components/QuantityController'
 import { ButtonSelect, InputCheckbox } from '@/pages/Cart'
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal'
-
-export interface ExtendedPurchase extends Purchase {
-  disabled: boolean
-  checked: boolean
-}
+import noProduct from '@/assets/images/no-product-in-cart.png'
 
 export default function Cart() {
   const [purchasesOriginal, setPurchasesOriginal] = useState<Purchase[]>([])
-  const [extendedPurchases, setExtendedPurchases] = useState<ExtendedPurchase[]>([])
   const [isShowModal, setIsShowModal] = useState<boolean>(false)
 
-  const isAllChecked = extendedPurchases.every((purchase) => purchase.checked === true)
-  const checkedExtendedPurchases = extendedPurchases.filter((item) => item.checked === true)
+  const { state: stateFromLocation } = useLocation()
+  const typedStateFromLocation = stateFromLocation as { purchaseId: string } | null
 
-  const totalPayment = checkedExtendedPurchases.reduce(
-    (result, current) => result + current.price * current.buy_count,
-    0
+  const { extendedPurchases, setExtendedPurchases } = useContext(AppContext)
+
+  const isAllChecked = useMemo(
+    () => extendedPurchases.every((purchase) => purchase.checked === true),
+    [extendedPurchases]
   )
-  const totalSavings = checkedExtendedPurchases.reduce(
-    (result, current) =>
-      result + (current.price_before_discount * current.buy_count - current.price * current.buy_count),
-    0
+
+  const checkedExtendedPurchases = useMemo(
+    () => extendedPurchases.filter((item) => item.checked === true),
+    [extendedPurchases]
+  )
+
+  const totalPayment = useMemo(
+    () => checkedExtendedPurchases.reduce((result, current) => result + current.price * current.buy_count, 0),
+    [checkedExtendedPurchases]
+  )
+
+  const totalSavings = useMemo(
+    () =>
+      checkedExtendedPurchases.reduce(
+        (result, current) =>
+          result + (current.price_before_discount * current.buy_count - current.price * current.buy_count),
+        0
+      ),
+    [checkedExtendedPurchases]
   )
 
   const ModalId = useId()
@@ -53,6 +66,7 @@ export default function Cart() {
 
   const purchasesInCartQuery = usePurchasesByStatus(PURCHASES_STATUS.inCart)
   const purchasesInCartData = purchasesInCartQuery.data?.data.data
+  console.log('🔥 ~ Cart ~ purchasesInCartData:', purchasesInCartData)
 
   const updatePurchaseMutation = useMutation({
     mutationFn: (body: { product_id: string; buy_count: number }) => purchasesApi.updatePurchases(body),
@@ -95,15 +109,30 @@ export default function Cart() {
   })
 
   useEffect(() => {
-    setExtendedPurchases(
-      purchasesInCartData?.map((purchase) => ({ ...purchase, disabled: false, checked: false })) || []
-    )
+    setExtendedPurchases((prev) => {
+      const extendedPurchasesObj = keyBy(prev, '_id')
+
+      return (
+        purchasesInCartData?.map((purchase) => {
+          if (typedStateFromLocation && purchase._id === typedStateFromLocation.purchaseId) {
+            return { ...purchase, disabled: false, checked: true }
+          }
+          return { ...purchase, disabled: false, checked: extendedPurchasesObj[purchase._id]?.checked || false }
+        }) || []
+      )
+    })
     setPurchasesOriginal(purchasesInCartData || [])
-  }, [purchasesInCartData])
+  }, [purchasesInCartData, setExtendedPurchases, typedStateFromLocation])
 
   function handleAllChecked() {
     setExtendedPurchases((purchases) => purchases.map((purchase) => ({ ...purchase, checked: !isAllChecked })))
   }
+
+  useEffect(() => {
+    return () => {
+      window.history.replaceState(null, document.title)
+    }
+  }, [])
 
   function handleDeletePurchase(purchaseIds: string[]) {
     deletePurchasesMutation.mutate(purchaseIds, {
@@ -147,7 +176,17 @@ export default function Cart() {
     }
   }
 
-  return (
+  return purchasesInCartData === undefined || purchasesInCartData.length === 0 ? (
+    <div className="container">
+      <div className="flex flex-col items-center pb-40 pt-32">
+        <img src={noProduct} alt="not purchase" className="h-24 w-24 object-cover" />
+        <div className="mt-5 font-medium text-gray-400">Giỏ hàng của bạn còn trống</div>
+        <Link to={PATH.home}>
+          <Button className="mt-5 rounded-sm px-11 py-2">MUA NGAY</Button>
+        </Link>
+      </div>
+    </div>
+  ) : (
     <div className="bg-secondary py-3 md:py-8">
       {/* Cart Main */}
       <div className="container">
@@ -189,7 +228,7 @@ export default function Cart() {
                 return function (ev: React.ChangeEvent<HTMLInputElement>) {
                   setExtendedPurchases(
                     produce((draft) => {
-                      ;(draft.find((item) => item._id === purchaseId) as ExtendedPurchase).checked = ev.target.checked
+                      ;(draft.find((item) => item._id === purchaseId) as ExtendedPurchaseI).checked = ev.target.checked
                     })
                   )
                 }
@@ -203,7 +242,7 @@ export default function Cart() {
 
                 setExtendedPurchases(
                   produce((draft) => {
-                    ;(draft.find((item) => item.product._id === productId) as ExtendedPurchase).disabled = true
+                    ;(draft.find((item) => item.product._id === productId) as ExtendedPurchaseI).disabled = true
                   })
                 )
 
@@ -217,7 +256,7 @@ export default function Cart() {
                 return function (value: number) {
                   setExtendedPurchases(
                     produce((draft) => {
-                      ;(draft.find((item) => item.product._id === productId) as ExtendedPurchase).buy_count = value
+                      ;(draft.find((item) => item.product._id === productId) as ExtendedPurchaseI).buy_count = value
                     })
                   )
                 }
@@ -397,11 +436,9 @@ export default function Cart() {
           <div className="ml-auto flex items-center">
             <div className="text-gray-700">
               <div className="flex items-center justify-end">
-                <div className="hidden shrink-0 md:block">
-                  Tổng thanh toán ({checkedExtendedPurchases.length} sản phẩm):
-                </div>
+                <div className="hidden shrink-0 md:block">Tổng tiền ({checkedExtendedPurchases.length} sản phẩm):</div>
                 <div className="block shrink-0 text-[0.625rem] md:hidden">Tổng tiền</div>
-                <div className="ml-2 text-xs text-primary md:text-2xl">₫{formatCurrency(totalPayment)}</div>
+                <div className="ml-2 text-xs text-primary md:text-xl">₫{formatCurrency(totalPayment)}</div>
               </div>
               <div className="flex items-center justify-end text-[0.625rem] md:text-sm">
                 <div className="text-gray-500">Tiết kiệm</div>

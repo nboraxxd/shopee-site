@@ -4,6 +4,7 @@ import { createSearchParams, useNavigate } from 'react-router-dom'
 import classNames from 'classnames'
 import omit from 'lodash/omit'
 
+import useScrollTop from '@/hooks/useScrollTop'
 import useHiddenScroll from '@/hooks/useHiddenScroll'
 import productsApi from '@/apis/products.api'
 import categoriesApi from '@/apis/categories.api'
@@ -23,7 +24,7 @@ export default function ProductList() {
   const [isShowAside, setIsShowAside] = useState(false)
 
   const navigate = useNavigate()
-
+  useScrollTop()
   useHiddenScroll(isShowAside)
 
   const productsQuery = useQuery({
