@@ -4,7 +4,7 @@ import { ProductDetail } from '@/pages/ProductDetail'
 import { ProductList } from '@/pages/ProductList'
 import { authentication } from './authentication'
 import { cart } from './cart'
-import { profile } from './profile'
+import { profile } from './user'
 
 export const routers = [
   {

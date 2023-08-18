@@ -1,4 +1,5 @@
 const PRODUCTS = '/products'
+const USER = '/user'
 
 export const PATH = {
   home: '/',
@@ -7,6 +8,11 @@ export const PATH = {
   login: '/login',
   signup: '/register',
   logout: '/logout',
-  profile: '/profile',
+  user: {
+    index: USER,
+    profile: USER + '/profile',
+    password: USER + '/password',
+    purchase: USER + '/purchase',
+  },
   cart: '/cart',
 } as const
