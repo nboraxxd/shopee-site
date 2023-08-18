@@ -2,7 +2,7 @@ import axios, { AxiosError, type AxiosInstance } from 'axios'
 import { toast } from 'react-toastify'
 import HttpStatusCode from '@/constants/httpStatusCode.enum'
 import { AuthResponse } from '@/types/auth.type'
-import { clearAuthLocalStorage, getAccessToken, setAccessToken, setUser } from './token'
+import { clearAuthLocalStorage, getAccessToken, setAccessToken, setUser } from '@/utils/token'
 import { PATH } from '@/constants/path'
 
 let accessToken = getAccessToken()
@@ -36,13 +36,19 @@ http.interceptors.response.use(
       toast.error(message)
     }
 
+    if (error.response?.status === HttpStatusCode.Unauthorized) {
+      accessToken = ''
+      clearAuthLocalStorage()
+      // window.location.reload()
+    }
+
     return Promise.reject(error)
   }
 )
 
 http.interceptors.request.use(
   function (config) {
-    if (accessToken) {
+    if (accessToken && config.headers) {
       config.headers['authorization'] = accessToken
     }
 

@@ -8,10 +8,11 @@ import { ScrollToTop } from '@/components/ScrollTop'
 import App from '@/App'
 import '@/index.css'
 
-export const queryClient = new QueryClient({
+const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
+      retry: 1,
     },
   },
 })
