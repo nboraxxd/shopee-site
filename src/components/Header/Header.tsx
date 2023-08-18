@@ -1,68 +1,28 @@
 import { useContext } from 'react'
-import { Link, createSearchParams, generatePath, useNavigate } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-import omit from 'lodash/omit'
+import { Link, generatePath } from 'react-router-dom'
 
-import useQueryConfig from '@/hooks/useQueryConfig'
-import usePurchasesByStatus from '@/hooks/usePurchasesInCartQuery'
+import useSearchProducts from '@/hooks/useSearchProducts'
 import { PATH } from '@/constants/path'
-import { Schema, schema } from '@/utils/rules'
-import { formatCurrency, generateSlug, sortProductsByLatestUpdate } from '@/utils/utils'
-import { Purchase } from '@/types/purchase.type'
-import { AppContext } from '@/contexts/app.context'
 import PURCHASES_STATUS from '@/constants/purchase'
+import { AppContext } from '@/contexts/app.context'
+import usePurchasesByStatus from '@/hooks/usePurchasesInCartQuery'
+import { Purchase } from '@/types/purchase.type'
+import { formatCurrency, generateSlug, sortProductsByLatestUpdate } from '@/utils/utils'
 
+import noProduct from '@/assets/images/no-product-in-cart.png'
 import { HeaderTopBar } from '@/components/HeaderTopBar'
 import { Popover } from '@/components/Popover'
 import { PopoverContent } from '@/components/PopoverContent'
-import PARAMETER_KEY from '@/constants/parameter'
-import noProduct from '@/assets/images/no-product-in-cart.png'
 
-type SearchProductSchema = Pick<Schema, 'searchProduct'>
-const searchProductSchema = schema.pick(['searchProduct'])
 const MAX_PRODUCTS_IN_CART = 5
 
 export default function Header() {
-  const navigate = useNavigate()
-  const queryConfig = useQueryConfig()
   const { isAuthenticated } = useContext(AppContext)
 
-  const { register, handleSubmit } = useForm<SearchProductSchema>({
-    defaultValues: {
-      searchProduct: '',
-    },
-    resolver: yupResolver(searchProductSchema),
-  })
+  const { register, onSubmitSearch } = useSearchProducts()
 
   const purchasesInCartQuery = usePurchasesByStatus(PURCHASES_STATUS.inCart, isAuthenticated)
   const purchasesInCartData = purchasesInCartQuery.data?.data.data
-
-  const onSubmitSearch = handleSubmit((data) => {
-    const omitDependency = queryConfig.order ? [PARAMETER_KEY.order, PARAMETER_KEY.sort_by] : []
-
-    const searchParamsToString = createSearchParams(
-      omit(
-        {
-          ...queryConfig,
-          [PARAMETER_KEY.page]: '1',
-          [PARAMETER_KEY.name]: data.searchProduct,
-        },
-        [
-          ...omitDependency,
-          PARAMETER_KEY.category,
-          PARAMETER_KEY.price_min,
-          PARAMETER_KEY.price_max,
-          PARAMETER_KEY.rating_filter,
-        ]
-      )
-    ).toString()
-
-    navigate({
-      pathname: PATH.products,
-      search: searchParamsToString,
-    })
-  })
 
   function getFiveLatestProducts(products: Purchase[]) {
     const latestUpdatedProducts = sortProductsByLatestUpdate(products)
