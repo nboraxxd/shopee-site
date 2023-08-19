@@ -4,7 +4,7 @@ import { ProductDetail } from '@/pages/ProductDetail'
 import { ProductList } from '@/pages/ProductList'
 import { authentication } from './authentication'
 import { cart } from './cart'
-import { profile } from './user'
+import { user } from './user'
 
 export const routers = [
   {
@@ -27,7 +27,7 @@ export const routers = [
 
   authentication,
 
-  profile,
+  user,
 
   cart,
 ]

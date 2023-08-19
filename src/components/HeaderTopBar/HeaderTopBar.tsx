@@ -100,7 +100,7 @@ export default function TopBarHeader() {
         <Popover
           renderPopover={
             <div className="flex flex-col rounded-sm border border-gray-200 bg-white shadow-md">
-              <PopoverContent as={Link} to="#!">
+              <PopoverContent as={Link} to={PATH.user.profile}>
                 Tài khoản của tôi
               </PopoverContent>
               <PopoverContent as={Link} to="#!">

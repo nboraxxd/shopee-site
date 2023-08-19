@@ -14,11 +14,15 @@ export default function UserLayout() {
   return (
     <>
       <Header />
-      <div className="flex">
-        <UserSideNav />
-        <main className="flex-1">
-          <Outlet />
-        </main>
+      <div className="bg-secondary pb-12 pt-6 text-sm text-gray-600">
+        <div className="container">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
+            <UserSideNav />
+            <main className="md:col-span-9 lg:col-span-10">
+              <Outlet />
+            </main>
+          </div>
+        </div>
       </div>
       <Footer />
     </>

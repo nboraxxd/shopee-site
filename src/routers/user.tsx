@@ -3,9 +3,9 @@ import { PrivateRouter } from '@/components/Routers'
 import { UserLayout } from '@/pages/User/layout/UserLayout'
 import { Profile } from '@/pages/User/pages/Profile'
 import { ChangePassword } from '@/pages/User/pages/ChangePassword'
-import { HistoryPurchases } from '@/pages/User/pages/HistoryPurchases'
+import { PurchasesHistory } from '@/pages/User/pages/PurchasesHistory'
 
-export const profile = {
+export const user = {
   element: <PrivateRouter />,
   children: [
     {
@@ -21,8 +21,8 @@ export const profile = {
           element: <ChangePassword />,
         },
         {
-          paht: PATH.user.purchase,
-          element: <HistoryPurchases />,
+          path: PATH.user.purchase,
+          element: <PurchasesHistory />,
         },
       ],
     },

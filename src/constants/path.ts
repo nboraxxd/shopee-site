@@ -12,7 +12,7 @@ export const PATH = {
     index: USER,
     profile: USER + '/profile',
     password: USER + '/password',
-    purchase: USER + '/purchase',
+    purchase: USER + '/purchases',
   },
   cart: '/cart',
 } as const
