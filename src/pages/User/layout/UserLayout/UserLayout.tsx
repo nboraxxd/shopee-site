@@ -16,9 +16,9 @@ export default function UserLayout() {
       <Header />
       <div className="bg-secondary pb-12 pt-6 text-sm text-gray-600">
         <div className="container">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
+          <div className="grid grid-cols-1 md:grid-cols-12">
             <UserSideNav />
-            <main className="md:col-span-9 lg:col-span-10">
+            <main className="md:col-span-9 md:ml-6 lg:col-span-10">
               <Outlet />
             </main>
           </div>
