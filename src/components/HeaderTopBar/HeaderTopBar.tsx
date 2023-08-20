@@ -103,7 +103,7 @@ export default function TopBarHeader() {
               <PopoverContent as={Link} to={PATH.user.profile}>
                 Tài khoản của tôi
               </PopoverContent>
-              <PopoverContent as={Link} to="#!">
+              <PopoverContent as={Link} to={PATH.user.purchase}>
                 Đơn mua
               </PopoverContent>
               <PopoverContent onClick={handleLogout}>Đăng xuất</PopoverContent>
