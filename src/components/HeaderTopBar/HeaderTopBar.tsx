@@ -9,6 +9,7 @@ import { PATH } from '@/constants/path'
 import PURCHASES_STATUS from '@/constants/purchase'
 import { Popover } from '@/components/Popover'
 import { PopoverContent } from '@/components/PopoverContent'
+import classNames from 'classnames'
 
 export default function TopBarHeader() {
   const { isAuthenticated, setIsAuthenticated, user, setUser } = useContext(AppContext)
@@ -111,21 +112,30 @@ export default function TopBarHeader() {
           }
           placement="bottom-end"
         >
-          <div className="hidden h-5 w-5 flex-shrink-0 items-end justify-center rounded-full border bg-white sm:flex">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="h-4 w-4 text-[#c6c6c6]"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
-              />
-            </svg>
+          <div
+            className={classNames(
+              'hidden h-5 w-5 flex-shrink-0 items-end justify-center rounded-full bg-white sm:flex',
+              { 'overflow-hidden': user?.avatar, border: !user?.avatar }
+            )}
+          >
+            {user?.avatar ? (
+              <img src={user.avatar} alt={user.email} className="h-full w-full object-cover" />
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="h-4 w-4 text-[#c6c6c6]"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                />
+              </svg>
+            )}
           </div>
           <span className="ml-1 line-clamp-1 min-w-[40px] max-w-[155px] break-all text-xs sm:ml-2 sm:text-sm">
             {user?.email}
