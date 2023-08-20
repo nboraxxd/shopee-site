@@ -37,7 +37,7 @@ export default function UserSideNav() {
           <NavLink
             to={PATH.user.profile}
             className={({ isActive }) =>
-              classNames('px-2 text-xs sm:ml-[0.625rem] sm:px-0 md:px-0', { 'text-primary': isActive })
+              classNames('px-2 text-xs sm:ml-[0.625rem] sm:px-0 md:px-0 md:text-sm', { 'text-primary': isActive })
             }
           >
             Tài khoản của tôi
@@ -48,7 +48,7 @@ export default function UserSideNav() {
           <NavLink
             to={PATH.user.password}
             className={({ isActive }) =>
-              classNames('px-2 text-xs sm:ml-[0.625rem] sm:px-0 md:px-0', { 'text-primary': isActive })
+              classNames('px-2 text-xs sm:ml-[0.625rem] sm:px-0 md:px-0 md:text-sm', { 'text-primary': isActive })
             }
           >
             Đổi mật khẩu
@@ -59,7 +59,7 @@ export default function UserSideNav() {
           <NavLink
             to={PATH.user.purchase}
             className={({ isActive }) =>
-              classNames('px-2 text-xs sm:ml-[0.625rem] sm:px-0 md:px-0', { 'text-primary': isActive })
+              classNames('px-2 text-xs sm:ml-[0.625rem] sm:px-0 md:px-0 md:text-sm', { 'text-primary': isActive })
             }
           >
             Đơn hàng

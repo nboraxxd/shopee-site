@@ -14,18 +14,18 @@ export const schema = yup.object({
     .string()
     .required('Vui lòng nhập email')
     .email('Email chưa đúng định dạng')
-    .min(5, 'Email phải có đối thiểu 5 ký tự')
-    .max(160, 'Email chỉ được phép có đối đa 160 ký tự'),
+    .min(5, 'Email phải có tối thiểu 5 ký tự')
+    .max(160, 'Email chỉ được phép có tối đa 160 ký tự'),
   password: yup
     .string()
     .required('Vui lòng nhập password')
-    .min(6, 'Password phải có đối thiểu 6 ký tự')
-    .max(160, 'Password chỉ được phép có đối đa 160 ký tự'),
+    .min(6, 'Password phải có tối thiểu 6 ký tự')
+    .max(160, 'Password chỉ được phép có tối đa 160 ký tự'),
   confirm_password: yup
     .string()
     .required('Vui lòng nhập lại password')
-    .min(6, 'Password phải có đối thiểu 6 ký tự')
-    .max(160, 'Password chỉ được phép có đối đa 160 ký tự')
+    .min(6, 'Password phải có tối thiểu 6 ký tự')
+    .max(160, 'Password chỉ được phép có tối đa 160 ký tự')
     .oneOf([yup.ref('password')], 'Các mật khẩu đã nhập không khớp'),
   price_min: yup.string().test({
     name: 'price-not-allowed',
@@ -40,5 +40,19 @@ export const schema = yup.object({
   searchProduct: yup.string().trim().required(),
 })
 
+export const userSchema = yup.object({
+  name: yup.string().max(160, 'Tên chỉ được phép có tối đa 160 ký tự'),
+  phone: yup
+    .string()
+    .matches(/((84|0[3|5|7|8|9])+([0-9]{8})|(84[3|5|7|8|9])+([0-9]{8}))\b/, 'Số điện thoại chưa đúng định dạng'),
+  address: yup.string().max(160, 'Địa chỉ được phép có tối đa 160 ký tự'),
+  avatar: yup.string().max(1000, 'Avatar chỉ được phép có tối đa 160 ký tự'),
+  date_of_birth: yup.date().max(new Date(), 'Ngày sinh không hợp lệ'),
+  password: schema.fields['password'],
+  new_password: schema.fields['password'],
+  confirm_password: schema.fields['confirm_password'],
+})
+
 // Yup khai báo kiểu thế nào thì ta xuất ra type kiểu đó
 export type Schema = yup.InferType<typeof schema>
+export type UserSchema = yup.InferType<typeof userSchema>
