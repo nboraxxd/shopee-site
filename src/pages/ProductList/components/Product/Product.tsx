@@ -12,7 +12,7 @@ export default function Product({ product }: { product: Product }) {
   return (
     <Link to={productDetailPath}>
       {/* Container */}
-      <div className="overflow-hidden rounded-sm bg-white shadow transition-all duration-200 hover:-mt-[1px] hover:shadow-xl">
+      <div className="overflow-hidden rounded-sm bg-white shadow transition-all duration-200 hover:-mt-[0.0625rem] hover:shadow-xl">
         {/* Product Image */}
         <div className="relative w-full pt-[100%]">
           <img

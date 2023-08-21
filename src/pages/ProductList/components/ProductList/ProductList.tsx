@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { createSearchParams, useNavigate } from 'react-router-dom'
 import classNames from 'classnames'
-import omit from 'lodash/omit'
 
 import useScrollTop from '@/hooks/useScrollTop'
 import useHiddenScroll from '@/hooks/useHiddenScroll'
@@ -40,15 +39,10 @@ export default function ProductList() {
   })
 
   function handleClearFilter() {
-    const searchParamsToString = createSearchParams(
-      omit(
-        {
-          ...queryConfig,
-          [PARAMETER_KEY.page]: '1',
-        },
-        [PARAMETER_KEY.category, PARAMETER_KEY.price_min, PARAMETER_KEY.price_max, PARAMETER_KEY.rating_filter]
-      )
-    ).toString()
+    const searchParamsToString = createSearchParams({
+      [PARAMETER_KEY.page]: '1',
+      [PARAMETER_KEY.limit]: '12',
+    }).toString()
 
     navigate({
       pathname: PATH.products,
