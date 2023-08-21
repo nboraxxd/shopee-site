@@ -14,7 +14,7 @@ export default function UserLayout() {
   return (
     <>
       <Header />
-      <div className="bg-secondary pb-12 pt-6 text-sm text-gray-600">
+      <div className="bg-secondary pb-12 pt-8 text-sm text-gray-600">
         <div className="container">
           <div className="grid grid-cols-1 md:grid-cols-12">
             <UserSideNav />
