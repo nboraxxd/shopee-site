@@ -66,7 +66,6 @@ export default function Cart() {
 
   const purchasesInCartQuery = usePurchasesByStatus(PURCHASES_STATUS.inCart)
   const purchasesInCartData = purchasesInCartQuery.data?.data.data
-  console.log('🔥 ~ Cart ~ purchasesInCartData:', purchasesInCartData)
 
   const updatePurchaseMutation = useMutation({
     mutationFn: (body: { product_id: string; buy_count: number }) => purchasesApi.updatePurchases(body),

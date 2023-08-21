@@ -1,13 +1,13 @@
-import { Link, NavLink } from 'react-router-dom'
+import { AppContext } from '@/contexts/app.context'
 import classNames from 'classnames'
 import { useContext } from 'react'
-import { AppContext } from '@/contexts/app.context'
+import { Link, NavLink } from 'react-router-dom'
 
-import { PATH } from '@/constants/path'
-import { getAvatarUrl } from '@/utils/utils'
-import myAccountImg from '@/assets/images/my-account.png'
 import changePasswordImg from '@/assets/images/change-password.png'
+import myAccountImg from '@/assets/images/my-account.png'
 import purchasesHistoryImg from '@/assets/images/purchases-history.png'
+import { AvatarImage } from '@/components/AvatarImage'
+import { PATH } from '@/constants/path'
 
 export default function UserSideNav() {
   const { user } = useContext(AppContext)
@@ -16,14 +16,7 @@ export default function UserSideNav() {
     <aside className="md:col-span-3 lg:col-span-2">
       <div className="flex items-center justify-center md:justify-start md:border-b md:border-b-gray-200 md:py-4">
         <NavLink to={PATH.user.profile} className="h-12 w-12 shrink-0 overflow-hidden rounded-full">
-          <img
-            src={getAvatarUrl(user?.avatar)}
-            alt={user?.email || 'default avatar'}
-            className={classNames('h-full w-full', {
-              'object-cover': user?.avatar,
-              'invert-[0.75]': !user?.avatar,
-            })}
-          />
+          <AvatarImage />
         </NavLink>
         <div className="ml-2">
           <p className="line-clamp-1 break-all font-semibold">{user?.email}</p>

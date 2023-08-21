@@ -1,7 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import classNames from 'classnames'
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 
@@ -10,11 +9,12 @@ import { AppContext } from '@/contexts/app.context'
 import { ErrorResponse } from '@/types/utils.type'
 import { userSchema } from '@/utils/rules'
 import { setUser } from '@/utils/token'
-import { getAvatarUrl, isAxiosUnprocessableEntityError } from '@/utils/utils'
+import { isAxiosUnprocessableEntityError } from '@/utils/utils'
 
+import { AvatarImage } from '@/components/AvatarImage'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
-import InputFile from '@/components/InputFile/InputFile'
+import { InputFile } from '@/components/InputFile'
 import { DateSelect } from '@/pages/User/components/DateSelect'
 
 // type ProfileSchema = Pick<UserSchema, 'name' | 'phone' | 'address' | 'date_of_birth' | 'avatar'>
@@ -34,11 +34,8 @@ type ProfileSchemaError = Omit<ProfileSchema, 'date_of_birth'> & {
 const profileSchema = userSchema.pick(['name', 'phone', 'address', 'date_of_birth', 'avatar'])
 
 export default function Profile() {
-  const { user, setUser: setUserContext } = useContext(AppContext)
+  const { setUser: setUserContext } = useContext(AppContext)
   const [file, setFile] = useState<File>()
-  const imagePreview = useMemo(() => {
-    return file ? URL.createObjectURL(file) : ''
-  }, [file])
 
   const profileQuery = useQuery({ queryKey: ['profile'], queryFn: userApi.getProfile })
   const profileData = profileQuery.data?.data.data
@@ -188,14 +185,7 @@ export default function Profile() {
         <div className="md:border-l md:border-l-gray-200 md:pl-1 lg:px-5">
           <div className="flex flex-col items-center">
             <div className="my-4 h-24 w-24 overflow-hidden rounded-full">
-              <img
-                src={imagePreview || getAvatarUrl(user?.avatar)}
-                alt={user?.email || 'default avatar'}
-                className={classNames('h-full w-full', {
-                  'object-cover': user?.avatar,
-                  'invert-[0.75]': !user?.avatar,
-                })}
-              />
+              <AvatarImage file={file} />
             </div>
             <InputFile onChange={onChangeFile} />
             <div className="mt-3 md:text-[0.625rem] lg:text-sm">

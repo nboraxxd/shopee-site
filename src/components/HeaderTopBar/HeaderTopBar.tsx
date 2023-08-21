@@ -1,15 +1,15 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import classNames from 'classnames'
 import { useContext } from 'react'
 import { Link } from 'react-router-dom'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
-import classNames from 'classnames'
 
 import userApi from '@/apis/user.api'
-import { AppContext } from '@/contexts/app.context'
-import { getAvatarUrl } from '@/utils/utils'
 import { PATH } from '@/constants/path'
 import PURCHASES_STATUS from '@/constants/purchase'
+import { AppContext } from '@/contexts/app.context'
 
+import { AvatarImage } from '@/components/AvatarImage'
 import { Popover } from '@/components/Popover'
 import { PopoverContent } from '@/components/PopoverContent'
 
@@ -120,14 +120,7 @@ export default function TopBarHeader() {
               { 'overflow-hidden': user?.avatar, border: !user?.avatar }
             )}
           >
-            <img
-              src={getAvatarUrl(user?.avatar)}
-              alt={user?.email || 'default avatar'}
-              className={classNames('h-full w-full', {
-                'object-cover': user?.avatar,
-                'invert-[0.75]': !user?.avatar,
-              })}
-            />
+            <AvatarImage />
           </div>
           <span className="ml-1 line-clamp-1 min-w-[40px] max-w-[155px] break-all text-xs sm:ml-2 sm:text-sm">
             {user?.email}
