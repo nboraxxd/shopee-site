@@ -1,4 +1,4 @@
-import { ElementType, useRef, useState } from 'react'
+import { ElementType, useRef, SetStateAction, useState } from 'react'
 import { FloatingArrow, FloatingPortal, type Placement, arrow, offset, shift, useFloating } from '@floating-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -12,6 +12,8 @@ interface PopoverProps {
   as?: ElementType
   initialOpen?: boolean
   placement?: Placement
+  isShowPopover?: boolean
+  setIsShowPopover?: React.Dispatch<SetStateAction<boolean>>
 }
 
 export default function Popover(props: PopoverProps) {
@@ -25,6 +27,8 @@ export default function Popover(props: PopoverProps) {
     as: Element = 'li',
     initialOpen = false,
     placement = 'bottom',
+    isShowPopover,
+    setIsShowPopover,
   } = props
 
   const TOOLTIP_GAP = 3
@@ -45,11 +49,11 @@ export default function Popover(props: PopoverProps) {
   })
 
   const showPopover = () => {
-    setIsOpen(true)
+    setIsShowPopover ? setIsShowPopover(true) : setIsOpen(true)
   }
 
   const hidePopover = () => {
-    setIsOpen(false)
+    setIsShowPopover ? setIsShowPopover(false) : setIsOpen(false)
   }
 
   return (
@@ -62,7 +66,7 @@ export default function Popover(props: PopoverProps) {
       {children}
       {/* Popover */}
       <AnimatePresence>
-        {isOpen && (
+        {((isShowPopover !== undefined && isShowPopover) || (isShowPopover === undefined && isOpen)) && (
           <FloatingPortal>
             <motion.div
               ref={refs.setFloating}

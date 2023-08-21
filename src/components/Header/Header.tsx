@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { Link, generatePath } from 'react-router-dom'
 
 import useSearchProducts from '@/hooks/useSearchProducts'
@@ -17,6 +17,8 @@ import { PopoverContent } from '@/components/PopoverContent'
 const MAX_PRODUCTS_IN_CART = 5
 
 export default function Header() {
+  const [isShowPopover, setIsShowPopover] = useState(false)
+
   const { isAuthenticated } = useContext(AppContext)
 
   const { register, onSubmitSearch } = useSearchProducts()
@@ -79,6 +81,8 @@ export default function Header() {
             classNameWrap="ml-auto lg:mr-20 mr-5"
             classNameArrow="hidden md:block"
             placement="bottom-end"
+            isShowPopover={isShowPopover}
+            setIsShowPopover={setIsShowPopover}
             renderPopover={
               <div className="hidden max-w-[400px] flex-col rounded-sm border border-gray-200 bg-white shadow-md md:flex">
                 <div>
@@ -121,6 +125,7 @@ export default function Header() {
                         return (
                           <PopoverContent
                             as={Link}
+                            onClick={() => setIsShowPopover(false)}
                             to={productDetailPath}
                             key={item._id}
                             className="flex cursor-default py-3 hover:bg-gray-100"

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import classNames from 'classnames'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
@@ -14,6 +14,9 @@ import { Popover } from '@/components/Popover'
 import { PopoverContent } from '@/components/PopoverContent'
 
 export default function TopBarHeader() {
+  const [isShowPopoverLanguages, setIsShowPopoverLanguages] = useState(false)
+  const [isShowPopoverUser, setIsShowPopoverUser] = useState(false)
+
   const { isAuthenticated, setIsAuthenticated, user, setUser } = useContext(AppContext)
   const queryClient = useQueryClient()
 
@@ -27,6 +30,7 @@ export default function TopBarHeader() {
         setIsAuthenticated(false)
         setUser(null)
         toast.success(response.data.message)
+        setIsShowPopoverUser(false)
         queryClient.removeQueries({ queryKey: ['purchases', { status: PURCHASES_STATUS.inCart }] })
       },
     })
@@ -47,11 +51,13 @@ export default function TopBarHeader() {
       {/* End Logo */}
       {/* Language Popover */}
       <Popover
+        isShowPopover={isShowPopoverLanguages}
+        setIsShowPopover={setIsShowPopoverLanguages}
         classNameWrap="ml-auto"
         renderPopover={
           <div className="flex flex-col rounded-sm border border-gray-200 bg-white shadow-md">
-            <PopoverContent>Tiếng Việt</PopoverContent>
-            <PopoverContent>English</PopoverContent>
+            <PopoverContent onClick={() => setIsShowPopoverLanguages(false)}>Tiếng Việt</PopoverContent>
+            <PopoverContent onClick={() => setIsShowPopoverLanguages(false)}>English</PopoverContent>
           </div>
         }
       >
@@ -101,12 +107,14 @@ export default function TopBarHeader() {
       {/* Account Popover */}
       {isAuthenticated && (
         <Popover
+          isShowPopover={isShowPopoverUser}
+          setIsShowPopover={setIsShowPopoverUser}
           renderPopover={
             <div className="flex flex-col rounded-sm border border-gray-200 bg-white shadow-md">
-              <PopoverContent as={Link} to={PATH.user.profile}>
+              <PopoverContent as={Link} to={PATH.user.profile} onClick={() => setIsShowPopoverUser(false)}>
                 Tài khoản của tôi
               </PopoverContent>
-              <PopoverContent as={Link} to={PATH.user.purchase}>
+              <PopoverContent as={Link} to={PATH.user.purchase} onClick={() => setIsShowPopoverUser(false)}>
                 Đơn mua
               </PopoverContent>
               <PopoverContent onClick={handleLogout}>Đăng xuất</PopoverContent>
