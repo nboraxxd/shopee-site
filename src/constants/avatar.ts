@@ -1,0 +1,1 @@
+export const MAX_SIZE_UPLOAD_AVATAR = 1_048_576

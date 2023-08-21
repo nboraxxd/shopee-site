@@ -8,6 +8,7 @@ import classNames from 'classnames'
 import userApi, { type BodyUpdateProfile } from '@/apis/user.api'
 import { userSchema } from '@/utils/rules'
 import { AppContext } from '@/contexts/app.context'
+import { MAX_SIZE_UPLOAD_AVATAR } from '@/constants/avatar'
 import { getAvatarUrl, isAxiosUnprocessableEntityError } from '@/utils/utils'
 import { setUser } from '@/utils/token'
 import { ErrorResponse } from '@/types/utils.type'
@@ -118,7 +119,14 @@ export default function Profile() {
 
   function onChangeFile(ev: React.ChangeEvent<HTMLInputElement>) {
     const imageFromLocal = ev.target.files?.[0]
-    setFile(imageFromLocal)
+    if (imageFromLocal && !imageFromLocal.type.includes('image')) {
+      toast.error('File phải có định dạng JPEG, JPG hoặc PNG')
+    } else if (imageFromLocal && imageFromLocal.size >= MAX_SIZE_UPLOAD_AVATAR) {
+      toast.error('Dung lượng file tối đa là 1MB')
+    } else {
+      setFile(imageFromLocal)
+    }
+    ev.target.value = ''
   }
 
   return (
