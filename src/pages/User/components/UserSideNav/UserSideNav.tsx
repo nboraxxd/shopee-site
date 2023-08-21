@@ -1,23 +1,32 @@
-import { PATH } from '@/constants/path'
 import { Link, NavLink } from 'react-router-dom'
+import classNames from 'classnames'
+import { useContext } from 'react'
+import { AppContext } from '@/contexts/app.context'
+
+import { PATH } from '@/constants/path'
+import { getAvatarUrl } from '@/utils/utils'
 import myAccountImg from '@/assets/images/my-account.png'
 import changePasswordImg from '@/assets/images/change-password.png'
 import purchasesHistoryImg from '@/assets/images/purchases-history.png'
-import classNames from 'classnames'
 
 export default function UserSideNav() {
+  const { user } = useContext(AppContext)
+
   return (
     <aside className="md:col-span-3 lg:col-span-2">
-      <div className="flex items-center md:border-b md:border-b-gray-200 md:py-4">
+      <div className="flex items-center justify-center md:justify-start md:border-b md:border-b-gray-200 md:py-4">
         <NavLink to={PATH.user.profile} className="h-12 w-12 shrink-0 overflow-hidden rounded-full">
           <img
-            src="https://down-vn.img.susercontent.com/file/vn-11134226-7r98o-lkjvorq2n20a75_tn"
-            alt="avatar"
-            className="h-full w-full object-cover"
+            src={getAvatarUrl(user?.avatar)}
+            alt={user?.email || 'default avatar'}
+            className={classNames('h-full w-full', {
+              'object-cover': user?.avatar,
+              'invert-[0.75]': !user?.avatar,
+            })}
           />
         </NavLink>
-        <div className="ml-4">
-          <p className="font-semibold">nhatbao606</p>
+        <div className="ml-2">
+          <p className="line-clamp-1 break-all font-semibold">{user?.email}</p>
           <Link to={PATH.user.profile} className="mt-1 flex items-baseline">
             <svg width={12} height={12} viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -31,7 +40,7 @@ export default function UserSideNav() {
         </div>
       </div>
 
-      <ul className="mt-5 flex items-center justify-center rounded-sm bg-white py-3 shadow sm:gap-10 md:flex-col md:items-start md:gap-5 md:rounded-none md:bg-transparent md:py-0 md:shadow-none">
+      <ul className="mt-3 flex items-center justify-center rounded-sm bg-white py-3 shadow sm:gap-10 md:mt-5 md:flex-col md:items-start md:gap-5 md:rounded-none md:bg-transparent md:py-0 md:shadow-none">
         <li className="-ml-2 flex items-center sm:ml-0">
           <img src={myAccountImg} alt="my account" className="hidden h-5 w-5 sm:block" />
           <NavLink

@@ -4,6 +4,7 @@ import moment from 'moment/moment'
 
 import HttpStatusCode from '@/constants/httpStatusCode.enum'
 import { Purchase } from '@/types/purchase.type'
+import defaultAvatar from '@/assets/images/defaultAvatar.svg'
 
 export function isAxiosError<T>(error: unknown): error is AxiosError<T> {
   return axios.isAxiosError(error)
@@ -58,4 +59,8 @@ export function sortProductsByLatestUpdate<T extends Purchase>(products: T[]): T
     }
     return 0
   })
+}
+
+export function getAvatarUrl(avatarName?: string) {
+  return avatarName ? `${import.meta.env.VITE_IMAGE_URL}/${avatarName}` : defaultAvatar
 }

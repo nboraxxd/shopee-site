@@ -1,13 +1,17 @@
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Controller, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { toast } from 'react-toastify'
+import classNames from 'classnames'
 
 import userApi, { type BodyUpdateProfile } from '@/apis/user.api'
 import { userSchema } from '@/utils/rules'
 import { AppContext } from '@/contexts/app.context'
+import { getAvatarUrl, isAxiosUnprocessableEntityError } from '@/utils/utils'
 import { setUser } from '@/utils/token'
+import { ErrorResponse } from '@/types/utils.type'
+
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { DateSelect } from '@/pages/User/components/DateSelect'
@@ -22,14 +26,27 @@ type ProfileSchema = {
   date_of_birth: Date | undefined
 }
 
+type ProfileSchemaError = Omit<ProfileSchema, 'date_of_birth'> & {
+  date_of_birth: string | undefined
+}
+
 const profileSchema = userSchema.pick(['name', 'phone', 'address', 'date_of_birth', 'avatar'])
 
 export default function Profile() {
-  const { setUser: setUserContext } = useContext(AppContext)
+  const { user, setUser: setUserContext } = useContext(AppContext)
+  const [file, setFile] = useState<File>()
+  const imagePreview = useMemo(() => {
+    return file ? URL.createObjectURL(file) : ''
+  }, [file])
+
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   const profileQuery = useQuery({ queryKey: ['profile'], queryFn: userApi.getProfile })
   const profileData = profileQuery.data?.data.data
 
   const profileMutation = useMutation({ mutationFn: (body: BodyUpdateProfile) => userApi.updateProfile(body) })
+
+  const uploadAvatarMutation = useMutation({ mutationFn: (body: FormData) => userApi.updateAvatar(body) })
 
   const {
     register,
@@ -37,6 +54,8 @@ export default function Profile() {
     control,
     handleSubmit,
     formState: { errors },
+    setError,
+    watch,
   } = useForm<ProfileSchema>({
     defaultValues: {
       name: '',
@@ -48,22 +67,7 @@ export default function Profile() {
     resolver: yupResolver(profileSchema),
   })
 
-  const onSubmit = handleSubmit((data) => {
-    profileMutation.mutate(
-      { ...data, date_of_birth: data.date_of_birth?.toISOString() },
-      {
-        onSuccess: (response) => {
-          setUserContext(response.data.data)
-          setUser(response.data.data)
-          profileQuery.refetch()
-          toast.success(response.data.message)
-        },
-        onError: (error) => {
-          console.log(error)
-        },
-      }
-    )
-  })
+  const avatar = watch('avatar')
 
   useEffect(() => {
     if (profileData) {
@@ -74,6 +78,48 @@ export default function Profile() {
       setValue('avatar', profileData.avatar)
     }
   }, [profileData, setValue])
+
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      let avatarName = avatar
+      if (file) {
+        const form = new FormData()
+        form.append('image', file)
+        const uploadResponse = await uploadAvatarMutation.mutateAsync(form)
+
+        avatarName = uploadResponse.data.data
+        setValue('avatar', avatarName)
+      }
+
+      const response = await profileMutation.mutateAsync({
+        ...data,
+        date_of_birth: data.date_of_birth?.toISOString(),
+        avatar: avatarName,
+      })
+
+      setUserContext(response.data.data)
+      setUser(response.data.data)
+      profileQuery.refetch()
+      toast.success(response.data.message)
+    } catch (error) {
+      if (isAxiosUnprocessableEntityError<ErrorResponse<ProfileSchemaError>>(error)) {
+        const formError = error.response?.data.data
+        if (formError) {
+          Object.keys(formError).forEach((key) => {
+            setError(key as keyof ProfileSchemaError, {
+              message: formError[key as keyof ProfileSchemaError],
+              type: 'Server',
+            })
+          })
+        }
+      }
+    }
+  })
+
+  function onChangeFile(ev: React.ChangeEvent<HTMLInputElement>) {
+    const imageFromLocal = ev.target.files?.[0]
+    setFile(imageFromLocal)
+  }
 
   return (
     <div className="mt-3 rounded-sm bg-white px-7 pb-20 shadow md:mt-0 md:px-4 lg:px-7">
@@ -135,7 +181,7 @@ export default function Profile() {
           <div className="mt-4 flex flex-col md:mt-2 md:flex-row md:items-center md:gap-2 lg:gap-5">
             <div className="mb-[0.125rem] text-gray-500 md:mb-0 md:w-1/4 md:text-right lg:w-1/5"></div>
             <div className="md:w-3/4 lg:w-4/5">
-              <Button className="rounded-sm px-5 py-2.5 text-base" type="submit">
+              <Button className="rounded-sm px-5 py-2.5 text-base" type="submit" disabled={profileMutation.isLoading}>
                 Lưu
               </Button>
             </div>
@@ -143,17 +189,27 @@ export default function Profile() {
         </div>
         <div className="md:border-l md:border-l-gray-200 md:pl-1 lg:px-5">
           <div className="flex flex-col items-center">
-            <div className="my-4 h-24 w-24">
+            <div className="my-4 h-24 w-24 overflow-hidden rounded-full">
               <img
-                src="https://down-vn.img.susercontent.com/file/vn-11134226-7r98o-lkjvorq2n20a75_tn"
-                alt="avt"
-                className="h-full w-full rounded-full object-cover"
+                src={imagePreview || getAvatarUrl(user?.avatar)}
+                alt={user?.email || 'default avatar'}
+                className={classNames('h-full w-full', {
+                  'object-cover': user?.avatar,
+                  'invert-[0.75]': !user?.avatar,
+                })}
               />
             </div>
-            <input type="file" accept=".jpg, .jpeg, .png*" className="hidden" />
+            <input
+              type="file"
+              accept=".jpg, .jpeg, .png*"
+              className="hidden"
+              ref={fileInputRef}
+              onChange={onChangeFile}
+            />
             <button
               className="flex h-10 items-center justify-end rounded-sm border bg-white px-6 text-sm text-gray-500 shadow-sm transition hover:bg-gray-50"
-              type="submit"
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
             >
               Chọn ảnh
             </button>
