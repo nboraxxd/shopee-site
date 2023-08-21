@@ -1,20 +1,20 @@
-import { useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { Controller, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { toast } from 'react-toastify'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import classNames from 'classnames'
+import { useContext, useEffect, useMemo, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'react-toastify'
 
 import userApi, { type BodyUpdateProfile } from '@/apis/user.api'
-import { userSchema } from '@/utils/rules'
 import { AppContext } from '@/contexts/app.context'
-import { MAX_SIZE_UPLOAD_AVATAR } from '@/constants/avatar'
-import { getAvatarUrl, isAxiosUnprocessableEntityError } from '@/utils/utils'
-import { setUser } from '@/utils/token'
 import { ErrorResponse } from '@/types/utils.type'
+import { userSchema } from '@/utils/rules'
+import { setUser } from '@/utils/token'
+import { getAvatarUrl, isAxiosUnprocessableEntityError } from '@/utils/utils'
 
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
+import InputFile from '@/components/InputFile/InputFile'
 import { DateSelect } from '@/pages/User/components/DateSelect'
 
 // type ProfileSchema = Pick<UserSchema, 'name' | 'phone' | 'address' | 'date_of_birth' | 'avatar'>
@@ -39,8 +39,6 @@ export default function Profile() {
   const imagePreview = useMemo(() => {
     return file ? URL.createObjectURL(file) : ''
   }, [file])
-
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const profileQuery = useQuery({ queryKey: ['profile'], queryFn: userApi.getProfile })
   const profileData = profileQuery.data?.data.data
@@ -117,16 +115,8 @@ export default function Profile() {
     }
   })
 
-  function onChangeFile(ev: React.ChangeEvent<HTMLInputElement>) {
-    const imageFromLocal = ev.target.files?.[0]
-    if (imageFromLocal && !imageFromLocal.type.includes('image')) {
-      toast.error('File phải có định dạng JPEG, JPG hoặc PNG')
-    } else if (imageFromLocal && imageFromLocal.size >= MAX_SIZE_UPLOAD_AVATAR) {
-      toast.error('Dung lượng file tối đa là 1MB')
-    } else {
-      setFile(imageFromLocal)
-    }
-    ev.target.value = ''
+  function onChangeFile(file?: File) {
+    setFile(file)
   }
 
   return (
@@ -207,20 +197,7 @@ export default function Profile() {
                 })}
               />
             </div>
-            <input
-              type="file"
-              accept=".jpg, .jpeg, .png*"
-              className="hidden"
-              ref={fileInputRef}
-              onChange={onChangeFile}
-            />
-            <button
-              className="flex h-10 items-center justify-end rounded-sm border bg-white px-6 text-sm text-gray-500 shadow-sm transition hover:bg-gray-50"
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              Chọn ảnh
-            </button>
+            <InputFile onChange={onChangeFile} />
             <div className="mt-3 md:text-[0.625rem] lg:text-sm">
               <p>Dung lượng file tối đa 1MB</p>
               <p>Định dạng: .JPEG, .PNG</p>
