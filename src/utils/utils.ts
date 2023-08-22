@@ -1,6 +1,5 @@
 import axios, { AxiosError } from 'axios'
 import cloneDeep from 'lodash/cloneDeep'
-import moment from 'moment/moment'
 
 import HttpStatusCode from '@/constants/httpStatusCode.enum'
 import { Purchase } from '@/types/purchase.type'
@@ -51,14 +50,7 @@ export function trimLeadingZeros(str: string) {
 export function sortProductsByLatestUpdate<T extends Purchase>(products: T[]): T[] {
   const clonedProducts = cloneDeep(products)
 
-  return clonedProducts.sort((prev, curr) => {
-    if (moment(prev.updatedAt).isBefore(curr.updatedAt) === true) {
-      return 1
-    } else if (moment(prev.updatedAt).isBefore(curr.updatedAt) === false) {
-      return -1
-    }
-    return 0
-  })
+  return clonedProducts.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
 }
 
 export function getAvatarUrl(avatarName?: string) {
