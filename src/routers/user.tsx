@@ -1,9 +1,11 @@
+import { lazy } from 'react'
 import { PATH } from '@/constants/path'
 import { PrivateRouter } from '@/components/Routers'
-import { UserLayout } from '@/pages/User/layout/UserLayout'
-import { Profile } from '@/pages/User/pages/Profile'
-import { ChangePassword } from '@/pages/User/pages/ChangePassword'
-import { PurchasesHistory } from '@/pages/User/pages/PurchasesHistory'
+
+const UserLayout = lazy(() => import('@/pages/User/layout/UserLayout/UserLayout'))
+const Profile = lazy(() => import('@/pages/User/pages/Profile/Profile'))
+const ChangePassword = lazy(() => import('@/pages/User/pages/ChangePassword/ChangePassword'))
+const PurchasesHistory = lazy(() => import('@/pages/User/pages/PurchasesHistory/PurchasesHistory'))
 
 export const user = {
   element: <PrivateRouter />,

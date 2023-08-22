@@ -1,8 +1,10 @@
+import { lazy } from 'react'
 import { PATH } from '@/constants/path'
 import { AuthRouter } from '@/components/Routers'
-import { AuthenticationLayout } from '@/layouts/AuthenticationLayout'
-import { Login } from '@/pages/Login'
-import { Register } from '@/pages/Register'
+
+const AuthenticationLayout = lazy(() => import('@/layouts/AuthenticationLayout/AuthenticationLayout'))
+const Login = lazy(() => import('@/pages/Login/Login'))
+const Register = lazy(() => import('@/pages/Register/Register'))
 
 export const authentication = {
   element: <AuthRouter />,

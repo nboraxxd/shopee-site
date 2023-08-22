@@ -1,11 +1,13 @@
+import { lazy } from 'react'
 import { PATH } from '@/constants/path'
-import { MainLayout } from '@/layouts/MainLayout'
-import { ProductDetail } from '@/pages/ProductDetail'
-import { ProductList } from '@/pages/ProductList'
-import { NotFound } from '@/pages/NotFound'
 import { authentication } from './authentication'
 import { cart } from './cart'
 import { user } from './user'
+
+const MainLayout = lazy(() => import('@/layouts/MainLayout/MainLayout'))
+const ProductList = lazy(() => import('@/pages/ProductList/components/ProductList/ProductList'))
+const ProductDetail = lazy(() => import('@/pages/ProductDetail/components/ProductDetail/ProductDetail'))
+const NotFound = lazy(() => import('@/pages/NotFound/NotFound'))
 
 export const routers = [
   {

@@ -1,4 +1,4 @@
-// import React from 'react'
+import { Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router-dom'
@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { AppProvider } from '@/contexts/app.context'
 import { ScrollToTop } from '@/components/ScrollTop'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { SuspenseLoading } from '@/components/SuspenseLoading'
 import App from '@/App'
 import '@/index.css'
 
@@ -25,7 +26,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <AppProvider>
         <ScrollToTop>
           <ErrorBoundary>
-            <App />
+            <Suspense fallback={<SuspenseLoading />}>
+              <App />
+            </Suspense>
           </ErrorBoundary>
         </ScrollToTop>
       </AppProvider>
