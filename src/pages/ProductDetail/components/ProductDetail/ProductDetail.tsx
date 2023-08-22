@@ -187,7 +187,7 @@ export default function ProductDetail() {
   }
 
   if (isError === true && !product) {
-    return <NotFound wrapperClassname="py-56" title="Không tìm thấy sản phẩm" />
+    return <NotFound wrapperClassname="py-56" desc="Không tìm thấy sản phẩm" />
   }
   if (!product) return null
   return (

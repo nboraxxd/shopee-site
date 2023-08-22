@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom'
 
 import { AppProvider } from '@/contexts/app.context'
 import { ScrollToTop } from '@/components/ScrollTop'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import App from '@/App'
 import '@/index.css'
 
@@ -23,7 +24,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <AppProvider>
         <ScrollToTop>
-          <App />
+          <ErrorBoundary>
+            <App />
+          </ErrorBoundary>
         </ScrollToTop>
       </AppProvider>
     </QueryClientProvider>
