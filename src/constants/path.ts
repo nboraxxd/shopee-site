@@ -15,4 +15,5 @@ export const PATH = {
     purchase: USER + '/purchases',
   },
   cart: '/cart',
+  notFound: '*',
 } as const

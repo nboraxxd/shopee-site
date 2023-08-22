@@ -2,6 +2,7 @@ import { PATH } from '@/constants/path'
 import { MainLayout } from '@/layouts/MainLayout'
 import { ProductDetail } from '@/pages/ProductDetail'
 import { ProductList } from '@/pages/ProductList'
+import { NotFound } from '@/pages/NotFound'
 import { authentication } from './authentication'
 import { cart } from './cart'
 import { user } from './user'
@@ -30,4 +31,9 @@ export const routers = [
   user,
 
   cart,
+
+  {
+    path: PATH.notFound,
+    element: <NotFound />,
+  },
 ]

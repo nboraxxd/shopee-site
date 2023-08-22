@@ -89,36 +89,35 @@ export default function ProductList() {
                   ))}
               </div>
             )}
-            {productsQuery.isSuccess && productsQuery.data && (
-              <>
-                <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
-                  {productsQuery.data.status === 200 && productsQuery.data.data.data.products.length !== 0 ? (
-                    productsQuery.data.data.data.products.map((product) => (
-                      <div key={product._id} className="col-span-1">
-                        <Product product={product} />
-                      </div>
-                    ))
-                  ) : (
-                    <div className="col-span-2 flex flex-col items-center sm:col-span-3 md:col-span-4 xl:col-span-5">
-                      <img src={noProduct} alt="empty products" className="w-28" />
-                      <div className="mt-3 text-center text-gray-500 md:text-xl">
-                        <p>Hix. Không có sản phẩm nào.</p>
-                        <p className="mt-3">Bạn thử xoá điều kiện lọc và tìm lại nhé?</p>
-                      </div>
-                      <Button className="mt-6 max-w-[12rem] rounded-sm p-3" onClick={handleClearFilter}>
-                        Xoá bộ lọc
-                      </Button>
+
+            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
+              {productsQuery.data &&
+              productsQuery.data.status === 200 &&
+              productsQuery.data.data.data.products.length !== 0 ? (
+                <>
+                  {productsQuery.data.data.data.products.map((product) => (
+                    <div key={product._id} className="col-span-1">
+                      <Product product={product} />
                     </div>
-                  )}
-                </div>
-                {/* End Product List */}
-                {/* Pagination */}
-                {productsQuery.data.status === 200 && productsQuery.data.data.data.products.length !== 0 && (
+                  ))}
+                  {/* Pagination */}
                   <Pagination queryConfig={queryConfig} pageSize={productsQuery.data.data.data.pagination.page_size} />
-                )}
-                {/* End Pagination */}
-              </>
-            )}
+                  {/* End Pagination */}
+                </>
+              ) : (
+                <div className="col-span-2 flex flex-col items-center sm:col-span-3 md:col-span-4 xl:col-span-5">
+                  <img src={noProduct} alt="empty products" className="w-28" />
+                  <div className="mt-3 text-center text-gray-500 md:text-xl">
+                    <p>Hix. Không có sản phẩm nào.</p>
+                    <p className="mt-3">Bạn thử xoá điều kiện lọc và tìm lại nhé?</p>
+                  </div>
+                  <Button className="mt-6 max-w-[12rem] rounded-sm p-3" onClick={handleClearFilter}>
+                    Xoá bộ lọc
+                  </Button>
+                </div>
+              )}
+            </div>
+            {/* End Product List */}
           </div>
           {/* End Product Main */}
         </div>

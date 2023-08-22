@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import DOMPurify from 'dompurify'
 import { toast } from 'react-toastify'
+import classNames from 'classnames'
 
 import { useWindowSize } from '@/hooks/useWindowSize'
 import usePurchasesByStatus from '@/hooks/usePurchasesInCartQuery'
@@ -13,13 +14,13 @@ import { calcDiscountPercentage, formatCurrency, formatNumberToSocialStyle, getI
 import { Product as ProductType, ProductListConfig } from '@/types/product.type'
 import PARAMETER_KEY from '@/constants/parameter'
 import PURCHASES_STATUS from '@/constants/purchase'
+import { PATH } from '@/constants/path'
 
 import { ProductSkeleton, Product } from '@/pages/ProductList'
+import { NotFound } from '@/pages/NotFound'
 import { ProductRating } from '@/components/ProductRating'
 import { Button } from '@/components/Button'
 import { QuantityController } from '@/components/QuantityController'
-import { PATH } from '@/constants/path'
-import classNames from 'classnames'
 
 export type StateType = {
   redirect: string
@@ -42,7 +43,7 @@ export default function ProductDetail() {
   const imageRef = useRef<HTMLImageElement>(null)
   const windowWidth = useWindowSize()
 
-  const { data: productDetailData } = useQuery({
+  const { data: productDetailData, isError } = useQuery({
     queryKey: ['productDetail', id],
     queryFn: () => productsApi.getProductDetail(id as string),
   })
@@ -185,6 +186,9 @@ export default function ProductDetail() {
     })
   }
 
+  if (isError === true && !product) {
+    return <NotFound wrapperClassname="py-56" title="Không tìm thấy sản phẩm" />
+  }
   if (!product) return null
   return (
     <div className="bg-secondary py-8">
