@@ -100,9 +100,6 @@ export default function ProductList() {
                       <Product product={product} />
                     </div>
                   ))}
-                  {/* Pagination */}
-                  <Pagination queryConfig={queryConfig} pageSize={productsQuery.data.data.data.pagination.page_size} />
-                  {/* End Pagination */}
                 </>
               ) : (
                 <div className="col-span-2 flex flex-col items-center sm:col-span-3 md:col-span-4 xl:col-span-5">
@@ -118,6 +115,13 @@ export default function ProductList() {
               )}
             </div>
             {/* End Product List */}
+            {/* Pagination */}
+            {productsQuery.data &&
+              productsQuery.data.status === 200 &&
+              productsQuery.data.data.data.products.length !== 0 && (
+                <Pagination queryConfig={queryConfig} pageSize={productsQuery.data.data.data.pagination.page_size} />
+              )}
+            {/* End Pagination */}
           </div>
           {/* End Product Main */}
         </div>
