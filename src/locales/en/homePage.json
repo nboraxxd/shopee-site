@@ -1,0 +1,26 @@
+{
+  "home_page": {
+    "register": "Register",
+    "login": "Login",
+    "logout": "Logout",
+    "my_account": "My account",
+    "my_purchase": "My purchase",
+    "recently_added_products": "Recently added products",
+    "more_products_in_cart": "more products in cart",
+    "view_my_shopping_cart": "View my shopping cart"
+  },
+
+  "aside_filter": {
+    "aside_title": "Filter products",
+    "category_title": "Category",
+    "categories": "All",
+    "search_filter": "Search filter",
+    "reset": "Reset",
+    "price_range": "Price range",
+    "min": "MIN",
+    "max": "MAX",
+    "apply": "APPLY",
+    "rating": "Rating",
+    "&up": "& up"
+  }
+}

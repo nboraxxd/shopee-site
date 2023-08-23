@@ -1,0 +1,26 @@
+{
+  "home_page": {
+    "register": "Đăng ký",
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "my_account": "Tài khoản của tôi",
+    "my_purchase": "Đơn mua",
+    "recently_added_products": "Sản phẩm mới thêm",
+    "more_products_in_cart": "thêm vào giỏ hàng",
+    "view_my_shopping_cart": "Xem giỏ hàng"
+  },
+
+  "aside_filter": {
+    "aside_title": "Lọc sản phẩm",
+    "category_title": "Danh mục",
+    "categories": "Tất cả",
+    "search_filter": "Bộ lọc",
+    "reset": "Xoá lọc",
+    "price_range": "Khoảng giá",
+    "min": "TỪ",
+    "max": "ĐẾN",
+    "apply": "ÁP DỤNG",
+    "rating": "Đánh giá",
+    "&up": "trở lên"
+  }
+}

@@ -1,5 +1,6 @@
 import { SetStateAction } from 'react'
 import { createSearchParams, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { QueryConfig } from '@/types/query.type'
 import { PATH } from '@/constants/path'
 import PARAMETER_KEY from '@/constants/parameter'
@@ -14,6 +15,8 @@ const TOTAL_FILTERED_RATING_ROWS = 5
 
 export default function RatingStars({ queryConfig, setIsShowAside }: Props) {
   const navigate = useNavigate()
+
+  const { t } = useTranslation(['home'])
 
   function handleRatingFilter(starsNumber: number) {
     const searchParamsToString = createSearchParams({
@@ -96,7 +99,7 @@ export default function RatingStars({ queryConfig, setIsShowAside }: Props) {
                       // End Transparent Star
                     )
                   })}
-                {starsIndex !== 0 && <span className="ml-1 text-sm text-gray-700">trở lên</span>}
+                {starsIndex !== 0 && <span className="ml-1 text-sm text-gray-700">{t('aside_filter.&up')}</span>}
               </button>
             </li>
           )

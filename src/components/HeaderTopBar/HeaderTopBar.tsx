@@ -3,11 +3,14 @@ import classNames from 'classnames'
 import { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { useTranslation } from 'react-i18next'
 
 import userApi from '@/apis/user.api'
 import { PATH } from '@/constants/path'
+import { LANGUAGES, Language } from '@/constants/languages'
 import PURCHASES_STATUS from '@/constants/purchase'
 import { AppContext } from '@/contexts/app.context'
+import { locales } from '@/locales/translation/i18n'
 
 import { AvatarImage } from '@/components/AvatarImage'
 import { Popover } from '@/components/Popover'
@@ -16,6 +19,9 @@ import { PopoverContent } from '@/components/PopoverContent'
 export default function TopBarHeader() {
   const [isShowPopoverLanguages, setIsShowPopoverLanguages] = useState(false)
   const [isShowPopoverUser, setIsShowPopoverUser] = useState(false)
+
+  const { i18n } = useTranslation()
+  const currentLanguage = locales[i18n.language as Language]
 
   const { isAuthenticated, setIsAuthenticated, user, setUser } = useContext(AppContext)
   const queryClient = useQueryClient()
@@ -34,6 +40,11 @@ export default function TopBarHeader() {
         queryClient.removeQueries({ queryKey: ['purchases', { status: PURCHASES_STATUS.inCart }] })
       },
     })
+  }
+
+  function changeLanguage(lng: Language) {
+    i18n.changeLanguage(lng)
+    setIsShowPopoverLanguages(false)
   }
 
   return (
@@ -56,8 +67,8 @@ export default function TopBarHeader() {
         classNameWrap="ml-auto"
         renderPopover={
           <div className="flex flex-col rounded-sm border border-gray-200 bg-white shadow-md">
-            <PopoverContent onClick={() => setIsShowPopoverLanguages(false)}>Tiếng Việt</PopoverContent>
-            <PopoverContent onClick={() => setIsShowPopoverLanguages(false)}>English</PopoverContent>
+            <PopoverContent onClick={() => changeLanguage(LANGUAGES.vi)}>Tiếng Việt</PopoverContent>
+            <PopoverContent onClick={() => changeLanguage(LANGUAGES.en)}>English</PopoverContent>
           </div>
         }
       >
@@ -75,7 +86,7 @@ export default function TopBarHeader() {
             d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"
           />
         </svg>
-        <span className="mx-1 text-[0.625rem] sm:text-sm">Tiếng Việt</span>
+        <span className="mx-1 text-[0.625rem] sm:text-sm">{currentLanguage}</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

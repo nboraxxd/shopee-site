@@ -55,3 +55,12 @@ body {
     margin-inline-end: 4px;
   }
 }
+
+@layer utilities {
+  .paused {
+    animation-play-state: paused;
+  }
+  .running {
+    animation-play-state: running;
+  }
+}

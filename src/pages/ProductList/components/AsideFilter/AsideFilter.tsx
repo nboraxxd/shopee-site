@@ -4,6 +4,7 @@ import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import omit from 'lodash/omit'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useTranslation } from 'react-i18next'
 
 import { PATH } from '@/constants/path'
 import PARAMETER_KEY from '@/constants/parameter'
@@ -43,6 +44,8 @@ export default function AsideFilter(props: Props) {
 
   const { category: categoryQuery, price_min, price_max } = queryConfig
   const navigate = useNavigate()
+
+  const { t } = useTranslation(['home'])
 
   const {
     control,
@@ -110,7 +113,7 @@ export default function AsideFilter(props: Props) {
     >
       {/* Sidebar Title */}
       <div className="flex items-center justify-between bg-primary p-4 text-white lg:hidden">
-        <p className="mx-auto cursor-default">Lọc sản phẩm</p>
+        <p className="mx-auto cursor-default">{t('aside_filter.aside_title')}</p>
         <button className="p-1" onClick={() => setIsShowAside(false)}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -144,7 +147,7 @@ export default function AsideFilter(props: Props) {
                 d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
               />
             </svg>
-            <p>Danh mục</p>
+            <p>{t('aside_filter.category_title')}</p>
           </div>
           <ul>
             {categories.length !== 0 ? (
@@ -173,7 +176,7 @@ export default function AsideFilter(props: Props) {
                         <polygon points="4 3.5 0 0 0 7"></polygon>
                       </svg>
                     )}
-                    Tất cả
+                    {t('aside_filter.categories')}
                   </Link>
                 </li>
                 {categories.map((category) => (
@@ -232,7 +235,7 @@ export default function AsideFilter(props: Props) {
                 d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"
               />
             </svg>
-            <p className="font-semibold">Bộ lọc</p>
+            <p className="font-semibold">{t('aside_filter.search_filter')}</p>
             <button
               className="ml-auto px-1.5 py-1.5 text-sm font-semibold text-primary"
               onClick={() => {
@@ -241,13 +244,13 @@ export default function AsideFilter(props: Props) {
                 reset({ price_min: '', price_max: '' })
               }}
             >
-              Xoá lọc
+              {t('aside_filter.reset')}
             </button>
           </div>
           {/* End Title */}
           {/* Price Filter */}
           <div className="mt-4">
-            <p className="text-sm">Khoảng giá</p>
+            <p className="text-sm">{t('aside_filter.price_range')}</p>
             <form className="mt-2" onSubmit={onSubmit}>
               <div className="flex items-center">
                 <Controller
@@ -259,7 +262,7 @@ export default function AsideFilter(props: Props) {
                         classNameWrapper="grow"
                         classNameInput="w-full p-[4.5px_2px_4.5px_5px] placeholder:text-xs"
                         classNameError="min-h-0"
-                        placeholder="₫ TỪ"
+                        placeholder={`₫ ${t('aside_filter.min')}`}
                         {...field}
                         onChange={(event) => {
                           field.onChange(event)
@@ -281,7 +284,7 @@ export default function AsideFilter(props: Props) {
                         classNameWrapper="grow"
                         classNameInput="w-full p-[4.5px_2px_4.5px_5px] placeholder:text-xs"
                         classNameError="min-h-0"
-                        placeholder="₫ ĐẾN"
+                        placeholder={`₫ ${t('aside_filter.max')}`}
                         {...field}
                         onChange={(ev) => {
                           field.onChange(ev)
@@ -295,13 +298,13 @@ export default function AsideFilter(props: Props) {
                 />
               </div>
               <p className={`mb-1 min-h-[1rem] text-xs text-red-600`}>{errors.price_min?.message}</p>
-              <Button className="w-full rounded-sm px-1.5 py-1.5 text-sm">Áp dụng</Button>
+              <Button className="w-full rounded-sm px-1.5 py-1.5 text-sm">{t('aside_filter.apply')}</Button>
             </form>
           </div>
           {/* End Price Filter */}
           {/* Rating Filter */}
           <div className="mt-4">
-            <p className="text-sm">Đánh giá</p>
+            <p className="text-sm">{t('aside_filter.rating')}</p>
             <RatingStars queryConfig={queryConfig} setIsShowAside={setIsShowAside} />
           </div>
           {/* End Rating Filter */}
