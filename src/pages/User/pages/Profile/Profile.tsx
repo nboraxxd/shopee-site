@@ -3,6 +3,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { useContext, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
+import { Helmet } from 'react-helmet-async'
 
 import userApi, { type BodyUpdateProfile } from '@/apis/user.api'
 import { AppContext } from '@/contexts/app.context'
@@ -118,6 +119,10 @@ export default function Profile() {
 
   return (
     <div className="mt-3 rounded-sm bg-white px-7 pb-20 shadow md:mt-0 md:px-4 lg:px-7">
+      <Helmet>
+        <title>Hồ sơ của tôi | Shopee clone</title>
+        <meta name="description" content="Trang hồ sơ của tôi | Dự án Shopee Clone" />
+      </Helmet>
       <div className="border-b border-b-gray-200 py-2.5 md:py-5">
         <h1 className="text-lg font-medium text-gray-700">Hồ Sơ Của Tôi</h1>
         <p className="mt-1 hidden text-sm text-gray-500 md:block">Quản lý thông tin hồ sơ để bảo mật tài khoản</p>

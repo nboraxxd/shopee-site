@@ -1,8 +1,9 @@
-import { Suspense } from 'react'
+import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router-dom'
 import '@/locales/translation/i18n'
+import { HelmetProvider } from 'react-helmet-async'
 
 import { AppProvider } from '@/contexts/app.context'
 import { ScrollToTop } from '@/components/ScrollTop'
@@ -21,19 +22,21 @@ const queryClient = new QueryClient({
 })
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  // <React.StrictMode>
-  <BrowserRouter>
-    <QueryClientProvider client={queryClient}>
-      <AppProvider>
-        <ScrollToTop>
-          <ErrorBoundary>
-            <Suspense fallback={<SuspenseLoading />}>
-              <App />
-            </Suspense>
-          </ErrorBoundary>
-        </ScrollToTop>
-      </AppProvider>
-    </QueryClientProvider>
-  </BrowserRouter>
-  // </React.StrictMode>
+  <React.StrictMode>
+    <BrowserRouter>
+      <HelmetProvider>
+        <QueryClientProvider client={queryClient}>
+          <AppProvider>
+            <ScrollToTop>
+              <ErrorBoundary>
+                <Suspense fallback={<SuspenseLoading />}>
+                  <App />
+                </Suspense>
+              </ErrorBoundary>
+            </ScrollToTop>
+          </AppProvider>
+        </QueryClientProvider>
+      </HelmetProvider>
+    </BrowserRouter>
+  </React.StrictMode>
 )

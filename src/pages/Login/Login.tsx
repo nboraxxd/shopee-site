@@ -4,6 +4,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { toast } from 'react-toastify'
+import { Helmet } from 'react-helmet-async'
 
 import authenticationApi from '@/apis/authentication.api'
 import { PATH } from '@/constants/path'
@@ -64,6 +65,10 @@ export default function Login() {
 
   return (
     <div className="bg-primary">
+      <Helmet>
+        <title>Đăng nhập | Shopee clone</title>
+        <meta name="description" content="Đăng nhập vào dự án Shopee Clone" />
+      </Helmet>
       {/* Container */}
       <div className="container">
         <div className="grid grid-cols-1 py-12 lg:grid-cols-5 lg:py-32 lg:pr-10">

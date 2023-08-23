@@ -3,6 +3,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation } from '@tanstack/react-query'
 import omit from 'lodash/omit'
 import { toast } from 'react-toastify'
+import { Helmet } from 'react-helmet-async'
 
 import userApi, { BodyUpdateProfile } from '@/apis/user.api'
 import { isAxiosUnprocessableEntityError } from '@/utils/utils'
@@ -63,6 +64,10 @@ export default function ChangePassword() {
 
   return (
     <div className="mt-3 rounded-sm bg-white px-7 pb-20 shadow md:mt-0 md:px-4 lg:px-7">
+      <Helmet>
+        <title>Đổi mật khẩu | Shopee clone</title>
+        <meta name="description" content="Trang đổi mật khẩu | Dự án Shopee Clone" />
+      </Helmet>
       <div className="border-b border-b-gray-200 py-5">
         <h1 className="text-lg font-medium text-gray-700">Đổi mật khẩu</h1>
         <p className="mt-1 hidden text-sm text-gray-500 md:block">

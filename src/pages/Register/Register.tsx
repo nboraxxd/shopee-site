@@ -5,12 +5,15 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { Link, useNavigate } from 'react-router-dom'
 import omit from 'lodash/omit'
 import { toast } from 'react-toastify'
+import { Helmet } from 'react-helmet-async'
+
 import authenticationApi from '@/apis/authentication.api'
 import { AppContext } from '@/contexts/app.context'
 import { PATH } from '@/constants/path'
 import { Schema, schema } from '@/utils/rules'
 import { isAxiosUnprocessableEntityError } from '@/utils/utils'
 import { ErrorResponse } from '@/types/utils.type'
+
 import { Input } from '@/components/Input'
 import { Button } from '@/components/Button'
 
@@ -62,6 +65,10 @@ export default function Register() {
 
   return (
     <div className="bg-primary">
+      <Helmet>
+        <title>Đăng ký | Shopee clone</title>
+        <meta name="description" content="Đăng ký tài khoản để vào dự án Shopee Clone" />
+      </Helmet>
       {/* Container */}
       <div className="container">
         <div className="grid grid-cols-1 py-12 lg:grid-cols-5 lg:py-32 lg:pr-10">

@@ -1,5 +1,6 @@
 import { PATH } from '@/constants/path'
 import { Link } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 
 interface Props {
   wrapperClassname?: string
@@ -18,6 +19,10 @@ export default function NotFound(props: Props) {
 
   return (
     <main className={`flex w-full flex-col items-center justify-center ${wrapperClassname}`}>
+      <Helmet>
+        <title>Không tìm thấy trang | Shopee clone</title>
+        <meta name="description" content="Không tìm thấy trang, vui lòng kiểm tra lại đường dẫn" />
+      </Helmet>
       <h1 className="text-9xl font-extrabold tracking-widest text-primary">{errorCode}</h1>
       <div className="absolute rotate-12 rounded bg-[#1A2238] px-2 text-sm text-white">{desc}</div>
       <button className="mt-5">

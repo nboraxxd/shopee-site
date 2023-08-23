@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { createSearchParams, useNavigate } from 'react-router-dom'
 import classNames from 'classnames'
+import { Helmet } from 'react-helmet-async'
 
 import useScrollTop from '@/hooks/useScrollTop'
 import useHiddenScroll from '@/hooks/useHiddenScroll'
@@ -52,6 +53,10 @@ export default function ProductList() {
 
   return (
     <div className="overflow-hidden bg-secondary">
+      <Helmet>
+        <title>Trang chủ | Shopee clone</title>
+        <meta name="description" content="Trang chủ của dự án Shopee Clone" />
+      </Helmet>
       <div className="container">
         {/* Wrapper */}
         <div className="grid grid-cols-12 gap-6 py-7">

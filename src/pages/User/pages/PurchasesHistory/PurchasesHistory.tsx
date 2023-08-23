@@ -5,6 +5,7 @@ import useQueryParams from '@/hooks/useQueryParams'
 import { PurchaseListStatus } from '@/types/purchase.type'
 import { formatCurrency, generateSlug } from '@/utils/utils'
 import classNames from 'classnames'
+import { Helmet } from 'react-helmet-async'
 import { Link, createSearchParams, generatePath } from 'react-router-dom'
 
 const PURCHASE_TABS = [
@@ -23,7 +24,11 @@ export default function PurchasesHistory() {
   const purchasesQuery = usePurchasesByStatus(status as PurchaseListStatus)
 
   return (
-    <div>
+    <>
+      <Helmet>
+        <title>Đơn hàng | Shopee clone</title>
+        <meta name="description" content="Trang đơn hàng | Dự án Shopee Clone" />
+      </Helmet>
       {/* Purchase Tabs */}
       <div className="sticky top-0 mt-3 flex rounded-t-sm text-[0.5rem] sm:text-xs md:mt-0 lg:text-sm">
         {PURCHASE_TABS.map((item) => (
@@ -90,6 +95,6 @@ export default function PurchasesHistory() {
         )
       })}
       {/* End Purchases List */}
-    </div>
+    </>
   )
 }

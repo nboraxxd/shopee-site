@@ -7,6 +7,7 @@ import { useInView } from 'react-intersection-observer'
 import { produce } from 'immer'
 import keyBy from 'lodash/keyBy'
 import { toast } from 'react-toastify'
+import { Helmet } from 'react-helmet-async'
 
 import usePurchasesByStatus from '@/hooks/usePurchasesInCartQuery'
 import useHiddenScroll from '@/hooks/useHiddenScroll'
@@ -177,6 +178,10 @@ export default function Cart() {
 
   return purchasesInCartData === undefined || purchasesInCartData.length === 0 ? (
     <div className="container">
+      <Helmet>
+        <title>Giỏ hàng | Shopee clone</title>
+        <meta name="description" content="Trang giỏ hàng của dự án Shopee Clone" />
+      </Helmet>
       <div className="flex flex-col items-center pb-40 pt-32">
         <img src={noProduct} alt="not purchase" className="h-24 w-24 object-cover" />
         <div className="mt-5 font-medium text-gray-400">Giỏ hàng của bạn còn trống</div>
