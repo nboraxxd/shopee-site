@@ -74,9 +74,11 @@ export default function Register() {
                 name="email"
                 placeholder="Email"
                 register={register}
-                type="email"
+                type="password"
                 autoComplete="email"
-                classNameWrapper="mt-8"
+                classNameWrapper="relative mt-8"
+                classNameInput="py-3 pl-3 pr-8 focus:border-gray-400"
+                classNameEye="absolute right-2 top-3 h-5 w-5 cursor-pointer text-gray-500"
                 errorMessage={errors.email?.message}
               />
               {/* End Email Input */}
@@ -87,6 +89,9 @@ export default function Register() {
                 register={register}
                 type="password"
                 autoComplete="new-password"
+                classNameWrapper="relative mt-2"
+                classNameInput="py-3 pl-3 pr-8 focus:border-gray-400"
+                classNameEye="absolute right-2 top-3 h-5 w-5 cursor-pointer text-gray-500"
                 errorMessage={errors.password?.message}
               />
               {/* End Password Input */}
@@ -96,6 +101,9 @@ export default function Register() {
                 placeholder="Confirm password"
                 register={register}
                 type="password"
+                classNameWrapper="relative mt-2"
+                classNameInput="py-3 pl-3 pr-8 focus:border-gray-400"
+                classNameEye="absolute right-2 top-3 h-5 w-5 cursor-pointer text-gray-500"
                 errorMessage={errors.confirm_password?.message}
               />
               {/* End Confirm Password Input */}

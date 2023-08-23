@@ -89,6 +89,9 @@ export default function Login() {
                 register={register}
                 type="password"
                 autoComplete="new-password"
+                classNameWrapper="relative mt-2"
+                classNameInput="py-3 pl-3 pr-8 focus:border-gray-400"
+                classNameEye="absolute right-2 top-3 h-5 w-5 cursor-pointer text-gray-500"
                 errorMessage={errors.password?.message}
               />
               {/* End Password Input */}
@@ -100,7 +103,7 @@ export default function Login() {
               {/* Redirect Link */}
               <div className="mt-8 flex items-center justify-center">
                 <span className="text-gray-400">Bạn mới biết đến Shopee?</span>
-                <Link to={PATH.signup} className="ml-1 text-primary">
+                <Link to={PATH.register} className="ml-1 text-primary">
                   Đăng ký
                 </Link>
               </div>

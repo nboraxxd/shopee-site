@@ -1,46 +1,99 @@
-import axios, { AxiosError, type AxiosInstance } from 'axios'
+import axios, { AxiosError, InternalAxiosRequestConfig, type AxiosInstance } from 'axios'
 import { toast } from 'react-toastify'
 import HttpStatusCode from '@/constants/httpStatusCode.enum'
 import { AuthResponse } from '@/types/auth.type'
-import { clearAuthLocalStorage, getAccessToken, setAccessToken, setUser } from '@/utils/token'
-import { PATH } from '@/constants/path'
+import {
+  clearAuthLocalStorage,
+  getAccessToken,
+  getRefreshToken,
+  setAccessToken,
+  setRefreshToken,
+  setUser,
+} from '@/utils/token'
+import authenticationApi, {
+  API_LOGIN_URL,
+  API_LOOUT_URL,
+  API_REFRESH_TOKEN_URL,
+  API_REGISTER_URL,
+} from '@/apis/authentication.api'
+import { isAxiosExpiredTokenError, isAxiosUnauthorizedError } from '@/utils/utils'
+import { ErrorResponse } from '@/types/utils.type'
 
 let accessToken = getAccessToken()
+let refreshToken = getRefreshToken()
+let refreshTokenRequest: Promise<string> | null
 
 export const http: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_SERVER_URL,
   timeout: 10000,
-  headers: { 'Content-Type': 'application/json' },
+  headers: {
+    'Content-Type': 'application/json',
+    'expire-access-token': 5,
+    'expire-refresh-token': 60 * 60,
+  },
 })
 
 http.interceptors.response.use(
   function (response) {
     const { url } = response.config
-    if (url === PATH.signup || url === PATH.login) {
+    if (url === API_LOGIN_URL || url === API_REGISTER_URL) {
       accessToken = (response.data as AuthResponse).data.access_token
-      const user = (response.data as AuthResponse).data.user
+      refreshToken = (response.data as AuthResponse).data.refresh_token
+
       setAccessToken(accessToken)
+      setRefreshToken(refreshToken)
+
+      const user = (response.data as AuthResponse).data.user
       setUser(user)
-    } else if (url === PATH.logout) {
+    } else if (url === API_LOOUT_URL) {
       accessToken = ''
+      refreshToken = ''
+
       clearAuthLocalStorage()
     }
 
     return response
   },
 
-  function (error: AxiosError) {
-    if (error.response?.status !== HttpStatusCode.UnprocessableEntity) {
+  async function (error: AxiosError) {
+    // Chỉ show error toast khi lỗi không phải là 401 và 422
+    if (![HttpStatusCode.UnprocessableEntity, HttpStatusCode.Unauthorized].includes(error.response?.status as number)) {
       const data: any | undefined = error.response?.data
-      console.log(data, error)
       const message = data?.message || error.message
       toast.error(message)
     }
 
-    if (error.response?.status === HttpStatusCode.Unauthorized) {
+    if (isAxiosUnauthorizedError<ErrorResponse<{ name: string; message: string }>>(error)) {
+      const config = error.response?.config || ({ headers: {} } as InternalAxiosRequestConfig)
+      const { url } = config
+
+      if (
+        isAxiosExpiredTokenError<ErrorResponse<{ name: string; message: string }>>(error) &&
+        url !== API_REFRESH_TOKEN_URL
+      ) {
+        refreshTokenRequest = refreshTokenRequest
+          ? refreshTokenRequest
+          : handleRefreshToken().finally(() => {
+              // Giữ refreshTokenRequest trong 10s cho những request tiếp theo nếu có 401 thì dùng
+              setTimeout(() => {
+                refreshTokenRequest = null
+              }, 5000)
+            })
+
+        return refreshTokenRequest
+          .then((access_token) => {
+            return http({ ...config, headers: { ...config.headers, authorization: access_token } })
+          })
+          .catch((error) => {
+            throw error
+          })
+      }
+
+      // Những trường hợp như token không đúng, không truyền được token, token hết hạn nhưng gọi refresh token bị fail thì tiến hành như sau
       accessToken = ''
+      refreshToken = ''
       clearAuthLocalStorage()
-      // window.location.reload()
+      toast.error(error.response?.data.data?.message || error.response?.data.message)
     }
 
     return Promise.reject(error)
@@ -60,3 +113,19 @@ http.interceptors.request.use(
     return Promise.reject(error)
   }
 )
+
+async function handleRefreshToken() {
+  try {
+    const response = await authenticationApi.refreshToken({ refresh_token: refreshToken })
+    accessToken = response.data.data.access_token
+    setAccessToken(response.data.data.access_token)
+
+    return response.data.data.access_token
+  } catch (error) {
+    accessToken = ''
+    refreshToken = ''
+
+    clearAuthLocalStorage()
+    throw error
+  }
+}

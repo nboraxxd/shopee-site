@@ -92,7 +92,7 @@ export default function TopBarHeader() {
       {!isAuthenticated && (
         <>
           <li className="text-xs text-gray-50 transition-all hover:text-gray-200 sm:text-sm">
-            <Link className="px-1 sm:px-2" to={PATH.signup}>
+            <Link className="px-1 sm:px-2" to={PATH.register}>
               Đăng Ký
             </Link>
           </li>

@@ -1,5 +1,10 @@
-import { AuthResponse } from '@/types/auth.type'
+import { AuthResponse, RefreshTokenResponse } from '@/types/auth.type'
 import { http } from '@/utils/http'
+
+export const API_LOGIN_URL = '/login'
+export const API_REGISTER_URL = '/register'
+export const API_LOOUT_URL = '/logout'
+export const API_REFRESH_TOKEN_URL = '/refresh-access-token'
 
 type AuthenticationForm = {
   email: string
@@ -8,11 +13,15 @@ type AuthenticationForm = {
 
 const authenticationApi = {
   register(body: AuthenticationForm) {
-    return http.post<AuthResponse>('/register', body)
+    return http.post<AuthResponse>(API_REGISTER_URL, body)
   },
 
   login(body: AuthenticationForm) {
-    return http.post<AuthResponse>('/login', body)
+    return http.post<AuthResponse>(API_LOGIN_URL, body)
+  },
+
+  refreshToken(body: { refresh_token: string }) {
+    return http.post<RefreshTokenResponse>(API_REFRESH_TOKEN_URL, body)
   },
 }
 

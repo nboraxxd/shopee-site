@@ -17,7 +17,7 @@ export const authentication = {
           element: <Login />,
         },
         {
-          path: PATH.signup,
+          path: PATH.register,
           element: <Register />,
         },
       ],

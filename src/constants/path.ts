@@ -6,7 +6,7 @@ export const PATH = {
   products: PRODUCTS,
   productDetail: PRODUCTS + '/:id',
   login: '/login',
-  signup: '/register',
+  register: '/register',
   logout: '/logout',
   user: {
     index: USER,

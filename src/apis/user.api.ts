@@ -2,6 +2,7 @@ import { http } from '@/utils/http'
 import { AuthResponse } from '@/types/auth.type'
 import { SuccessResponse } from '@/types/utils.type'
 import { User } from '@/types/user.type'
+import { API_LOOUT_URL } from '@/apis/authentication.api'
 
 export interface BodyUpdateProfile extends Omit<User, '_id' | 'roles' | 'createdAt' | 'updatedAt' | 'email'> {
   password?: string
@@ -9,18 +10,19 @@ export interface BodyUpdateProfile extends Omit<User, '_id' | 'roles' | 'created
 }
 
 const USER_URL = '/user'
+const ME_URL = '/me'
 
 const userApi = {
   logout() {
-    return http.post<AuthResponse>('/logout')
+    return http.post<AuthResponse>(API_LOOUT_URL)
   },
 
   getProfile() {
-    return http.get<SuccessResponse<User>>('/me')
+    return http.get<SuccessResponse<User>>(ME_URL)
   },
 
   updateProfile(body: BodyUpdateProfile) {
-    return http.put<SuccessResponse<User>>('/user', body)
+    return http.put<SuccessResponse<User>>(USER_URL, body)
   },
 
   updateAvatar(body: FormData) {
