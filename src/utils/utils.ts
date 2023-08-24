@@ -6,7 +6,7 @@ import { Purchase } from '@/types/purchase.type'
 import defaultAvatar from '@/assets/images/defaultAvatar.svg'
 import { ErrorResponse } from '@/types/utils.type'
 
-function isAxiosError<T>(error: unknown): error is AxiosError<T> {
+export function isAxiosError<T>(error: unknown): error is AxiosError<T> {
   return axios.isAxiosError(error)
 }
 
