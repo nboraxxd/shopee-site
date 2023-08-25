@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { beforeAll, beforeEach, afterEach, describe, expect, it, afterAll } from 'vitest'
 import {
   clearAuthLocalStorage,
   getAccessToken,
@@ -28,6 +28,26 @@ const user: User = {
   phone: '0987654321',
   avatar: 'ed8fb6e9-e95a-4361-b086-a40418ad40b1.jpg',
 }
+
+// beforeEach sẽ được gọi trước MỖI describe
+beforeEach(() => {
+  localStorage.clear()
+})
+
+// beforeAll sẽ được gọi 1 lần trước khi chạy tất cả các describe
+beforeAll(() => {
+  console.log('beforeAll running')
+})
+
+// afterEach sẽ được gọi sau MỖI describe
+afterEach(() => {
+  console.log('afterEach running')
+})
+
+// afterAll sẽ được gọi 1 lần trước khi chạy tất cả các describe
+afterAll(() => {
+  console.log('afterAll running')
+})
 
 describe('setAccessToken', () => {
   it('set và get access_token localStorage', () => {
