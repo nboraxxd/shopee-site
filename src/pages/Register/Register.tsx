@@ -81,11 +81,9 @@ export default function Register() {
                 name="email"
                 placeholder="Email"
                 register={register}
-                type="password"
                 autoComplete="email"
-                classNameWrapper="relative mt-8"
+                classNameWrapper="mt-8"
                 classNameInput="py-3 pl-3 pr-8 focus:border-gray-400"
-                classNameEye="absolute right-2 top-3 h-5 w-5 cursor-pointer text-gray-500"
                 errorMessage={errors.email?.message}
               />
               {/* End Email Input */}
