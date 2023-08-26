@@ -3,7 +3,8 @@ import { render, screen, waitFor } from '@testing-library/react'
 // import userEvent from '@testing-library/user-event'
 // import '@testing-library/jest-dom'
 import { BrowserRouter, MemoryRouter } from 'react-router-dom'
-import { logScreen } from '@/utils/__test__/testUtils'
+import { logScreen, renderWithRouter } from '@/utils/__test__/testUtils'
+import { PATH } from '@/constants/path'
 import App from '@/App'
 
 describe('App', () => {
@@ -11,7 +12,7 @@ describe('App', () => {
     render(<App />, {
       wrapper: BrowserRouter,
     })
-    // const user = userEvent.setup()
+    // const user = userEvent.setup(
     /**
      * waitFor sẽ run callback 1 vài lần
      * cho đến khi hết timeout hoặc expect pass
@@ -40,5 +41,15 @@ describe('App', () => {
     )
     await logScreen()
     screen.debug(document.body.parentElement as HTMLElement, 99999999)
+  })
+
+  it('Render trang register', async () => {
+    renderWithRouter({ route: PATH.register })
+
+    await waitFor(() => {
+      expect(document.querySelector('title')?.textContent).toBe('Đăng ký | Shopee clone')
+    })
+
+    await logScreen()
   })
 })
