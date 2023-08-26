@@ -101,7 +101,7 @@ export default function Login() {
               />
               {/* End Password Input */}
               {/* Button */}
-              <Button isLoading={loginMutation.isLoading} disabled={loginMutation.isLoading}>
+              <Button type="submit" isLoading={loginMutation.isLoading} disabled={loginMutation.isLoading}>
                 Đăng nhập
               </Button>
               {/* End Button */}
