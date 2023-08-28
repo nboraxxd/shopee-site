@@ -32,6 +32,16 @@ describe('App', () => {
     screen.debug(document.body.parentElement as HTMLElement, 99999999)
   })
 
+  it('Render trang register', async () => {
+    renderWithRouter({ route: PATH.register })
+
+    await waitFor(() => {
+      expect(document.querySelector('title')?.textContent).toBe('Đăng ký | Shopee clone')
+    })
+
+    await logScreen()
+  })
+
   it('Redirect sang trang not found', async () => {
     const badRoute = '/some/bad/route'
     render(
@@ -41,15 +51,5 @@ describe('App', () => {
     )
     await logScreen()
     screen.debug(document.body.parentElement as HTMLElement, 99999999)
-  })
-
-  it('Render trang register', async () => {
-    renderWithRouter({ route: PATH.register })
-
-    await waitFor(() => {
-      expect(document.querySelector('title')?.textContent).toBe('Đăng ký | Shopee clone')
-    })
-
-    await logScreen()
   })
 })
