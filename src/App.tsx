@@ -10,7 +10,7 @@ import { localStorageEventTarget } from '@/utils/token'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { ScrollToTop } from '@/components/ScrollTop'
 import { SuspenseLoading } from '@/components/SuspenseLoading'
-import { AppProvider, AppContext } from '@/contexts/app.context'
+import { AppContext } from '@/contexts/app.context'
 import 'react-toastify/dist/ReactToastify.css'
 
 function App() {
@@ -25,16 +25,14 @@ function App() {
 
   return (
     <HelmetProvider>
-      <AppProvider>
-        <ScrollToTop>
-          <ErrorBoundary>
-            <Suspense fallback={<SuspenseLoading />}>
-              {element}
-              <ToastContainer autoClose={2000} position="top-center" limit={3} hideProgressBar />
-            </Suspense>
-          </ErrorBoundary>
-        </ScrollToTop>
-      </AppProvider>
+      <ScrollToTop>
+        <ErrorBoundary>
+          <Suspense fallback={<SuspenseLoading />}>
+            {element}
+            <ToastContainer autoClose={2000} position="top-center" limit={3} hideProgressBar />
+          </Suspense>
+        </ErrorBoundary>
+      </ScrollToTop>
       <ReactQueryDevtools initialIsOpen={false} />
     </HelmetProvider>
   )
