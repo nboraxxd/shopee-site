@@ -1,40 +1,10 @@
 import { afterAll, afterEach, beforeAll } from 'vitest'
 import { setupServer } from 'msw/node'
-import { rest } from 'msw'
-import HttpStatusCode from './src/constants/httpStatusCode.enum'
+import authRequests from './src/msw/auth.msw'
+import productRequests from './src/msw/product.msw'
+import userRequests from './src/msw/user.msw'
 
-const loginResponse = {
-  message: 'Đăng nhập thành công',
-  data: {
-    access_token:
-      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0Y2NjZGQzM2JlNTc2ZGQ1M2QyOWYwNSIsImVtYWlsIjoia2l4aUBtYWlsaW5hdG9yLmNvbSIsInJvbGVzIjpbIlVzZXIiXSwiY3JlYXRlZF9hdCI6IjIwMjMtMDgtMjhUMDM6NDg6MDUuNDg2WiIsImlhdCI6MTY5MzE5NDQ4NSwiZXhwIjoxNjk0MTk0NDg0fQ.InWzNtx5bDTV8vbcMcrPRyCrbpXhG_mUVB6q_rmPHtg',
-    expires: 999999,
-    refresh_token:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0Y2NjZGQzM2JlNTc2ZGQ1M2QyOWYwNSIsImVtYWlsIjoia2l4aUBtYWlsaW5hdG9yLmNvbSIsInJvbGVzIjpbIlVzZXIiXSwiY3JlYXRlZF9hdCI6IjIwMjMtMDgtMjhUMDM6NDg6MDUuNDg2WiIsImlhdCI6MTY5MzE5NDQ4NSwiZXhwIjoxNzc5NTk0NDg1fQ.dNwHf-gIu-pKPfEg3fAZQmG7gVxsjFwXAJfLbcub2YU',
-    expires_refresh_token: 86400000,
-    user: {
-      _id: '64cccdd33be576dd53d29f05',
-      roles: ['User'],
-      email: 'kixi@mailinator.com',
-      createdAt: '2023-08-04T10:07:15.934Z',
-      updatedAt: '2023-08-23T02:57:20.910Z',
-      __v: 0,
-      address: 'Viet Nam',
-      date_of_birth: '2000-02-15T00:00:00.000Z',
-      name: 'hello',
-      phone: '0987654321',
-      avatar: 'ed8fb6e9-e95a-4361-b086-a40418ad40b1.jpg',
-    },
-  },
-}
-
-export const restHandlers = [
-  rest.post(`${import.meta.env.VITE_SERVER_URL}/login`, (_, res, ctx) => {
-    return res(ctx.status(HttpStatusCode.Ok), ctx.json(loginResponse))
-  }),
-]
-
-const server = setupServer(...restHandlers)
+const server = setupServer(...authRequests, ...productRequests, ...userRequests)
 
 // Start server before all tests
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
