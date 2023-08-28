@@ -5,7 +5,6 @@ import DOMPurify from 'dompurify'
 import { toast } from 'react-toastify'
 import classNames from 'classnames'
 import { Helmet } from 'react-helmet-async'
-import { convert } from 'html-to-text'
 
 import { useWindowSize } from '@/hooks/useWindowSize'
 import usePurchasesByStatus from '@/hooks/usePurchasesInCartQuery'
@@ -196,14 +195,6 @@ export default function ProductDetail() {
     <div className="bg-secondary py-8">
       <Helmet>
         <title>{product.name} | Shopee clone</title>
-        <meta
-          name="description"
-          content={convert(product.description, {
-            limits: {
-              maxInputLength: 150,
-            },
-          })}
-        />
       </Helmet>
       <div className="container">
         {/* Product Main */}
