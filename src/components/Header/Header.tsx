@@ -111,59 +111,61 @@ export default function Header() {
                           </div>
                         </PopoverContent>
                       ))}
-                  {isAuthenticated &&
-                  !purchasesInCartQuery.isFetching &&
-                  purchasesInCartData &&
-                  purchasesInCartData.length > 0 ? (
-                    <>
-                      <p className="px-5 py-2.5 text-sm text-gray-300">Sản Phẩm Mới Thêm</p>
-                      {getFiveLatestProducts(purchasesInCartData).map((item) => {
-                        const productDetailPath = generatePath(PATH.productDetail, {
-                          id: generateSlug({ name: item.product.name, id: item.product._id }),
-                        })
-
-                        return (
-                          <PopoverContent
-                            as={Link}
-                            onClick={() => setIsShowPopover(false)}
-                            to={productDetailPath}
-                            key={item._id}
-                            className="flex cursor-default py-3 hover:bg-gray-100"
-                          >
-                            <img
-                              className="h-10 w-10 flex-shrink-0 border border-gray-100 object-cover"
-                              src={item.product.image}
-                              alt={item.product.name}
-                            />
-                            <div className="flex cursor-text items-center text-sm">
-                              <p className="ml-2 line-clamp-1 text-gray-800">{item.product.name}</p>
-                              <p className="ml-5 flex-shrink-0 text-primary">₫{formatCurrency(item.product.price)}</p>
-                            </div>
-                          </PopoverContent>
-                        )
-                      })}
-                      <div className="flex items-center px-5 py-2.5">
-                        {purchasesInCartData.length >= 5 && (
-                          <span className="text-xs text-gray-500">
-                            {purchasesInCartData.length - MAX_PRODUCTS_IN_CART} Thêm Hàng Vào Giỏ
-                          </span>
-                        )}
-
-                        <PopoverContent
-                          as={Link}
-                          to={PATH.cart}
-                          className="ml-auto rounded-sm bg-primary text-sm text-white hover:bg-primary hover:text-white hover:opacity-90"
-                        >
-                          Xem Giỏ Hàng
-                        </PopoverContent>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="w-[398px] py-10 text-center">
+                  {(!isAuthenticated ||
+                    (!purchasesInCartQuery.isLoading &&
+                      (!purchasesInCartData || purchasesInCartData.length === 0))) && (
+                    <div className="w-[24.875rem] py-10 text-center">
                       <img src={noProduct} alt="not purchase" className="mx-auto w-1/3" />
                       <p className="mt-8 text-gray-500">Chưa có sản phẩm</p>
                     </div>
                   )}
+                  {isAuthenticated &&
+                    !purchasesInCartQuery.isFetching &&
+                    purchasesInCartData &&
+                    purchasesInCartData.length > 0 && (
+                      <>
+                        <p className="px-5 py-2.5 text-sm text-gray-300">Sản Phẩm Mới Thêm</p>
+                        {getFiveLatestProducts(purchasesInCartData).map((item) => {
+                          const productDetailPath = generatePath(PATH.productDetail, {
+                            id: generateSlug({ name: item.product.name, id: item.product._id }),
+                          })
+
+                          return (
+                            <PopoverContent
+                              as={Link}
+                              onClick={() => setIsShowPopover(false)}
+                              to={productDetailPath}
+                              key={item._id}
+                              className="flex cursor-default py-3 hover:bg-gray-100"
+                            >
+                              <img
+                                className="h-10 w-10 flex-shrink-0 border border-gray-100 object-cover"
+                                src={item.product.image}
+                                alt={item.product.name}
+                              />
+                              <div className="flex cursor-text items-center text-sm">
+                                <p className="ml-2 line-clamp-1 text-gray-800">{item.product.name}</p>
+                                <p className="ml-5 flex-shrink-0 text-primary">₫{formatCurrency(item.product.price)}</p>
+                              </div>
+                            </PopoverContent>
+                          )
+                        })}
+                        <div className="flex items-center px-5 py-2.5">
+                          {purchasesInCartData.length >= 5 && (
+                            <span className="text-xs text-gray-500">
+                              {purchasesInCartData.length - MAX_PRODUCTS_IN_CART} Thêm Hàng Vào Giỏ
+                            </span>
+                          )}
+                          <PopoverContent
+                            as={Link}
+                            to={PATH.cart}
+                            className="ml-auto rounded-sm bg-primary text-sm text-white hover:bg-primary hover:text-white hover:opacity-90"
+                          >
+                            Xem Giỏ Hàng
+                          </PopoverContent>
+                        </div>
+                      </>
+                    )}
                 </div>
               </div>
             }

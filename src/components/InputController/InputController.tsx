@@ -3,7 +3,7 @@ import { FieldPath, FieldValues, UseControllerProps, useController } from 'react
 
 export type InputControllerProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 > = {
   classNameWrapper?: string
   classNameInput?: string
@@ -13,7 +13,7 @@ export type InputControllerProps<
 
 export default function InputController<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 >(props: InputControllerProps<TFieldValues, TName>) {
   const {
     type,
