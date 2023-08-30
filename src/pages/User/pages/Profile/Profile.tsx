@@ -132,6 +132,7 @@ export default function Profile() {
           <div className="flex flex-col md:flex-row md:items-center md:gap-2 lg:gap-5">
             <div className="mb-[0.125rem] text-gray-500 md:mb-5 md:w-1/4 md:text-right lg:w-1/5">Email</div>
             <Input
+              name="email"
               classNameWrapper="md:w-3/4 lg:w-4/5 w-full"
               classNameInput="px-3 py-2"
               disabled
