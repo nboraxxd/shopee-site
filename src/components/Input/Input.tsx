@@ -1,17 +1,18 @@
 import { InputHTMLAttributes, useState } from 'react'
-import type { RegisterOptions, UseFormRegister } from 'react-hook-form'
+import type { RegisterOptions, UseFormRegister, FieldValues, FieldPath } from 'react-hook-form'
 
-interface Props extends InputHTMLAttributes<HTMLInputElement> {
-  register?: UseFormRegister<any>
+interface Props<TFieldValues extends FieldValues> extends InputHTMLAttributes<HTMLInputElement> {
+  register?: UseFormRegister<TFieldValues>
   rules?: RegisterOptions
   errorMessage?: string
   classNameWrapper?: string
   classNameInput?: string
   classNameError?: string
   classNameEye?: string
+  name: FieldPath<TFieldValues>
 }
 
-export default function Input(props: Props) {
+export default function Input<TFieldValues extends FieldValues = FieldValues>(props: Props<TFieldValues>) {
   const {
     name,
     register,
