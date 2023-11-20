@@ -2,7 +2,7 @@ import { http } from '@/utils/http'
 import { AuthResponse } from '@/types/auth.type'
 import { SuccessResponse } from '@/types/utils.type'
 import { User } from '@/types/user.type'
-import { API_LOOUT_URL } from '@/apis/authentication.api'
+import { API_LOGOUT_URL } from '@/apis/authentication.api'
 
 export interface BodyUpdateProfile extends Omit<User, '_id' | 'roles' | 'createdAt' | 'updatedAt' | 'email'> {
   password?: string
@@ -14,7 +14,7 @@ const ME_URL = '/me'
 
 const userApi = {
   logout() {
-    return http.post<AuthResponse>(API_LOOUT_URL)
+    return http.post<AuthResponse>(API_LOGOUT_URL)
   },
 
   getProfile() {

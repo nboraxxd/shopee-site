@@ -3,7 +3,7 @@ import { http } from '@/utils/http'
 
 export const API_LOGIN_URL = '/login'
 export const API_REGISTER_URL = '/register'
-export const API_LOOUT_URL = '/logout'
+export const API_LOGOUT_URL = '/logout'
 export const API_REFRESH_TOKEN_URL = '/refresh-access-token'
 
 type AuthenticationForm = {

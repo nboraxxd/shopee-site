@@ -12,7 +12,7 @@ import {
 } from '@/utils/token'
 import authenticationApi, {
   API_LOGIN_URL,
-  API_LOOUT_URL,
+  API_LOGOUT_URL,
   API_REFRESH_TOKEN_URL,
   API_REGISTER_URL,
 } from '@/apis/authentication.api'
@@ -45,7 +45,7 @@ http.interceptors.response.use(
 
       const user = (response.data as AuthResponse).data.user
       setUser(user)
-    } else if (url === API_LOOUT_URL) {
+    } else if (url === API_LOGOUT_URL) {
       accessToken = ''
       refreshToken = ''
 
@@ -74,7 +74,7 @@ http.interceptors.response.use(
         refreshTokenRequest = refreshTokenRequest
           ? refreshTokenRequest
           : handleRefreshToken().finally(() => {
-              // Giữ refreshTokenRequest trong 10s cho những request tiếp theo nếu có 401 thì dùng
+              // Giữ refreshTokenRequest trong 5s cho những request tiếp theo nếu có 401 thì dùng
               setTimeout(() => {
                 refreshTokenRequest = null
               }, 5000)
