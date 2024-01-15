@@ -20,7 +20,7 @@ export default function AvatarImage({ file }: Props) {
       alt={user?.email || 'default avatar'}
       className={classNames('h-full w-full', {
         'object-cover': user?.avatar,
-        'invert-[0.75]': !user?.avatar,
+        'invert-[0.75]': !user?.avatar && !imagePreview,
       })}
     />
   )
