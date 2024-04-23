@@ -73,8 +73,9 @@ export default function Profile() {
       setValue('address', profileData.address)
       setValue('date_of_birth', profileData.date_of_birth ? new Date(profileData.date_of_birth) : new Date(1990, 0, 1))
       setValue('avatar', profileData.avatar)
+      setUserContext(profileData)
     }
-  }, [profileData, setValue])
+  }, [profileData, setUserContext, setValue])
 
   const onSubmit = handleSubmit(async (data) => {
     try {
